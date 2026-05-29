@@ -1,0 +1,533 @@
+﻿
+> helpdesk-react-frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\App.jsx
+   1:8  warning  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  24:9  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  22 |       const role = user.role;
+  23 |       if (role === 'USER') {
+> 24 |         setActiveConsole('customer');
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  25 |         setActiveTab('kb');
+  26 |       } else if (role === 'AGENT') {
+  27 |         setActiveConsole('agent');  react-hooks/set-state-in-effect
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\components\Layout.jsx
+  1:8   warning  'React' is defined but never used  no-unused-vars
+  5:39  warning  'User' is defined but never used   no-unused-vars
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\context\AuthContext.jsx
+    1:8   warning  'React' is defined but never used                                                                                               no-unused-vars
+    7:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   72:20  warning  'e' is defined but never used                                                                                                   no-unused-vars
+   72:23  warning  Empty block statement                                                                                                           no-empty
+  176:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\context\NotificationContext.jsx
+    1:8   warning  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+   14:9   warning  'ticketSubscriptionsRef' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   74:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  72 |         stompClientRef.current = null;
+  73 |       }
+> 74 |       setNotifications([]);
+     |       ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  75 |       setUnreadCount(0);
+  76 |       return;
+  77 |     }  react-hooks/set-state-in-effect
+  121:6   warning  React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+  178:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-refresh/only-export-components
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\pages\Login.jsx
+  1:8  warning  'React' is defined but never used  no-unused-vars
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\pages\Register.jsx
+  1:8  warning  'React' is defined but never used  no-unused-vars
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\pages\admin\AdminConsole.jsx
+   1:8   warning  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   5:3   warning  'Users' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   5:19  warning  'CheckSquare' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   5:32  warning  'LayoutDashboard' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+   5:49  warning  'Sparkles' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+   6:15  warning  'Award' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   7:3   warning  'FolderKanban' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   7:23  warning  'Clock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   7:30  warning  'ShieldAlert' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   7:53  warning  'Shield' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  23:10  warning  'statsLoading' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  55:7   error    Error: Cannot access variable before it is declared
+
+`fetchDashboardStats` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  53 |   useEffect(() => {
+  54 |     if (activeTab === 'dashboard') {
+> 55 |       fetchDashboardStats();
+     |       ^^^^^^^^^^^^^^^^^^^ `fetchDashboardStats` accessed before it is declared
+  56 |       fetchAgentWorkloads();
+  57 |       setupLiveLogStreamer();
+  58 |     } else if (activeTab === 'users') {
+
+   67 |
+   68 |   // ΓöÇΓöÇ STATS & WORKLOADS (Tab 1) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+>  69 |   const fetchDashboardStats = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  70 |     setStatsLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  71 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 106 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 107 |   };
+      | ^^^^^ `fetchDashboardStats` is declared here
+  108 |
+  109 |   const fetchAgentWorkloads = async () => {
+  110 |     try {                                                                                                                            react-hooks/immutability
+  56:7   error    Error: Cannot access variable before it is declared
+
+`fetchAgentWorkloads` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  54 |     if (activeTab === 'dashboard') {
+  55 |       fetchDashboardStats();
+> 56 |       fetchAgentWorkloads();
+     |       ^^^^^^^^^^^^^^^^^^^ `fetchAgentWorkloads` accessed before it is declared
+  57 |       setupLiveLogStreamer();
+  58 |     } else if (activeTab === 'users') {
+  59 |       fetchUsers();
+
+  107 |   };
+  108 |
+> 109 |   const fetchAgentWorkloads = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 110 |     try {
+      | ^^^^^^^^^
+> 111 |       const res = await api.get('/api/admin/agents/workload');
+      | ^^^^^^^^^
+> 112 |       setWorkloads(res.data || []);
+      | ^^^^^^^^^
+> 113 |     } catch (err) {
+      | ^^^^^^^^^
+> 114 |       console.error(err);
+      | ^^^^^^^^^
+> 115 |     }
+      | ^^^^^^^^^
+> 116 |   };
+      | ^^^^^ `fetchAgentWorkloads` is declared here
+  117 |
+  118 |   // Simulated Log Streamer using mock data running on interval
+  119 |   const setupLiveLogStreamer = () => {  react-hooks/immutability
+  57:7   error    Error: Cannot access variable before it is declared
+
+`setupLiveLogStreamer` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  55 |       fetchDashboardStats();
+  56 |       fetchAgentWorkloads();
+> 57 |       setupLiveLogStreamer();
+     |       ^^^^^^^^^^^^^^^^^^^^ `setupLiveLogStreamer` accessed before it is declared
+  58 |     } else if (activeTab === 'users') {
+  59 |       fetchUsers();
+  60 |       loadCategories();
+
+  117 |
+  118 |   // Simulated Log Streamer using mock data running on interval
+> 119 |   const setupLiveLogStreamer = () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 120 |     setLogs([
+      | ^^^^^^^^^^^^^
+> 121 |       `[${new Date().toLocaleTimeString()}] [INFO] Starting Flyway Database initialization...`,
+      ΓÇª
+      | ^^^^^^^^^^^^^
+> 148 |     return () => clearInterval(interval);
+      | ^^^^^^^^^^^^^
+> 149 |   };
+      | ^^^^^ `setupLiveLogStreamer` is declared here
+  150 |
+  151 |   // ΓöÇΓöÇ USER DIRECTORY MANAGEMENT (Tab 2) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  152 |   const fetchUsers = async () => {                             react-hooks/immutability
+  59:7   error    Error: Cannot access variable before it is declared
+
+`fetchUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  57 |       setupLiveLogStreamer();
+  58 |     } else if (activeTab === 'users') {
+> 59 |       fetchUsers();
+     |       ^^^^^^^^^^ `fetchUsers` accessed before it is declared
+  60 |       loadCategories();
+  61 |     } else if (activeTab === 'articles') {
+  62 |       fetchPendingArticles();
+
+  150 |
+  151 |   // ΓöÇΓöÇ USER DIRECTORY MANAGEMENT (Tab 2) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+> 152 |   const fetchUsers = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 153 |     setUsersLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 154 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 162 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 163 |   };
+      | ^^^^^ `fetchUsers` is declared here
+  164 |
+  165 |   const loadCategories = async () => {
+  166 |     try {                                                                                                                                                                                      react-hooks/immutability
+  60:7   error    Error: Cannot access variable before it is declared
+
+`loadCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  58 |     } else if (activeTab === 'users') {
+  59 |       fetchUsers();
+> 60 |       loadCategories();
+     |       ^^^^^^^^^^^^^^ `loadCategories` accessed before it is declared
+  61 |     } else if (activeTab === 'articles') {
+  62 |       fetchPendingArticles();
+  63 |     } else if (activeTab === 'settings') {
+
+  163 |   };
+  164 |
+> 165 |   const loadCategories = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 166 |     try {
+      | ^^^^^^^^^
+> 167 |       const res = await api.get('/api/admin/categories');
+      | ^^^^^^^^^
+> 168 |       setCategories(res.data || []);
+      | ^^^^^^^^^
+> 169 |     } catch (err) {
+      | ^^^^^^^^^
+> 170 |       console.error(err);
+      | ^^^^^^^^^
+> 171 |     }
+      | ^^^^^^^^^
+> 172 |   };
+      | ^^^^^ `loadCategories` is declared here
+  173 |
+  174 |   const handleRegisterAgent = async (e) => {
+  175 |     e.preventDefault();                                                       react-hooks/immutability
+  62:7   error    Error: Cannot access variable before it is declared
+
+`fetchPendingArticles` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  60 |       loadCategories();
+  61 |     } else if (activeTab === 'articles') {
+> 62 |       fetchPendingArticles();
+     |       ^^^^^^^^^^^^^^^^^^^^ `fetchPendingArticles` accessed before it is declared
+  63 |     } else if (activeTab === 'settings') {
+  64 |       loadCategories();
+  65 |     }
+
+  229 |
+  230 |   // ΓöÇΓöÇ KB APPROVAL WORKFLOW (Tab 3) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+> 231 |   const fetchPendingArticles = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 232 |     setPendingLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 233 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 240 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 241 |   };
+      | ^^^^^ `fetchPendingArticles` is declared here
+  242 |
+  243 |   const handlePublishArticle = async (id) => {
+  244 |     try {                                                                                                                           react-hooks/immutability
+  66:6   warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+  91:16  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+  91:19  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-empty
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\pages\agent\AgentWorkspace.jsx
+    1:8   warning  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+    5:19  warning  'ClipboardList' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+    5:44  warning  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+    6:40  warning  'CheckCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+    6:53  warning  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+    7:3   warning  'Shield' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+    7:11  warning  'UserCheck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+    7:22  warning  'AlertCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+    7:62  warning  'FileText' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+    7:72  warning  'Plus' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   58:7   error    Error: Cannot access variable before it is declared
+
+`fetchQueue` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  56 |   useEffect(() => {
+  57 |     if (activeTab === 'queue') {
+> 58 |       fetchQueue();
+     |       ^^^^^^^^^^ `fetchQueue` accessed before it is declared
+  59 |     } else if (activeTab === 'kb-drafts') {
+  60 |       fetchDraftArticles();
+  61 |       loadCategories();
+
+   90 |
+   91 |   // ΓöÇΓöÇ QUEUE / TICKET DATA CALLS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+>  92 |   const fetchQueue = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     setTicketsLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 125 |   };
+      | ^^^^^ `fetchQueue` is declared here
+  126 |
+  127 |   const selectTicketForWorkspace = async (ticket) => {
+  128 |     setSelectedTicket(ticket);                                                                                                                    react-hooks/immutability
+   60:7   error    Error: Cannot access variable before it is declared
+
+`fetchDraftArticles` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  58 |       fetchQueue();
+  59 |     } else if (activeTab === 'kb-drafts') {
+> 60 |       fetchDraftArticles();
+     |       ^^^^^^^^^^^^^^^^^^ `fetchDraftArticles` accessed before it is declared
+  61 |       loadCategories();
+  62 |     }
+  63 |   }, [activeTab, queueFilter, statusFilter]);
+
+  307 |
+  308 |   // ΓöÇΓöÇ ARTICLE DRAFT CREATION & DIRECTORIES ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+> 309 |   const fetchDraftArticles = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 310 |     setDraftsLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 311 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 318 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 319 |   };
+      | ^^^^^ `fetchDraftArticles` is declared here
+  320 |
+  321 |   const loadCategories = async () => {
+  322 |     try {                                                                                                              react-hooks/immutability
+   61:7   error    Error: Cannot access variable before it is declared
+
+`loadCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  59 |     } else if (activeTab === 'kb-drafts') {
+  60 |       fetchDraftArticles();
+> 61 |       loadCategories();
+     |       ^^^^^^^^^^^^^^ `loadCategories` accessed before it is declared
+  62 |     }
+  63 |   }, [activeTab, queueFilter, statusFilter]);
+  64 |
+
+  319 |   };
+  320 |
+> 321 |   const loadCategories = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 322 |     try {
+      | ^^^^^^^^^
+> 323 |       const res = await api.get('/api/admin/categories');
+      | ^^^^^^^^^
+> 324 |       setCategories(res.data || []);
+      | ^^^^^^^^^
+> 325 |     } catch (err) {
+      | ^^^^^^^^^
+> 326 |       console.error(err);
+      | ^^^^^^^^^
+> 327 |     }
+      | ^^^^^^^^^
+> 328 |   };
+      | ^^^^^ `loadCategories` is declared here
+  329 |
+  330 |   const handleCreateDraft = async (e) => {
+  331 |     e.preventDefault();                                                                      react-hooks/immutability
+   63:6   warning  React Hook useEffect has a missing dependency: 'fetchQueue'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+   82:9   error    Error: Cannot access variable before it is declared
+
+`reloadTicket` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  80 |       // Reload ticket status changes
+  81 |       if (message.message?.includes('status changed')) {
+> 82 |         reloadTicket(selectedTicket.id);
+     |         ^^^^^^^^^^^^ `reloadTicket` accessed before it is declared
+  83 |       }
+  84 |     });
+  85 |
+
+  155 |   };
+  156 |
+> 157 |   const reloadTicket = async (id) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 158 |     try {
+      | ^^^^^^^^^
+> 159 |       const res = await api.get(`/api/tickets/${id}`);
+      | ^^^^^^^^^
+> 160 |       setSelectedTicket(res.data);
+      | ^^^^^^^^^
+> 161 |       // sync list
+      | ^^^^^^^^^
+> 162 |       setTickets(prev => prev.map(t => t.id === id ? res.data : t));
+      | ^^^^^^^^^
+> 163 |     } catch (e) {}
+      | ^^^^^^^^^
+> 164 |   };
+      | ^^^^^ `reloadTicket` is declared here
+  165 |
+  166 |   const updateTicketProperties = async (updates) => {
+  167 |     if (!selectedTicket) return;  react-hooks/immutability
+   89:6   warning  React Hook useEffect has a missing dependency: 'subscribeToTicket'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+  146:16  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  146:19  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-empty
+  163:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  163:17  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-empty
+  176:13  warning  'statusMessage' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  251:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  251:17  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-empty
+  300:13  warning  'res' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+  628:28  error    'X' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-undef
+
+C:\Users\niles\Desktop\Helpdesk\helpdesk-react-frontend\src\pages\customer\CustomerPortal.jsx
+    1:8   warning  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+    5:27  warning  'FilePlus2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+    5:38  warning  'ListTodo' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+    6:14  warning  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+    6:41  warning  'AlertCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+    7:26  warning  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+    7:41  warning  'Eye' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   49:5   error    Error: Cannot access variable before it is declared
+
+`loadCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  47 |   // ΓöÇΓöÇ INITIAL LOAD ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  48 |   useEffect(() => {
+> 49 |     loadCategories();
+     |     ^^^^^^^^^^^^^^ `loadCategories` accessed before it is declared
+  50 |     if (activeTab === 'kb') {
+  51 |       fetchArticles('');
+  52 |     } else if (activeTab === 'history') {
+
+   85 |
+   86 |   // ΓöÇΓöÇ CORE DATA FETCHERS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+>  87 |   const loadCategories = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  88 |     try {
+      | ^^^^^^^^^
+>  89 |       // Attempt to load from admin categories
+      ΓÇª
+      | ^^^^^^^^^
+> 118 |     }
+      | ^^^^^^^^^
+> 119 |   };
+      | ^^^^^ `loadCategories` is declared here
+  120 |
+  121 |   const fetchArticles = async (query) => {
+  122 |     setKbLoading(true);                                                                                                               react-hooks/immutability
+   51:7   error    Error: Cannot access variable before it is declared
+
+`fetchArticles` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  49 |     loadCategories();
+  50 |     if (activeTab === 'kb') {
+> 51 |       fetchArticles('');
+     |       ^^^^^^^^^^^^^ `fetchArticles` accessed before it is declared
+  52 |     } else if (activeTab === 'history') {
+  53 |       fetchMyTickets();
+  54 |     }
+
+  119 |   };
+  120 |
+> 121 |   const fetchArticles = async (query) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     setKbLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 132 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^
+> 133 |   };
+      | ^^^^^ `fetchArticles` is declared here
+  134 |
+  135 |   const fetchMyTickets = async () => {
+  136 |     setTicketsLoading(true);                                                                                                                                                                                                               react-hooks/immutability
+   53:7   error    Error: Cannot access variable before it is declared
+
+`fetchMyTickets` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  51 |       fetchArticles('');
+  52 |     } else if (activeTab === 'history') {
+> 53 |       fetchMyTickets();
+     |       ^^^^^^^^^^^^^^ `fetchMyTickets` accessed before it is declared
+  54 |     }
+  55 |   }, [activeTab]);
+  56 |
+
+  133 |   };
+  134 |
+> 135 |   const fetchMyTickets = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 136 |     setTicketsLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 137 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 144 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 145 |   };
+      | ^^^^^ `fetchMyTickets` is declared here
+  146 |
+  147 |   const selectTicketForChat = async (ticket) => {
+  148 |     setSelectedTicket(ticket);                                                                                                                                                                                                                   react-hooks/immutability
+   55:6   warning  React Hook useEffect has a missing dependency: 'fetchArticles'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+   77:9   error    Error: Cannot access variable before it is declared
+
+`reloadTicketDetails` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  75 |       // If the message is a status update or resolved, reload the ticket details
+  76 |       if (message.message?.includes('status changed') || message.isAiGenerated) {
+> 77 |         reloadTicketDetails(selectedTicket.id);
+     |         ^^^^^^^^^^^^^^^^^^^ `reloadTicketDetails` accessed before it is declared
+  78 |       }
+  79 |     });
+  80 |
+
+  181 |   };
+  182 |
+> 183 |   const reloadTicketDetails = async (id) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 184 |     try {
+      | ^^^^^^^^^
+> 185 |       const res = await api.get(`/api/tickets/${id}`);
+      | ^^^^^^^^^
+> 186 |       setSelectedTicket(res.data);
+      | ^^^^^^^^^
+> 187 |     } catch (err) {}
+      | ^^^^^^^^^
+> 188 |   };
+      | ^^^^^ `reloadTicketDetails` is declared here
+  189 |
+  190 |   // ΓöÇΓöÇ AI DEFLECTION ON TICKET FILING ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  191 |   const handleTitleChange = (e) => {  react-hooks/immutability
+   84:6   warning  React Hook useEffect has a missing dependency: 'subscribeToTicket'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+   92:14  warning  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  168:18  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  168:21  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-empty
+  175:16  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  175:19  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-empty
+  187:14  warning  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  187:19  warning  Empty block statement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-empty
+
+Γ£û 81 problems (17 errors, 64 warnings)
+

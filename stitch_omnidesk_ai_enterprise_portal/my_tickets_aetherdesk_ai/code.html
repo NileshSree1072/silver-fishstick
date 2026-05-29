@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Tickets - AetherDesk AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#131b2e",
+                      "surface-bright": "#31394d",
+                      "tertiary-fixed-dim": "#ffb695",
+                      "tertiary-fixed": "#ffdbcc",
+                      "primary": "#c3c0ff",
+                      "inverse-surface": "#dae2fd",
+                      "secondary-container": "#03b5d3",
+                      "surface-container": "#171f33",
+                      "on-primary": "#1d00a5",
+                      "secondary": "#4cd7f6",
+                      "surface-dim": "#0b1326",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "on-background": "#dae2fd",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-secondary-fixed": "#001f26",
+                      "on-surface": "#dae2fd",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "outline-variant": "#464555",
+                      "on-error": "#690005",
+                      "tertiary": "#ffb695",
+                      "inverse-primary": "#4d44e3",
+                      "secondary-fixed-dim": "#4cd7f6",
+                      "on-surface-variant": "#c7c4d8",
+                      "outline": "#918fa1",
+                      "primary-fixed": "#e2dfff",
+                      "surface-container-highest": "#2d3449",
+                      "on-tertiary": "#571f00",
+                      "on-secondary": "#003640",
+                      "surface-container-lowest": "#060e20",
+                      "surface-variant": "#2d3449",
+                      "on-secondary-container": "#00424e",
+                      "primary-container": "#4f46e5",
+                      "surface": "#0b1326",
+                      "on-secondary-fixed-variant": "#004e5c",
+                      "tertiary-container": "#a44100",
+                      "secondary-fixed": "#acedff",
+                      "inverse-on-surface": "#283044",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary-fixed": "#0f0069",
+                      "surface-container-high": "#222a3d",
+                      "error-container": "#93000a",
+                      "surface-tint": "#c3c0ff",
+                      "on-tertiary-fixed": "#351000",
+                      "background": "#0b1326"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sidebar-width": "240px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "gutter": "20px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "display-xl": ["Geist", "sans-serif"],
+                      "mono-code": ["JetBrains Mono", "monospace"],
+                      "title-md": ["Geist", "sans-serif"],
+                      "headline-lg": ["Geist", "sans-serif"],
+                      "body-md": ["Inter", "sans-serif"],
+                      "label-sm": ["Inter", "sans-serif"],
+                      "headline-lg-mobile": ["Geist", "sans-serif"],
+                      "body-lg": ["Inter", "sans-serif"]
+              },
+              "fontSize": {
+                      "display-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "mono-code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                      "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                      "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d3449; /* surface-variant */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #464555; /* outline-variant */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased overflow-hidden flex">
+<!-- SideNavBar Component -->
+<nav class="bg-surface-container dark:bg-surface-container border-r border-outline-variant dark:border-outline-variant flat no shadows fixed left-0 top-0 h-full flex flex-col p-md z-50 w-sidebar-width hidden md:flex">
+<!-- Brand Header -->
+<div class="flex items-center gap-sm mb-xl px-xs">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary icon-fill" style="font-size: 20px;">ac_unit</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-[20px] leading-none font-bold text-primary dark:text-primary-fixed-dim">AetherDesk AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Enterprise Support</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="mb-lg bg-primary-container text-on-primary-container rounded-lg py-2 px-4 flex items-center justify-center gap-2 font-label-sm text-label-sm font-bold hover:brightness-110 transition-all hover:scale-98 active:scale-95 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+            New Ticket
+        </button>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">inbox</span>
+                Inbox
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold font-label-sm text-label-sm scale-98 transition-all" href="#">
+<span class="material-symbols-outlined icon-fill">confirmation_number</span>
+                My Tickets
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">person_search</span>
+                Assigned
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">check_circle</span>
+                Resolved
+            </a>
+<div class="my-2 border-t border-outline-variant/50"></div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">auto_awesome</span>
+                AI Insights
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+                Settings
+            </a>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-outline-variant/50">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors font-label-sm text-label-sm group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-sidebar-width h-screen overflow-hidden">
+<!-- TopNavBar Component -->
+<header class="bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center w-full px-lg h-16 sticky top-0 z-40 flat no shadows text-primary dark:text-primary-fixed-dim font-body-md text-body-md">
+<!-- Mobile Menu Toggle (Visible only on small screens) -->
+<button class="md:hidden p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 h-full">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 h-full flex items-center relative" href="#">
+                    Dashboard
+                </a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors duration-200 h-full flex items-center relative scale-98 transition-all" href="#">
+                    Tickets
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 h-full flex items-center relative" href="#">
+                    Analytics
+                </a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 h-full flex items-center relative" href="#">
+                    Knowledge Base
+                </a>
+</nav>
+<!-- Search (Left aligned in original design intent, but positioned center/right depending on layout. Putting it right side next to actions for balance here) -->
+<div class="flex-1 flex justify-center md:justify-start md:px-lg max-w-xl hidden md:flex">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size: 20px;">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-full py-1.5 pl-10 pr-4 text-on-surface font-body-md text-body-md placeholder:text-outline-variant focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface transition-all" placeholder="Search global..." type="text"/>
+</div>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-high relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-high hidden sm:block">
+<span class="material-symbols-outlined">keyboard_command_key</span>
+</button>
+<button class="p-1 ml-2 rounded-full overflow-hidden border border-outline-variant hover:border-primary transition-colors">
+<img alt="User Avatar" class="w-8 h-8 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVSLH6fhiPqG8PYV_eymFxWZf5DTkSKCQWeTcF6jqlcvFUYYVmizB4DkoIThFehAQxje9h3r9ibb7q6pl-6Hv3sYIO7XXwp618hMoAxj0S8S5-TECoUZliZ1ArEEQsLSre4dGXxge3SnTY_GcEkaMYw6T3T-vGGLiSWOioarEDkJe3EPCDoWb-xtBDxJOpjpNko1lzjfiCUxGQf356WrmEe8nXGwujptJUsLoSM8z2XGECEQows1PYfAaJQwkH10RkpaWKT9Yly5nX"/>
+</button>
+</div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 overflow-y-auto p-md md:p-lg bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto h-full flex flex-col">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">My Tickets</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage and track your assigned support requests.</p>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container hover:text-primary transition-all font-label-sm text-label-sm">
+<span class="material-symbols-outlined" style="font-size: 18px;">ios_share</span>
+                            Export
+                        </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:brightness-110 transition-all font-label-sm text-label-sm shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+<span class="material-symbols-outlined" style="font-size: 18px;">tune</span>
+                            Customize View
+                        </button>
+</div>
+</div>
+<!-- Filters & Search Bar -->
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-md bg-surface-container rounded-lg p-2 border border-outline-variant/30">
+<!-- Tabs -->
+<div class="flex overflow-x-auto w-full md:w-auto hide-scrollbar gap-1">
+<button class="px-4 py-1.5 rounded-md bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-colors whitespace-nowrap border border-outline-variant/50">
+                            All Tickets <span class="ml-1 text-on-surface-variant">(124)</span>
+</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-sm text-label-sm transition-colors whitespace-nowrap">
+                            Open <span class="ml-1 opacity-70">(12)</span>
+</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-sm text-label-sm transition-colors whitespace-nowrap">
+                            Pending <span class="ml-1 opacity-70">(4)</span>
+</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:bg-surface-container-highest font-label-sm text-label-sm transition-colors whitespace-nowrap">
+                            Resolved
+                        </button>
+</div>
+<!-- Local Search & Sort -->
+<div class="flex items-center gap-2 w-full md:w-auto">
+<div class="relative flex-1 md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant" style="font-size: 18px;">search</span>
+<input class="w-full bg-surface-dim border border-outline-variant/50 rounded-md py-1.5 pl-9 pr-3 text-on-surface font-body-md text-label-sm placeholder:text-outline-variant focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Filter tickets..." type="text"/>
+</div>
+<button class="p-1.5 rounded-md border border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 20px;">sort</span>
+</button>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="flex-1 overflow-hidden bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col shadow-sm">
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse whitespace-nowrap">
+<thead class="sticky top-0 bg-surface-container-high z-10 border-b border-outline-variant/50">
+<tr>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium w-12">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium cursor-pointer hover:text-on-surface group transition-colors">
+                                        Ticket ID <span class="material-symbols-outlined text-[14px] align-middle opacity-0 group-hover:opacity-100 transition-opacity">arrow_downward</span>
+</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium w-full">Subject</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium">Status</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium">Priority</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium cursor-pointer hover:text-on-surface group transition-colors">
+                                        Last Updated <span class="material-symbols-outlined text-[14px] align-middle opacity-100 text-primary">arrow_downward</span>
+</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30 font-body-md text-body-md text-on-surface">
+<!-- Row 1 (Unread/AI Highlight) -->
+<tr class="hover:bg-surface-container-high/50 transition-colors group cursor-pointer bg-primary/5">
+<td class="py-3 px-4">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-mono-code text-mono-code text-primary-fixed-dim">#TIC-8492</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(76,215,246,0.6)]"></span>
+<span class="font-medium">API Rate Limit Exceeded - Production</span>
+<span class="material-symbols-outlined text-secondary text-[16px] ml-2" title="AI Summary Available">auto_awesome</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-bright text-on-surface border border-outline-variant/50">
+                                            Open
+                                        </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-error">
+<span class="material-symbols-outlined text-[16px] icon-fill">keyboard_double_arrow_up</span>
+                                            Urgent
+                                        </span>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">2 mins ago</td>
+<td class="py-3 px-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-mono-code text-mono-code text-on-surface-variant group-hover:text-primary-fixed-dim transition-colors">#TIC-8491</td>
+<td class="py-3 px-4">
+<span class="text-on-surface">Cannot access billing portal</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-bright text-on-surface border border-outline-variant/50">
+                                            Open
+                                        </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">keyboard_arrow_up</span>
+                                            High
+                                        </span>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">1 hour ago</td>
+<td class="py-3 px-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-mono-code text-mono-code text-on-surface-variant group-hover:text-primary-fixed-dim transition-colors">#TIC-8488</td>
+<td class="py-3 px-4">
+<span class="text-on-surface">Integration issue with Salesforce CRM</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-tertiary-container/30 text-tertiary border border-tertiary/20">
+                                            Pending
+                                        </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">horizontal_rule</span>
+                                            Medium
+                                        </span>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">3 hours ago</td>
+<td class="py-3 px-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-mono-code text-mono-code text-on-surface-variant group-hover:text-primary-fixed-dim transition-colors">#TIC-8475</td>
+<td class="py-3 px-4">
+<span class="text-on-surface-variant line-through opacity-70">Update user roles for Marketing team</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-highest text-outline border border-outline-variant/30">
+                                            Resolved
+                                        </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
+                                            Low
+                                        </span>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Yesterday</td>
+<td class="py-3 px-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors group cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-outline-variant bg-surface-dim text-primary focus:ring-primary focus:ring-offset-surface-container" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-mono-code text-mono-code text-on-surface-variant group-hover:text-primary-fixed-dim transition-colors">#TIC-8470</td>
+<td class="py-3 px-4">
+<span class="text-on-surface">Data export failing on specific date ranges</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-bright text-on-surface border border-outline-variant/50">
+                                            Open
+                                        </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">horizontal_rule</span>
+                                            Medium
+                                        </span>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Yesterday</td>
+<td class="py-3 px-4 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-4 py-3 border-t border-outline-variant/50 bg-surface-container-low flex items-center justify-between sm:px-6">
+<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+                                    Showing <span class="font-medium text-on-surface">1</span> to <span class="font-medium text-on-surface">5</span> of <span class="font-medium text-on-surface">124</span> results
+                                </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+<button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-outline-variant/50 bg-surface-container text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-50">
+<span class="sr-only">Previous</span>
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
+</button>
+<button aria-current="page" class="z-10 bg-primary/10 border-primary/50 text-primary relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        1
+                                    </button>
+<button class="border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-high relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors">
+                                        2
+                                    </button>
+<button class="border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-high relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors">
+                                        3
+                                    </button>
+<span class="relative inline-flex items-center px-4 py-2 border border-outline-variant/50 bg-surface-container text-sm font-medium text-on-surface-variant">
+                                        ...
+                                    </span>
+<button class="border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-high relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors">
+                                        10
+                                    </button>
+<button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-outline-variant/50 bg-surface-container text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="sr-only">Next</span>
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
+</button>
+</nav>
+</div>
+</div>
+<!-- Mobile Pagination -->
+<div class="flex items-center justify-between w-full sm:hidden">
+<button class="relative inline-flex items-center px-4 py-2 border border-outline-variant/50 text-sm font-medium rounded-md text-on-surface-variant bg-surface-container hover:bg-surface-container-high">
+                                Previous
+                            </button>
+<span class="text-sm text-on-surface-variant">Page 1 of 10</span>
+<button class="relative inline-flex items-center px-4 py-2 border border-outline-variant/50 text-sm font-medium rounded-md text-on-surface-variant bg-surface-container hover:bg-surface-container-high">
+                                Next
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AetherDesk AI - New Ticket</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#131b2e",
+                      "surface-bright": "#31394d",
+                      "tertiary-fixed-dim": "#ffb695",
+                      "tertiary-fixed": "#ffdbcc",
+                      "primary": "#c3c0ff",
+                      "inverse-surface": "#dae2fd",
+                      "secondary-container": "#03b5d3",
+                      "surface-container": "#171f33",
+                      "on-primary": "#1d00a5",
+                      "secondary": "#4cd7f6",
+                      "surface-dim": "#0b1326",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "on-background": "#dae2fd",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-secondary-fixed": "#001f26",
+                      "on-surface": "#dae2fd",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "outline-variant": "#464555",
+                      "on-error": "#690005",
+                      "tertiary": "#ffb695",
+                      "inverse-primary": "#4d44e3",
+                      "secondary-fixed-dim": "#4cd7f6",
+                      "on-surface-variant": "#c7c4d8",
+                      "outline": "#918fa1",
+                      "primary-fixed": "#e2dfff",
+                      "surface-container-highest": "#2d3449",
+                      "on-tertiary": "#571f00",
+                      "on-secondary": "#003640",
+                      "surface-container-lowest": "#060e20",
+                      "surface-variant": "#2d3449",
+                      "on-secondary-container": "#00424e",
+                      "primary-container": "#4f46e5",
+                      "surface": "#0b1326",
+                      "on-secondary-fixed-variant": "#004e5c",
+                      "tertiary-container": "#a44100",
+                      "secondary-fixed": "#acedff",
+                      "inverse-on-surface": "#283044",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary-fixed": "#0f0069",
+                      "surface-container-high": "#222a3d",
+                      "error-container": "#93000a",
+                      "surface-tint": "#c3c0ff",
+                      "on-tertiary-fixed": "#351000",
+                      "background": "#0b1326"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sidebar-width": "240px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "gutter": "20px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "display-xl": [
+                              "Geist"
+                      ],
+                      "mono-code": [
+                              "JetBrains Mono"
+                      ],
+                      "title-md": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-code": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-ai {
+            background: rgba(45, 52, 73, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(76, 215, 246, 0.2);
+            border-image: linear-gradient(to bottom right, rgba(76, 215, 246, 0.4), rgba(79, 70, 229, 0.4)) 1;
+        }
+        .file-drag-over {
+            border-color: #4f46e5 !important;
+            background-color: rgba(79, 70, 229, 0.1) !important;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex selection:bg-primary-container selection:text-white">
+<!-- SideNavBar -->
+<aside class="hidden md:flex bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary-fixed-dim font-label-sm text-label-sm docked left-0 h-full w-sidebar-width border-r border-outline-variant dark:border-outline-variant flat no shadows fixed left-0 top-0 flex-col p-md z-50">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-sm">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-variant flex-shrink-0">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a confident male professional in a modern office environment. The lighting is sophisticated and moody, typical of a high-end enterprise SaaS context. The color palette emphasizes cool grays, deep blues, and subtle neon cyan highlights in the background, matching a dark-mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZOffEtM_MDMVnjew7lwwQdTeqL_zxiDlcWt38VkwrpYdyOMMShg9xM-0D7Xp-pkNwurF8SP3Wf2FQv73_qPiFvePekbjUq-QN357tGhn9LyNIsa3ibFd3RsTPUnci1PY2mkYxeGLz0tzQZGlEg2RjHlmC69LearetlyLlDTeOsyOH0xvSsjGtjarPHz0G6tGxlDuQkAbFaslFsnGDdeUoNsYAx85F6d7JtMdhW_8zYGU7ap_hvSPWSaz1n3qZEKOG8FJ7LAVIXIzc"/>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight text-xl leading-tight">AetherDesk AI</div>
+<div class="text-on-surface-variant text-xs opacity-70">Enterprise Support</div>
+</div>
+</div>
+<!-- CTA -->
+<button class="mb-lg w-full bg-primary-container hover:bg-primary text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+            New Ticket
+        </button>
+<!-- Navigation Tabs -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">inbox</span>
+                Inbox
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">confirmation_number</span>
+                My Tickets
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">person_search</span>
+                Assigned
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+                Resolved
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors group" href="#">
+<span class="material-symbols-outlined text-lg text-secondary group-hover:text-primary transition-colors">auto_awesome</span>
+                AI Insights
+            </a>
+</nav>
+<!-- Footer Tabs -->
+<div class="mt-auto space-y-1 pt-4 border-t border-outline-variant/30">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-error hover:bg-error-container/20 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-sidebar-width flex flex-col min-h-screen relative">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary-fixed-dim font-body-md text-body-md docked full-width top-0 border-b border-outline-variant dark:border-outline-variant bg-surface/80 backdrop-blur-md flat no shadows flex justify-between items-center w-full px-lg h-16 sticky top-0 z-40">
+<div class="flex items-center gap-lg">
+<!-- Mobile Menu Trigger -->
+<button class="md:hidden text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Search (on_left) -->
+<div class="relative hidden sm:block w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary text-sm">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-3 py-1.5 text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Search knowledge or tickets..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-50">
+<span class="material-symbols-outlined text-[10px]">keyboard_command_key</span><span class="text-[10px] font-mono-code font-bold">K</span>
+</div>
+</div>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors duration-200 rounded-full hover:bg-surface-container-highest relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors duration-200 rounded-full hover:bg-surface-container-highest md:hidden">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-lg lg:p-xl flex-1 flex flex-col xl:flex-row gap-gutter">
+<!-- Form Area -->
+<div class="flex-1 max-w-3xl">
+<div class="mb-lg">
+<h1 class="font-title-md text-title-md text-on-surface mb-2">Create New Ticket</h1>
+<p class="text-on-surface-variant text-sm">Provide details below. Our AI assistant will suggest relevant resources as you type.</p>
+</div>
+<form class="space-y-6 bg-surface-container-lowest p-6 rounded-xl border border-surface-container-high shadow-sm">
+<!-- Subject -->
+<div>
+<label class="block text-sm font-label-sm text-on-surface mb-2" for="subject">Subject</label>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/40" id="subject" name="subject" placeholder="Brief summary of the issue" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Category -->
+<div>
+<label class="block text-sm font-label-sm text-on-surface mb-2" for="category">Category</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all appearance-none" id="category" name="category">
+<option class="text-on-surface-variant" disabled="" selected="" value="">Select category...</option>
+<option value="hardware">Hardware</option>
+<option value="software">Software</option>
+<option value="network">Network/Connectivity</option>
+<option value="access">Access/Permissions</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Priority -->
+<div>
+<label class="block text-sm font-label-sm text-on-surface mb-2" for="priority">Priority</label>
+<div class="flex gap-2">
+<label class="flex-1 cursor-pointer">
+<input class="peer sr-only" name="priority" type="radio" value="low"/>
+<div class="text-center px-3 py-2 rounded-lg border border-outline-variant text-on-surface-variant peer-checked:border-secondary peer-checked:bg-secondary-container/10 peer-checked:text-secondary transition-all">Low</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input checked="" class="peer sr-only" name="priority" type="radio" value="medium"/>
+<div class="text-center px-3 py-2 rounded-lg border border-outline-variant text-on-surface-variant peer-checked:border-primary peer-checked:bg-primary-container/20 peer-checked:text-primary transition-all">Medium</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="peer sr-only" name="priority" type="radio" value="high"/>
+<div class="text-center px-3 py-2 rounded-lg border border-outline-variant text-on-surface-variant peer-checked:border-error peer-checked:bg-error-container/20 peer-checked:text-error transition-all">High</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div>
+<label class="block text-sm font-label-sm text-on-surface mb-2 flex justify-between" for="description">
+<span>Detailed Description</span>
+<span class="text-xs text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">auto_awesome</span> AI formatting active</span>
+</label>
+<textarea class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/40 resize-y font-body-md" id="description" name="description" placeholder="Provide as much context as possible. Include error codes if applicable." rows="6"></textarea>
+</div>
+<!-- File Upload -->
+<div>
+<label class="block text-sm font-label-sm text-on-surface mb-2">Attachments</label>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-8 text-center bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer relative overflow-hidden group" id="drop-zone">
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="file-upload" multiple="" type="file"/>
+<div class="flex flex-col items-center justify-center space-y-2 pointer-events-none">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">upload_file</span>
+</div>
+<p class="text-sm font-medium text-on-surface">Drag &amp; drop files or click to browse</p>
+<p class="text-xs text-on-surface-variant">Supports PNG, JPG, PDF up to 10MB</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex justify-end gap-3 pt-4 border-t border-surface-container-high">
+<button class="px-5 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors text-sm font-medium" type="button">Cancel</button>
+<button class="px-5 py-2 rounded-lg bg-primary-container hover:bg-primary text-white transition-colors text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 flex items-center gap-2" type="submit">
+<span>Submit Ticket</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</form>
+</div>
+<!-- AI Sidebar (Contextual) -->
+<div class="w-full xl:w-80 flex-shrink-0 flex flex-col gap-4">
+<!-- Active AI Panel -->
+<div class="glass-ai rounded-xl p-5 sticky top-24">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-title-md text-sm font-bold text-secondary">AI Suggestions</h3>
+</div>
+<p class="text-xs text-on-surface-variant mb-4">Based on your subject, these resources might solve your issue instantly.</p>
+<div class="space-y-3">
+<!-- Suggestion Card 1 -->
+<a class="block bg-surface-container-low/50 hover:bg-surface-container-high border border-outline-variant/30 rounded-lg p-3 transition-all group" href="#">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h4 class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors line-clamp-2">Troubleshooting VPN Connectivity Issues</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">open_in_new</span>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] uppercase tracking-wider text-secondary px-1.5 py-0.5 rounded bg-secondary-container/10 border border-secondary/20">Network</span>
+<span class="text-[10px] text-on-surface-variant">98% Match</span>
+</div>
+</a>
+<!-- Suggestion Card 2 -->
+<a class="block bg-surface-container-low/50 hover:bg-surface-container-high border border-outline-variant/30 rounded-lg p-3 transition-all group" href="#">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h4 class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors line-clamp-2">Resetting Active Directory Passwords</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">open_in_new</span>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[10px] uppercase tracking-wider text-primary px-1.5 py-0.5 rounded bg-primary-container/10 border border-primary/20">Access</span>
+<span class="text-[10px] text-on-surface-variant">75% Match</span>
+</div>
+</a>
+</div>
+<!-- AI Feedback -->
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Are these helpful?</span>
+<div class="flex gap-1">
+<button class="p-1 rounded hover:bg-surface-variant text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[16px]">thumb_up</span></button>
+<button class="p-1 rounded hover:bg-surface-variant text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px]">thumb_down</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple drag and drop visual feedback
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-upload');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('file-drag-over');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('file-drag-over');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            fileInput.files = files; // Assign files to input
+            // Optional: update UI to show selected files
+            console.log("Files dropped:", files);
+        }
+    </script>
+</body></html>
