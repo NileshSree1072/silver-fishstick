@@ -104,7 +104,16 @@ Text embeddings are critical for duplicate ticket detection and semantic knowled
 
 ---
 
-## 👥 6. Login Credentials (Default Seed Data)
+## 🎨 6. How to Run the Vanilla Prototype (`mock-ui`)
+
+If you want to quickly test the user interface flows without setting up PostgreSQL, Java, or Node:
+1. Navigate to the **`mock-ui`** directory.
+2. Double-click the **`index.html`** file to open it directly in any modern web browser.
+3. This interface runs entirely client-side, using browser `localStorage` to simulate database records, ticket creation, agent replies, and AI auto-deflections.
+
+---
+
+## 👥 7. Login Credentials (Default Seed Data)
 
 When the backend launches for the first time, it automatically seeds the database with test accounts. Use these to log in and inspect different user workspace perspectives:
 
@@ -116,7 +125,7 @@ When the backend launches for the first time, it automatically seeds the databas
 
 ---
 
-## 🛠️ 7. Troubleshooting
+## 🛠️ 8. Troubleshooting
 
 * **Timezone Conflict:** If Postgres logs a fatal error regarding timezone `Asia/Calcutta`, ensure your local timezone options in the datasource URL are adjusted or aligned with your PostgreSQL server locale (e.g. UTC, IST, or Asia/Kolkata).
 * **Database Driver Error:** Ensure your database service is running and accessible on the specified port.
