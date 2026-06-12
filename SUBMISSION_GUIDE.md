@@ -9,7 +9,8 @@ Welcome to **Aegis Helpdesk**, an enterprise-ready, AI-augmented, event-driven t
 The project follows a decoupled client-server architecture consisting of three main modules:
 1. **`helpdesk-backend`**: A Spring Boot REST and WebSockets API leveraging JPA, Flyway migrations, and PostgreSQL. It incorporates AI capabilities using Groq LLM and Azure OpenAI/Standard OpenAI embeddings.
 2. **`helpdesk-react-frontend`**: A modern dashboard built using React, Vite, and Tailwind CSS.
-3. **`helpdesk-frontend`**: A standalone vanilla JS prototype that functions completely client-side (using localStorage mock databases). Useful for quick sandbox demonstrations.
+3. **`mock-ui`**: A standalone vanilla JS prototype that functions completely client-side (using localStorage mock databases). Useful for quick sandbox demonstrations.
+4. **`sample-ui`**: A repository of the static design slices and prototype UI screenshots/assets for developer reference.
 
 ---
 
