@@ -653,7 +653,9 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
             <form onSubmit={handleCreateTicket} className="space-y-md bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 shadow-sm">
               {/* Title / Subject */}
               <div>
-                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="subject">Subject</label>
+                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="subject">
+                  Subject <span className="text-error" title="Required">*</span>
+                </label>
                 <input 
                   required 
                   className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-on-surface-variant/40 text-xs" 
@@ -667,7 +669,9 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
 
               {/* Category Select */}
               <div>
-                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="category">Category</label>
+                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="category">
+                  Category <span className="text-on-surface-variant/50 font-normal lowercase italic">(Optional)</span>
+                </label>
                 <CustomSelect
                   options={categories.map(c => ({ value: c.id, label: c.name }))}
                   value={ticketCategory}
@@ -679,7 +683,9 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="description">Detailed Description</label>
+                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant" htmlFor="description">
+                  Detailed Description <span className="text-error" title="Required">*</span>
+                </label>
                 <textarea 
                   required 
                   rows={5} 
@@ -693,7 +699,9 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
 
               {/* Drag and Drop File Upload */}
               <div>
-                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant">Attachments</label>
+                <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide text-on-surface-variant">
+                  Attachments <span className="text-on-surface-variant/50 font-normal lowercase italic">(Optional)</span>
+                </label>
                 <div 
                   className="border-2 border-dashed border-outline-variant rounded-xl p-6 text-center bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer relative overflow-hidden group"
                   onClick={() => fileRef.current?.click()}

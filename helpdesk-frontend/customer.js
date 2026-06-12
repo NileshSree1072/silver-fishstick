@@ -1,5 +1,18 @@
 // Aegis Helpdesk Customer Portal Controller
 
+function escapeHtml(str) {
+    if (typeof str !== 'string') {
+        if (str === null || str === undefined) return '';
+        str = String(str);
+    }
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ────────────────────────────────────────────────────────
 // MOCK DATA STORE (LOCALSTORAGE SYNCED)
 // ────────────────────────────────────────────────────────
@@ -136,11 +149,11 @@ function renderKBCategories() {
     if (!container) return;
 
     container.innerHTML = mockCategories.map(c => `
-        <div class="dashboard-card article-card" onclick="listArticlesByCategory('${c.name}')">
+        <div class="dashboard-card article-card" onclick="listArticlesByCategory('${escapeHtml(c.name)}')">
             <div class="card-header-row">
-                <span class="card-title-text"><i class="fas fa-folder" style="color:var(--brand); margin-right:0.5rem;"></i> ${c.name}</span>
+                <span class="card-title-text"><i class="fas fa-folder" style="color:var(--brand); margin-right:0.5rem;"></i> ${escapeHtml(c.name)}</span>
             </div>
-            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">${c.desc}</p>
+            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">${escapeHtml(c.desc)}</p>
         </div>
     `).join('');
 }
@@ -181,16 +194,16 @@ if (kbSearchInput) {
         }
 
         resultsGrid.innerHTML = matches.map(art => `
-            <div class="dashboard-card article-card" onclick="viewArticleModal('${art.id}')">
+            <div class="dashboard-card article-card" onclick="viewArticleModal('${escapeHtml(art.id)}')">
                 <div class="card-header-row">
-                    <span class="card-title-text" style="font-size:0.85rem; color:var(--text-heading);">${art.title}</span>
+                    <span class="card-title-text" style="font-size:0.85rem; color:var(--text-heading);">${escapeHtml(art.title)}</span>
                     <span class="badge badge-resolved" style="font-size:0.6rem;">Match ${(art.score * 100).toFixed(0)}%</span>
                 </div>
                 <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem; height: 40px; overflow:hidden; text-overflow:ellipsis;">
-                    ${art.content.substring(0, 85)}...
+                    ${escapeHtml(art.content.substring(0, 85))}...
                 </p>
                 <div style="font-size:0.7rem; color:var(--brand); border-top:1px solid var(--border-subtle); padding-top:0.5rem; margin-top:0.75rem;">
-                    Category: ${art.category}
+                    Category: ${escapeHtml(art.category)}
                 </div>
             </div>
         `).join('');
@@ -212,10 +225,10 @@ window.viewArticleModal = function(artId) {
     modalBody.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:0.5rem;">
-                <span class="badge badge-open" style="font-size:0.7rem;">Category: ${art.category}</span>
+                <span class="badge badge-open" style="font-size:0.7rem;">Category: ${escapeHtml(art.category)}</span>
                 <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-shield-halved"></i> pgvector Verified article</span>
             </div>
-            <p style="font-size:0.875rem; line-height:1.6; color:var(--text-body);">${art.content}</p>
+            <p style="font-size:0.875rem; line-height:1.6; color:var(--text-body);">${escapeHtml(art.content)}</p>
         </div>
     `;
 
@@ -243,7 +256,7 @@ function populateFormCategories() {
     const select = document.getElementById('ticketCategorySelect');
     if (!select) return;
 
-    select.innerHTML = mockCategories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    select.innerHTML = mockCategories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
 }
 
 function initTicketFormDeflection() {
@@ -283,11 +296,11 @@ function initTicketFormDeflection() {
 
         resultsList.innerHTML = deflections.map(art => `
             <div class="copilot-box copilot-box-ai" style="padding:0.75rem; display:flex; flex-direction:column; gap:0.4rem;">
-                <div style="font-weight:600; color:var(--text-heading); font-size:0.8rem;">${art.title}</div>
-                <p style="font-size:0.7rem; color:var(--text-muted); line-height:1.4;">${art.content.substring(0, 100)}...</p>
+                <div style="font-weight:600; color:var(--text-heading); font-size:0.8rem;">${escapeHtml(art.title)}</div>
+                <p style="font-size:0.7rem; color:var(--text-muted); line-height:1.4;">${escapeHtml(art.content.substring(0, 100))}...</p>
                 <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
-                    <button class="action-btn" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="applyDeflectionResolution('${art.title}')">This resolves my issue</button>
-                    <button class="action-btn action-btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="viewArticleModal('${art.id}')">Read Full Article</button>
+                    <button class="action-btn" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="applyDeflectionResolution('${escapeHtml(art.title)}')">This resolves my issue</button>
+                    <button class="action-btn action-btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="viewArticleModal('${escapeHtml(art.id)}')">Read Full Article</button>
                 </div>
             </div>
         `).join('');
@@ -394,15 +407,15 @@ function renderCustomerTickets() {
         const activeClass = t.id === selectedTicketId ? 'active' : '';
 
         return `
-            <div class="queue-item ${activeClass}" onclick="selectCustomerTicket('${t.id}')">
+            <div class="queue-item ${activeClass}" onclick="selectCustomerTicket('${escapeHtml(t.id)}')">
                 <div class="queue-row">
-                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${t.id}</span>
-                    <span class="badge ${badgeClass}">${t.status}</span>
+                    <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${escapeHtml(t.id)}</span>
+                    <span class="badge ${badgeClass}">${escapeHtml(t.status)}</span>
                 </div>
-                <div class="queue-title">${t.title}</div>
+                <div class="queue-title">${escapeHtml(t.title)}</div>
                 <div class="queue-row" style="margin-top:0.25rem;">
-                    <span class="badge ${priorityLabelClass}">${t.priority}</span>
-                    <span style="font-size:0.75rem; color:var(--text-muted);">${t.date}</span>
+                    <span class="badge ${priorityLabelClass}">${escapeHtml(t.priority)}</span>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(t.date)}</span>
                 </div>
             </div>
         `;
@@ -426,7 +439,7 @@ window.selectCustomerTicket = function(ticketId) {
     if (ticket.rated) {
         ratingHeader.innerHTML = `
             <span class="badge badge-resolved" style="display:inline-flex; align-items:center; gap:0.25rem;">
-                <i class="fas fa-star" style="color:#fbbf24;"></i> Rated ${ticket.ratingVal}.0 / 5.0
+                <i class="fas fa-star" style="color:#fbbf24;"></i> Rated ${escapeHtml(ticket.ratingVal)}.0 / 5.0
             </span>
         `;
     } else {
@@ -456,11 +469,11 @@ window.selectCustomerTicket = function(ticketId) {
         return `
             <div class="chat-bubble ${bubbleClass}" style="${customStyle}">
                 <div style="font-size:0.75rem; font-weight:700; color:var(--text-heading); margin-bottom:0.25rem; display:flex; align-items:center;">
-                    ${senderIcon} ${r.sender}
+                    ${senderIcon} ${escapeHtml(r.sender)}
                 </div>
-                <div>${r.message}</div>
+                <div>${escapeHtml(r.message).replace(/\n/g, '<br>')}</div>
                 <div class="chat-bubble-meta">
-                    <span>${ticket.date}</span>
+                    <span>${escapeHtml(ticket.date)}</span>
                     <span>Delivered</span>
                 </div>
             </div>
@@ -678,7 +691,7 @@ window.showToast = function(message, type = 'info') {
 
     toast.innerHTML = `
         <i class="fas ${iconClass}" style="color: ${iconColor}; font-size: 1.1rem; flex-shrink: 0;"></i>
-        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${message}</div>
+        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${escapeHtml(message)}</div>
         <button onclick="this.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 0.25rem;"><i class="fas fa-xmark"></i></button>
     `;
 

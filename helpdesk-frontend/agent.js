@@ -1,5 +1,18 @@
 // Aegis Helpdesk Agent Console Controller
 
+function escapeHtml(str) {
+    if (typeof str !== 'string') {
+        if (str === null || str === undefined) return '';
+        str = String(str);
+    }
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ────────────────────────────────────────────────────────
 // STATE MANAGEMENT & SYNC LOGIC
 // ────────────────────────────────────────────────────────
@@ -313,15 +326,15 @@ function renderQueue(filter = 'my') {
         let activeClass = t.id === selectedTicketId ? 'active' : '';
         
         return `
-            <div class="queue-item ${activeClass}" onclick="selectAgentTicket('${t.id}')">
+            <div class="queue-item ${activeClass}" onclick="selectAgentTicket('${escapeHtml(t.id)}')">
                 <div class="queue-row">
-                    <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">${t.id}</span>
-                    <span class="badge ${statusBadgeClass}">${t.status}</span>
+                    <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">${escapeHtml(t.id)}</span>
+                    <span class="badge ${statusBadgeClass}">${escapeHtml(t.status)}</span>
                 </div>
-                <div class="queue-title">${t.title}</div>
+                <div class="queue-title">${escapeHtml(t.title)}</div>
                 <div class="queue-row" style="margin-top: 0.25rem;">
-                    <span class="badge ${priorityBadgeClass}">${t.priority}</span>
-                    <span style="font-size: 0.7rem; color: var(--text-muted);"><i class="fas fa-user" style="font-size:0.65rem;"></i> ${t.createdBy}</span>
+                    <span class="badge ${priorityBadgeClass}">${escapeHtml(t.priority)}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);"><i class="fas fa-user" style="font-size:0.65rem;"></i> ${escapeHtml(t.createdBy)}</span>
                 </div>
             </div>
         `;
@@ -349,7 +362,7 @@ window.selectAgentTicket = function(ticketId) {
     
     let priorityBadgeClass = `badge-priority-${ticket.priority}`;
     document.getElementById('ticketPriorityBadgeContainer').innerHTML = `
-        <span class="badge ${priorityBadgeClass}">${ticket.priority}</span>
+        <span class="badge ${priorityBadgeClass}">${escapeHtml(ticket.priority)}</span>
     `;
     
     // Enable Copilot Pane
@@ -422,16 +435,16 @@ function renderTimeline(ticket) {
             icon = '<i class="fas fa-lock" style="color: var(--status-progress);"></i>';
         }
         
-        const senderName = r.role === 'INTERNAL' ? `${r.sender} (Internal Note)` : r.sender;
+        const senderName = r.role === 'INTERNAL' ? `${escapeHtml(r.sender)} (Internal Note)` : escapeHtml(r.sender);
         
         return `
             <div class="chat-bubble ${bubbleClass}" style="${customStyle}">
                 <div style="font-size:0.75rem; font-weight:700; color:var(--text-heading); margin-bottom:0.25rem; display:flex; align-items:center; gap:0.25rem;">
                     ${icon} ${senderName}
                 </div>
-                <div style="font-size:0.9rem;">${r.message}</div>
+                <div style="font-size:0.9rem;">${escapeHtml(r.message).replace(/\n/g, '<br>')}</div>
                 <div class="chat-bubble-meta">
-                    <span>${ticket.date}</span>
+                    <span>${escapeHtml(ticket.date)}</span>
                     <span>${r.role === 'INTERNAL' ? 'Confidential' : 'Delivered'}</span>
                 </div>
             </div>
@@ -535,7 +548,7 @@ function simulateAiSuggestedReply(ticket) {
         }
         
         currentSuggestedDraft = suggestion;
-        draftBox.innerHTML = suggestion.replace(/\n/g, '<br>');
+        draftBox.innerHTML = escapeHtml(suggestion).replace(/\n/g, '<br>');
         applyBtn.disabled = false;
     }, 1200);
 }
@@ -573,7 +586,7 @@ function triggerThreadSummarization() {
         } else if (ticket.id === 't-88') {
             summary = "1. Customer David Vance hit database pool saturation limits of 100 on staging.<br>2. Agent Sarah Jenkins updated maximum HikariCP pool parameters to 250.<br>3. Ticket successfully resolved with 4-star review.";
         } else {
-            summary = `1. Customer reported support inquiry: "${ticket.title}".<br>2. Conversation history contains ${ticket.replies.length} replies from participants.<br>3. Awaiting resolution steps or documentation matching.`;
+            summary = `1. Customer reported support inquiry: "${escapeHtml(ticket.title)}".<br>2. Conversation history contains ${ticket.replies.length} replies from participants.<br>3. Awaiting resolution steps or documentation matching.`;
         }
         
         summaryBox.innerHTML = summary;
@@ -604,14 +617,14 @@ function loadPgvectorMatches(ticket) {
     container.innerHTML = matches.map(art => `
         <div class="copilot-box" style="padding:0.75rem;">
             <div class="copilot-suggested-title" style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                <span>${art.title}</span>
+                <span>${escapeHtml(art.title)}</span>
                 <span class="badge badge-resolved" style="font-size:0.6rem;">${(art.score || 0.85 * 100).toFixed(0)}%</span>
             </div>
             <p style="font-size: 0.7rem; color:var(--text-muted); line-height:1.3; margin-top:0.25rem;">
-                ${art.content ? art.content.substring(0, 80) : 'Resolution parameters loaded.'}...
+                ${escapeHtml(art.content ? art.content.substring(0, 80) : 'Resolution parameters loaded.')}...
             </p>
             <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
-                <button class="action-btn action-btn-outline" style="padding:0.15rem 0.4rem; font-size:0.65rem;" onclick="viewKbArticleInCopilot('${art.id}')">View full article</button>
+                <button class="action-btn action-btn-outline" style="padding:0.15rem 0.4rem; font-size:0.65rem;" onclick="viewKbArticleInCopilot('${escapeHtml(art.id)}')">View full article</button>
             </div>
         </div>
     `).join('');
@@ -631,10 +644,10 @@ window.viewKbArticleInCopilot = function(artId) {
     modalBody.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:0.5rem;">
-                <span class="badge badge-open">Category: ${art.category}</span>
+                <span class="badge badge-open">Category: ${escapeHtml(art.category)}</span>
                 <span style="font-size:0.75rem; color:var(--text-muted);">pgvector Cosine Synced</span>
             </div>
-            <p style="font-size:0.85rem; line-height:1.5; color:var(--text-body);">${art.content}</p>
+            <p style="font-size:0.85rem; line-height:1.5; color:var(--text-body);">${escapeHtml(art.content)}</p>
         </div>
     `;
     
@@ -654,12 +667,12 @@ function populateDropdownOptions() {
     
     assigneeSelect.innerHTML = `
         <option value="Unassigned">Unassigned</option>
-        ${mockAgents.map(a => `<option value="${a.name}">${a.name}</option>`).join('')}
+        ${mockAgents.map(a => `<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('')}
     `;
     
     const draftCat = document.getElementById('draftCategorySelect');
     if (draftCat) {
-        draftCat.innerHTML = mockCategories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        draftCat.innerHTML = mockCategories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
     }
 }
 
@@ -729,12 +742,12 @@ function renderPerformanceTab() {
                 return `
                     <div style="padding:1rem; border: 1px solid var(--border-subtle); border-radius:0.5rem; background-color: rgba(255,255,255,0.01);">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-                            <strong style="font-size:0.85rem; color:var(--text-heading);">${r.customer}</strong>
+                            <strong style="font-size:0.85rem; color:var(--text-heading);">${escapeHtml(r.customer)}</strong>
                             <div>${stars}</div>
                         </div>
-                        <p style="font-size:0.75rem; color:var(--text-body); font-style:italic;">"${r.comment}"</p>
+                        <p style="font-size:0.75rem; color:var(--text-body); font-style:italic;">"${escapeHtml(r.comment)}"</p>
                         <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.25rem;">
-                            Ticket Ref: <strong style="color:var(--brand);">${r.ticketId}</strong>
+                            Ticket Ref: <strong style="color:var(--brand);">${escapeHtml(r.ticketId)}</strong>
                         </div>
                     </div>
                 `;
@@ -761,10 +774,10 @@ function renderPerformanceTab() {
                         <span class="badge badge-priority-high" style="font-size:0.6rem;">Urgent response SLA</span>
                         <span style="font-size:0.7rem; color:var(--priority-high); font-weight:700;">Overdue by 4.2h</span>
                     </div>
-                    <strong style="font-size:0.8rem; color:var(--text-heading); display:block; margin-top:0.25rem;">${t.title}</strong>
+                    <strong style="font-size:0.8rem; color:var(--text-heading); display:block; margin-top:0.25rem;">${escapeHtml(t.title)}</strong>
                     <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:var(--text-muted); margin-top:0.4rem;">
-                        <span>Ref: ${t.id}</span>
-                        <span>Assignee: <strong style="color:var(--status-progress);">${t.assignee}</strong></span>
+                        <span>Ref: ${escapeHtml(t.id)}</span>
+                        <span>Assignee: <strong style="color:var(--status-progress);">${escapeHtml(t.assignee)}</strong></span>
                     </div>
                 </div>
             `).join('');
@@ -801,8 +814,8 @@ function renderKbDraftsTab() {
         return `
             <div class="draft-list-item">
                 <div style="flex:1; padding-right:1rem;">
-                    <strong style="font-size:0.85rem; color:var(--text-heading); display:block;">${art.title}</strong>
-                    <span style="font-size:0.7rem; color:var(--text-muted);">Category: ${art.category} • Updated: ${art.updated}</span>
+                    <strong style="font-size:0.85rem; color:var(--text-heading); display:block;">${escapeHtml(art.title)}</strong>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Category: ${escapeHtml(art.category)} • Updated: ${escapeHtml(art.updated)}</span>
                 </div>
                 <div>
                     ${statusBadge}
@@ -914,7 +927,7 @@ window.showToast = function(message, type = 'info') {
 
     toast.innerHTML = `
         <i class="fas ${iconClass}" style="color: ${iconColor}; font-size: 1.1rem; flex-shrink: 0;"></i>
-        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${message}</div>
+        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${escapeHtml(message)}</div>
         <button onclick="this.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 0.25rem;"><i class="fas fa-xmark"></i></button>
     `;
 

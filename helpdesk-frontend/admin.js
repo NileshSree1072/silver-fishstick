@@ -1,5 +1,18 @@
 // Aegis Helpdesk Admin Console Controller
 
+function escapeHtml(str) {
+    if (typeof str !== 'string') {
+        if (str === null || str === undefined) return '';
+        str = String(str);
+    }
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ────────────────────────────────────────────────────────
 // MOCK DATA REGISTRY
 // ────────────────────────────────────────────────────────
@@ -246,11 +259,11 @@ function renderDashboardChart() {
         const percentage = (c.ticketCount / maxVal) * 100;
         return `
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <span style="width: 130px; font-size: 0.85rem; color: var(--text-body); font-weight: 500;">${c.name}</span>
+                <span style="width: 130px; font-size: 0.85rem; color: var(--text-body); font-weight: 500;">${escapeHtml(c.name)}</span>
                 <div style="flex: 1; height: 8px; background-color: var(--border-subtle); border-radius: 4px; overflow: hidden;">
                     <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, var(--brand), #2563eb); border-radius: 4px; transition: width 1s ease;"></div>
                 </div>
-                <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: 600; color: var(--text-heading);">${c.ticketCount}</span>
+                <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: 600; color: var(--text-heading);">${escapeHtml(c.ticketCount)}</span>
             </div>
         `;
     }).join('');
@@ -271,9 +284,9 @@ function renderSystemLogs() {
 
         return `
             <div class="system-log-entry">
-                <span class="log-time">[${timestamp}]</span>
-                <span class="${tagClass}">[${log.type.toUpperCase()}]</span>
-                <span>${log.msg}</span>
+                <span class="log-time">[${escapeHtml(timestamp)}]</span>
+                <span class="${tagClass}">[${escapeHtml(log.type.toUpperCase())}]</span>
+                <span>${escapeHtml(log.msg)}</span>
             </div>
         `;
     }).join('');
@@ -314,24 +327,24 @@ function renderAgentDirectory() {
     );
 
     tableBody.innerHTML = filteredAgents.map(a => {
-        const catBadges = a.categories.map(c => `<span class="expert-badge">${c}</span>`).join('');
+        const catBadges = a.categories.map(c => `<span class="expert-badge">${escapeHtml(c)}</span>`).join('');
         const statusChecked = a.active ? 'checked' : '';
 
         return `
-            <tr id="agent-row-${a.id}">
-                <td style="font-weight:600; color:var(--text-heading);">${a.name}</td>
-                <td>${a.email}</td>
-                <td><span class="badge ${a.role === 'ADMIN' ? 'badge-priority-high' : 'badge-open'}">${a.role}</span></td>
+            <tr id="agent-row-${escapeHtml(a.id)}">
+                <td style="font-weight:600; color:var(--text-heading);">${escapeHtml(a.name)}</td>
+                <td>${escapeHtml(a.email)}</td>
+                <td><span class="badge ${a.role === 'ADMIN' ? 'badge-priority-high' : 'badge-open'}">${escapeHtml(a.role)}</span></td>
                 <td>${catBadges}</td>
                 <td>
                     <label class="toggle-switch">
-                        <input type="checkbox" ${statusChecked} onchange="toggleAgentActive('${a.id}', this.checked)">
+                        <input type="checkbox" ${statusChecked} onchange="toggleAgentActive('${escapeHtml(a.id)}', this.checked)">
                         <span class="toggle-slider"></span>
                     </label>
                 </td>
                 <td>
-                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="openEditAgentModal('${a.id}')"><i class="fas fa-edit"></i> Edit</button>
-                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem; color:var(--priority-high); border-color:rgba(239,68,68,0.2);" onclick="deleteAgent('${a.id}')"><i class="fas fa-trash"></i> Delete</button>
+                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="openEditAgentModal('${escapeHtml(a.id)}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem; color:var(--priority-high); border-color:rgba(239,68,68,0.2);" onclick="deleteAgent('${escapeHtml(a.id)}')"><i class="fas fa-trash"></i> Delete</button>
                 </td>
             </tr>
         `;
@@ -347,21 +360,21 @@ function renderCategoriesGrid() {
     if (!grid) return;
 
     grid.innerHTML = mockCategories.map(c => `
-        <div class="dashboard-card" id="category-card-${c.id}" style="display:flex; flex-direction:column; justify-content:space-between; min-height:160px;">
+        <div class="dashboard-card" id="category-card-${escapeHtml(c.id)}" style="display:flex; flex-direction:column; justify-content:space-between; min-height:160px;">
             <div>
                 <div class="card-header-row">
-                    <span class="card-title-text" style="font-size:0.95rem;">${c.name}</span>
-                    <span class="badge badge-open" style="font-size:0.65rem;">${c.ticketCount} Open Tickets</span>
+                    <span class="card-title-text" style="font-size:0.95rem;">${escapeHtml(c.name)}</span>
+                    <span class="badge badge-open" style="font-size:0.65rem;">${escapeHtml(c.ticketCount)} Open Tickets</span>
                 </div>
-                <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">${c.desc}</p>
+                <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">${escapeHtml(c.desc)}</p>
             </div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:0.75rem; margin-top:1rem;">
                 <span style="font-size:0.75rem; color:var(--text-body); font-weight:500;">
                     <i class="fas fa-headset" style="color:var(--brand); margin-right:0.25rem;"></i>
-                    ${getAgentCountByCategory(c.name)} Assigned Agents
+                    ${escapeHtml(getAgentCountByCategory(c.name))} Assigned Agents
                 </span>
-                <button class="action-btn action-btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteCategory('${c.id}')"><i class="fas fa-trash"></i></button>
+                <button class="action-btn action-btn-outline" style="padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="deleteCategory('${escapeHtml(c.id)}')"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     `).join('');
@@ -381,24 +394,24 @@ function renderArticleTable() {
         const statusChecked = art.published ? 'checked' : '';
 
         return `
-            <tr id="article-row-${art.id}">
-                <td style="font-weight:600; color:var(--text-heading);">${art.title}</td>
-                <td><span class="expert-badge">${art.category}</span></td>
+            <tr id="article-row-${escapeHtml(art.id)}">
+                <td style="font-weight:600; color:var(--text-heading);">${escapeHtml(art.title)}</td>
+                <td><span class="expert-badge">${escapeHtml(art.category)}</span></td>
                 <td>
                     <span class="badge ${vectorBadgeClass}" style="display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem;">
                         <span style="width:5px; height:5px; border-radius:50%; background-color:currentColor;"></span>
-                        ${art.vectorStatus}
+                        ${escapeHtml(art.vectorStatus)}
                     </span>
                 </td>
-                <td style="font-size:0.75rem; color:var(--text-muted);">${art.updated}</td>
+                <td style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(art.updated)}</td>
                 <td>
                     <label class="toggle-switch">
-                        <input type="checkbox" ${statusChecked} onchange="toggleArticlePublish('${art.id}', this.checked)">
+                        <input type="checkbox" ${statusChecked} onchange="toggleArticlePublish('${escapeHtml(art.id)}', this.checked)">
                         <span class="toggle-slider"></span>
                     </label>
                 </td>
                 <td>
-                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="openEditArticleModal('${art.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="action-btn action-btn-outline" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="openEditArticleModal('${escapeHtml(art.id)}')"><i class="fas fa-edit"></i> Edit</button>
                 </td>
             </tr>
         `;
@@ -446,12 +459,12 @@ function renderCsatRatings() {
         return `
             <div class="rating-review-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-weight:600; color:var(--text-heading); font-size:0.85rem;">${r.customer}</div>
+                    <div style="font-weight:600; color:var(--text-heading); font-size:0.85rem;">${escapeHtml(r.customer)}</div>
                     <div class="rating-stars">${starsHtml}</div>
                 </div>
-                <p style="font-size:0.75rem; color:var(--text-body); line-height:1.4;">"${r.comment}"</p>
+                <p style="font-size:0.75rem; color:var(--text-body); line-height:1.4;">"${escapeHtml(r.comment)}"</p>
                 <div style="font-size:0.7rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:0.35rem; display:flex; justify-content:space-between;">
-                    <span>Ticket Ref: <strong style="color:var(--brand);">${r.ticketId}</strong></span>
+                    <span>Ticket Ref: <strong style="color:var(--brand);">${escapeHtml(r.ticketId)}</strong></span>
                     <span>Verified Solution</span>
                 </div>
             </div>
@@ -467,12 +480,12 @@ function renderSlaBreaches() {
         <div class="sla-breach-card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span class="badge badge-priority-high" style="font-size:0.65rem;">SLA Breach</span>
-                <span style="font-size:0.75rem; font-weight:700; color:var(--priority-high);">${b.breachTime}</span>
+                <span style="font-size:0.75rem; font-weight:700; color:var(--priority-high);">${escapeHtml(b.breachTime)}</span>
             </div>
-            <strong style="font-size:0.8rem; color:var(--text-heading); display:block; margin:0.25rem 0;">${b.title}</strong>
+            <strong style="font-size:0.8rem; color:var(--text-heading); display:block; margin:0.25rem 0;">${escapeHtml(b.title)}</strong>
             <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:var(--text-muted); border-top:1px dashed rgba(239, 68, 68, 0.2); padding-top:0.35rem;">
-                <span>Ref: ${b.ticketId}</span>
-                <span>Assignee: <strong style="color:var(--status-progress);">${b.assignee}</strong></span>
+                <span>Ref: ${escapeHtml(b.ticketId)}</span>
+                <span>Assignee: <strong style="color:var(--status-progress);">${escapeHtml(b.assignee)}</strong></span>
             </div>
         </div>
     `).join('');
@@ -569,7 +582,7 @@ if (btnRegisterAgent) {
     btnRegisterAgent.addEventListener('click', () => {
         const catsCheckboxes = mockCategories.map(c => `
             <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--text-body);">
-                <input type="checkbox" name="agentCats" value="${c.name}"> ${c.name}
+                <input type="checkbox" name="agentCats" value="${escapeHtml(c.name)}"> ${escapeHtml(c.name)}
             </label>
         `).join('');
 
@@ -672,7 +685,7 @@ if (btnCreateCategory) {
 const btnWriteArticle = document.getElementById('btnWriteArticle');
 if (btnWriteArticle) {
     btnWriteArticle.addEventListener('click', () => {
-        const catOptions = mockCategories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        const catOptions = mockCategories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
         
         const formHtml = `
             <div class="form-layout">
@@ -791,7 +804,7 @@ window.showToast = function(message, type = 'info') {
 
     toast.innerHTML = `
         <i class="fas ${iconClass}" style="color: ${iconColor}; font-size: 1.1rem; flex-shrink: 0;"></i>
-        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${message}</div>
+        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${escapeHtml(message)}</div>
         <button onclick="this.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 0.25rem;"><i class="fas fa-xmark"></i></button>
     `;
 

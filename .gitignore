@@ -1,0 +1,64 @@
+# ── Database & Env Configurations ───────────────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+helpdesk-backend/.env
+helpdesk-backend/.env.local
+
+# ── Dependency Directories ──────────────────────────────────────────────────
+node_modules/
+**/node_modules/
+jspm_packages/
+web_modules/
+
+# ── Build & Output Artifacts ────────────────────────────────────────────────
+target/
+**/target/
+build/
+**/build/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+out/
+**/out/
+.gradle/
+.lazybeans/
+
+# ── IDE & Editor Configurations ─────────────────────────────────────────────
+.vscode/
+**/ .vscode/
+.idea/
+**/.idea/
+*.iml
+*.iws
+*.ipr
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs and Temp Files ─────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+build.log
+run.log
+errors.txt
+install_output.txt
+lint_errors.txt
+lint_errors_utf8.txt
+
+# ── Developer Task Files ────────────────────────────────────────────────────
+task.md
+aegis_*.json

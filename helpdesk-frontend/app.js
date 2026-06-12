@@ -1,4 +1,17 @@
 // Mock Initial Data Store
+function escapeHtml(str) {
+    if (typeof str !== 'string') {
+        if (str === null || str === undefined) return '';
+        str = String(str);
+    }
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 let mockCategories = [
     { id: '1', name: 'Database', description: 'PostgreSQL, Flyway migrations and performance issues' },
     { id: '2', name: 'Authentication', description: 'JWT tokens, Login/Signup, Spring Security locks' },
@@ -155,7 +168,7 @@ function initApp() {
 function initCategorySelectors() {
     const catSelectors = document.querySelectorAll('.category-dropdown');
     catSelectors.forEach(select => {
-        select.innerHTML = mockCategories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        select.innerHTML = mockCategories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
     });
 }
 
@@ -260,29 +273,28 @@ function setupCustomerHandlers() {
                 <div style="cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 0.8rem; border-radius: 0.5rem; transition: border-color 0.2s;" 
                      onmouseover="this.style.borderColor='var(--brand)'" 
                      onmouseout="this.style.borderColor='var(--border-subtle)'"
-                     onclick="viewKBArticle('${kb.title}', \`${kb.content}\`)">
+                     onclick="viewKBArticleById('${escapeHtml(kb.id)}')">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem; align-items: center;">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">📄 KB: ${kb.title}</span>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">📄 KB: ${escapeHtml(kb.title)}</span>
                         <span style="font-size: 0.65rem; font-weight: 700; background: var(--status-resolved-bg); color: var(--status-resolved); padding: 0.15rem 0.4rem; border-radius: 0.25rem;">Suggested Fix</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">${kb.content.substring(0, 100)}...</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">${escapeHtml(kb.content.substring(0, 100))}...</div>
                 </div>
             `;
         });
 
         // Render Resolved ticket matches
         ticketMatches.forEach(t => {
-            const solution = t.replies.find(r => r.role === 'AI' || r.role === 'AGENT')?.message || '';
             html += `
                 <div style="cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 0.8rem; border-radius: 0.5rem; transition: border-color 0.2s;" 
                      onmouseover="this.style.borderColor='var(--brand)'" 
                      onmouseout="this.style.borderColor='var(--border-subtle)'"
-                     onclick="viewKBArticle('Ticket: ${t.title}', \`Solution:\\n${solution}\`)">
+                     onclick="viewKBTicketById('${escapeHtml(t.id)}')">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem; align-items: center;">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">🕒 Case: ${t.title}</span>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-heading);">🕒 Case: ${escapeHtml(t.title)}</span>
                         <span style="font-size: 0.65rem; font-weight: 700; background: var(--status-open-bg); color: var(--status-open); padding: 0.15rem 0.4rem; border-radius: 0.25rem;">Solved Case</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">${t.description.substring(0, 100)}...</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">${escapeHtml(t.description.substring(0, 100))}...</div>
                 </div>
             `;
         });
@@ -335,6 +347,21 @@ function viewKBArticle(title, content) {
     const formattedContent = content.replace(/\n/g, '<br>');
     showModal(title, `<div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-body);">${formattedContent}</div>`, null);
 }
+
+window.viewKBArticleById = function(kbId) {
+    const kb = mockKnowledgeBase.find(k => k.id === kbId);
+    if (kb) {
+        viewKBArticle(kb.title, kb.content);
+    }
+};
+
+window.viewKBTicketById = function(ticketId) {
+    const t = mockTickets.find(tick => tick.id === ticketId);
+    if (t) {
+        const solution = t.replies.find(r => r.role === 'AI' || r.role === 'AGENT')?.message || '';
+        viewKBArticle('Ticket: ' + t.title, 'Solution:\n' + solution);
+    }
+};
 
 // Background simulation of AIService.processNewTicket
 function simulateAiResolution(ticket) {
@@ -415,17 +442,17 @@ function renderTicketsList(filterText = '') {
         const priorityBadgeClass = `badge-priority-${t.priority.toLowerCase()}`;
         
         return `
-            <div class="queue-item ${activeClass}" onclick="selectTicket('${t.id}')">
+            <div class="queue-item ${activeClass}" onclick="selectTicket('${escapeHtml(t.id)}')">
                 <div class="queue-row">
-                    <span class="queue-title" title="${t.title}">${t.title}</span>
-                    <span class="badge ${priorityBadgeClass}">${t.priority}</span>
+                    <span class="queue-title" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</span>
+                    <span class="badge ${priorityBadgeClass}">${escapeHtml(t.priority)}</span>
                 </div>
                 <div class="queue-row" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">
-                    <span>${t.id} • ${t.category}</span>
+                    <span>${escapeHtml(t.id)} • ${escapeHtml(t.category)}</span>
                 </div>
                 <div class="queue-row" style="margin-top: 0.35rem; font-size: 0.7rem; color: var(--text-muted);">
-                    <span>${t.createdAt}</span>
-                    <span class="badge ${statusBadgeClass}">${t.status.replace('_', ' ')}</span>
+                    <span>${escapeHtml(t.createdAt)}</span>
+                    <span class="badge ${statusBadgeClass}">${escapeHtml(t.status.replace('_', ' '))}</span>
                 </div>
             </div>
         `;
@@ -486,13 +513,13 @@ function loadTicketInChat(id) {
             bubbleClass = 'outgoing';
         }
         
-        let senderHtml = r.sender;
+        let senderHtml = escapeHtml(r.sender);
         if (r.role === 'AI') {
             senderHtml = `<i class="fas fa-robot" style="color: var(--brand); margin-right: 0.25rem;"></i> AI Assistant`;
         } else if (r.role === 'AGENT') {
-            senderHtml = `<i class="fas fa-headset" style="color: rgba(255,255,255,0.7); margin-right: 0.25rem;"></i> ${r.sender}`;
+            senderHtml = `<i class="fas fa-headset" style="color: rgba(255,255,255,0.7); margin-right: 0.25rem;"></i> ${escapeHtml(r.sender)}`;
         } else {
-            senderHtml = `<i class="fas fa-user-circle" style="color: var(--text-muted); margin-right: 0.25rem;"></i> ${r.sender}`;
+            senderHtml = `<i class="fas fa-user-circle" style="color: var(--text-muted); margin-right: 0.25rem;"></i> ${escapeHtml(r.sender)}`;
         }
         
         if (isInternal) {
@@ -501,10 +528,10 @@ function loadTicketInChat(id) {
         
         return `
             <div class="chat-bubble ${bubbleClass}" style="${customStyle}">
-                <div style="word-break: break-word;">${r.message.replace(/\n/g, '<br>')}</div>
+                <div style="word-break: break-word;">${escapeHtml(r.message).replace(/\n/g, '<br>')}</div>
                 <div class="chat-bubble-meta">
                     <span>${senderHtml}</span>
-                    <span>${r.time}</span>
+                    <span>${escapeHtml(r.time)}</span>
                 </div>
             </div>
         `;
@@ -557,15 +584,15 @@ function loadTicketInChat(id) {
                     <div style="cursor:pointer; background: rgba(0,0,0,0.15); border: 1px solid var(--border-subtle); padding: 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; transition: border-color 0.2s;" 
                          onmouseover="this.style.borderColor='var(--brand)'" 
                          onmouseout="this.style.borderColor='var(--border-subtle)'"
-                         onclick="viewKBArticle('${kb.title}', \`${kb.content}\`)">
-                        <i class="fas fa-file-lines" style="color: var(--brand); margin-right:0.25rem;"></i> <strong>${kb.title}</strong>
+                         onclick="viewKBArticleById('${escapeHtml(kb.id)}')">
+                        <i class="fas fa-file-lines" style="color: var(--brand); margin-right:0.25rem;"></i> <strong>${escapeHtml(kb.title)}</strong>
                     </div>
                 `).join('')}
             </div>
         `;
     } else {
         kbBox.innerHTML = `
-            <span style="color: var(--text-muted); font-size: 0.75rem;">No KB resolution articles found matching [${ticket.category}].</span>
+            <span style="color: var(--text-muted); font-size: 0.75rem;">No KB resolution articles found matching [${escapeHtml(ticket.category)}].</span>
         `;
     }
 }
@@ -630,15 +657,17 @@ function suggestAiReply() {
         } else if (ticket.id === 't-103') {
             suggestedResponse = "Hello Bob, Sure, we can update the JWT token expiration config. Please navigate to application.properties and look for app.jwt.expiration. Set it to 86400000 (24 Hours) to increase the active session duration.";
         } else {
-            suggestedResponse = `Dear ${ticket.createdBy}, I would recommend reviewing past resolved issues in category [${ticket.category}] to address your issue. Our systems are currently analyzing standard resolution logs.`;
+            suggestedResponse = `Dear ${escapeHtml(ticket.createdBy)}, I would recommend reviewing past resolved issues in category [${escapeHtml(ticket.category)}] to address your issue. Our systems are currently analyzing standard resolution logs.`;
         }
+
+        window.lastSuggestedAiResponse = suggestedResponse;
 
         draftText.innerHTML = `
             <div style="display:flex; flex-direction:column; gap:0.25rem;">
                 <div style="font-size: 0.75rem; color: var(--brand); font-weight: 700;"><i class="fas fa-bolt"></i> AI Suggested Draft:</div>
-                <div style="font-size: 0.85rem; font-style: italic; color: var(--text-heading); margin-bottom: 0.5rem;">"${suggestedResponse}"</div>
+                <div style="font-size: 0.85rem; font-style: italic; color: var(--text-heading); margin-bottom: 0.5rem;">"${escapeHtml(suggestedResponse)}"</div>
                 <div>
-                    <button class="action-btn" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="applyDraft(\`${suggestedResponse.replace(/"/g, '\\"')}\`)">Apply Suggested Reply</button>
+                    <button class="action-btn" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;" onclick="applyDraft(window.lastSuggestedAiResponse)">Apply Suggested Reply</button>
                     <button class="action-btn action-btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; margin-left:0.5rem;" onclick="document.getElementById('aiDraftAlert').style.display='none'">Dismiss</button>
                 </div>
             </div>
@@ -679,7 +708,7 @@ function summarizeThread() {
         } else if (ticket.id === 't-103') {
             summaryText = "• Admin Bob Manager requested longer JWT session expiration configs.<br>• Agent Sarah Jenkins suggested changing app.jwt.expiration to 24 hours.<br>• Ticket is IN_PROGRESS pending deploy verification.";
         } else {
-            summaryText = `• Ticket raised by ${ticket.createdBy} regarding: ${ticket.title}.<br>• The thread currently contains ${ticket.replies.length} replies.<br>• Status is currently marked as ${ticket.status}.`;
+            summaryText = `• Ticket raised by ${escapeHtml(ticket.createdBy)} regarding: ${escapeHtml(ticket.title)}.<br>• The thread currently contains ${ticket.replies.length} replies.<br>• Status is currently marked as ${escapeHtml(ticket.status)}.`;
         }
 
         summaryBox.innerHTML = `
@@ -738,10 +767,10 @@ function renderAdminCategories() {
     catList.innerHTML = mockCategories.map(c => `
         <div class="category-card">
             <div class="category-details">
-                <strong style="color: var(--text-heading); font-size: 0.95rem;">${c.name}</strong>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">${c.description}</span>
+                <strong style="color: var(--text-heading); font-size: 0.95rem;">${escapeHtml(c.name)}</strong>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(c.description)}</span>
             </div>
-            <button class="action-btn action-btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="manageCategory('${c.id}')">Manage</button>
+            <button class="action-btn action-btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="manageCategory('${escapeHtml(c.id)}')">Manage</button>
         </div>
     `).join('');
 }
@@ -752,15 +781,15 @@ window.manageCategory = function(id) {
     
     const bodyHtml = `
         <div style="font-size: 0.9rem; line-height: 1.6;">
-            <p><strong>ID:</strong> ${cat.id}</p>
-            <p><strong>Name:</strong> ${cat.name}</p>
-            <p><strong>Description:</strong> ${cat.description}</p>
+            <p><strong>ID:</strong> ${escapeHtml(cat.id)}</p>
+            <p><strong>Name:</strong> ${escapeHtml(cat.name)}</p>
+            <p><strong>Description:</strong> ${escapeHtml(cat.description)}</p>
             <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.8rem;">
-                <i class="fas fa-circle-info"></i> In the live backend database, this maps to direct REST API calls at <code>/api/admin/categories/${cat.id}</code>.
+                <i class="fas fa-circle-info"></i> In the live backend database, this maps to direct REST API calls at <code>/api/admin/categories/${escapeHtml(cat.id)}</code>.
             </p>
         </div>
     `;
-    showModal(`Manage: ${cat.name}`, bodyHtml, () => {
+    showModal(`Manage: ${escapeHtml(cat.name)}`, bodyHtml, () => {
         mockCategories.splice(mockCategories.findIndex(c => c.id === id), 1);
         showToast(`Category "${cat.name}" has been removed.`, 'warning');
         initCategorySelectors();
@@ -809,7 +838,7 @@ function showToast(message, type = 'info') {
 
     toast.innerHTML = `
         <i class="fas ${iconClass}" style="color: ${iconColor}; font-size: 1.1rem; flex-shrink: 0;"></i>
-        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${message}</div>
+        <div style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; line-height: 1.4; flex-grow: 1;">${escapeHtml(message)}</div>
         <button onclick="this.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 0.25rem;"><i class="fas fa-xmark"></i></button>
     `;
 
