@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Helpdesk - Agent Workspace</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Base styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Agent Dashboard Overrides -->
+    <style>
+        /* Prevent scrolling on the main container in agent console */
+        .workspace-content.no-padding {
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .ticket-center-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+            background-color: var(--bg-app);
+        }
+
+        @media (max-width: 1280px) {
+            .ticket-center-layout {
+                grid-template-columns: 300px 1fr;
+            }
+            .side-copilot-pane {
+                display: none;
+            }
+        }
+
+        /* Scrollable container inside tabs */
+        .tab-content {
+            display: none;
+            height: 100%;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content-scrollable {
+            padding: 2rem;
+            overflow-y: auto;
+            height: calc(100vh - 70px);
+            width: 100%;
+        }
+
+        /* Metric widget styling */
+        .metric-card-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        /* Custom toggle for Public Reply vs Internal Note */
+        .toggle-group {
+            display: flex;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.375rem;
+            padding: 0.2rem;
+            gap: 0.2rem;
+            width: fit-content;
+        }
+
+        .toggle-option {
+            padding: 0.45rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .toggle-option.active.public {
+            background-color: var(--brand);
+            color: white;
+        }
+
+        .toggle-option.active.internal {
+            background-color: var(--status-progress);
+            color: white;
+        }
+
+        /* Live status indicator */
+        .live-pulse {
+            width: 6px;
+            height: 6px;
+            background-color: var(--status-resolved);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--brand);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px var(--brand); }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        /* Custom styles for draft list */
+        .draft-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background-color 0.2s;
+        }
+        .draft-list-item:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Performance circle chart simulation */
+        .percentage-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--brand) 0% 96.8%, var(--border-subtle) 96.8% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .percentage-circle-inner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Highlight internal note bubble border */
+        .chat-bubble.internal {
+            align-self: center;
+            background-color: rgba(245, 158, 11, 0.04) !important;
+            border: 1px dashed rgba(245, 158, 11, 0.3) !important;
+            color: var(--text-body) !important;
+            width: 90% !important;
+            max-width: 90% !important;
+        }
+
+        /* Typewriter log styling in Copilot sidebar */
+        .ai-draft-loader {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--brand);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .typing-indicator span {
+            height: 6px;
+            width: 6px;
+            float: left;
+            margin: 0 1px;
+            background-color: var(--brand);
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            from { transform: translateY(0px); opacity: 0.4; }
+            to { transform: translateY(-4px); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+            <div>
+                <!-- Brand Header -->
+                <div class="sidebar-header">
+                    <div class="brand-icon" style="background: linear-gradient(135deg, var(--brand), #2563eb);">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <span class="brand-name">AEGIS WORKSPACE</span>
+                </div>
+
+                <!-- Navigation List -->
+                <ul class="menu-list">
+                    <li class="menu-item active" data-tab="ticketsTab">
+                        <a href="#tickets"><i class="fas fa-ticket"></i> Active Workspace</a>
+                    </li>
+                    <li class="menu-item" data-tab="reportsTab">
+                        <a href="#reports"><i class="fas fa-chart-line"></i> Performance Reports</a>
+                    </li>
+                    <li class="menu-item" data-tab="draftsTab">
+                        <a href="#drafts"><i class="fas fa-pen-nib"></i> KB Draft Portal</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar Footer Controls -->
+            <div class="sidebar-footer">
+                <!-- Portals quick links -->
+                <div style="display:flex; flex-direction:column; gap:0.5rem; padding: 0 0.5rem 0.5rem 0.5rem;">
+                    <a href="customer.html" class="action-btn action-btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem;">
+                        <i class="fas fa-user-circle"></i> Customer Portal
+                    </a>
+                    <a href="admin.html" class="action-btn action-btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem;">
+                        <i class="fas fa-shield-halved"></i> Admin Console
+                    </a>
+                </div>
+
+                <!-- Logged In User Profile -->
+                <div class="user-profile-badge">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, var(--brand), #3b82f6);">SJ</div>
+                    <div class="user-info">
+                        <span class="user-name" style="font-weight: 600; display: block; font-size: 0.9rem; color: var(--text-heading);">Sarah Jenkins</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Support Representative</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Workspace -->
+        <div class="workspace">
+            
+            <!-- Topbar Header -->
+            <header class="topbar">
+                <div class="view-title" id="currentViewTitle">Active Workspace</div>
+                <div class="topbar-actions">
+                    <!-- Connection Status Badge -->
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--status-resolved); background-color: var(--status-resolved-bg); padding: 0.25rem 0.6rem; border-radius: 1rem; display: flex; align-items: center; gap: 0.35rem;">
+                        <span class="live-pulse"></span>
+                        Agent Connected
+                    </span>
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" id="themeToggleBtn" title="Toggle Theme" style="background: none; border: none; color: var(--text-body); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background-color: var(--border-subtle); transition: background-color 0.2s;">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Workspace Content Area (Adjusted dynamically for paddings in JS) -->
+            <div class="workspace-content no-padding">
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 1: TICKETS CENTER SPLIT WORKSPACE
+                   ──────────────────────────────────────────────────────── -->
+                <section id="ticketsTab" class="tab-content active">
+                    <div class="ticket-center-layout">
+                        
+                        <!-- Left Queue Column -->
+                        <div class="queue-pane">
+                            <div class="queue-header">
+                                <!-- Queue Filter buttons row -->
+                                <div style="display: flex; gap: 0.35rem;">
+                                    <button class="action-btn" id="btnMyQueue" style="flex: 1; padding: 0.4rem; font-size: 0.75rem; justify-content: center;">
+                                        My Queue (<span id="countMyQueue">0</span>)
+                                    </button>
+                                    <button class="action-btn action-btn-outline" id="btnUnassignedQueue" style="flex: 1; padding: 0.4rem; font-size: 0.75rem; justify-content: center;">
+                                        Unassigned (<span id="countUnassignedQueue">0</span>)
+                                    </button>
+                                    <button class="action-btn action-btn-outline" id="btnResolvedQueue" style="flex: 1; padding: 0.4rem; font-size: 0.75rem; justify-content: center;">
+                                        Resolved (<span id="countResolvedQueue">0</span>)
+                                    </button>
+                                </div>
+                                <div class="search-bar-wrapper">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="queueSearchInput" class="text-input" placeholder="Search ticket queue...">
+                                </div>
+                            </div>
+                            <div class="queue-list" id="agentTicketList">
+                                <!-- Injected dynamically in agent.js -->
+                            </div>
+                        </div>
+
+                        <!-- Middle Chat & Reply Column -->
+                        <div class="conversation-pane">
+                            <div class="conversation-header" id="conversationHeaderArea">
+                                <div class="ticket-meta-headline">
+                                    <h3 id="currentTicketTitle">Select a support ticket</h3>
+                                    <span class="ticket-meta-subtitle" id="currentTicketSubtitle">Choose a ticket from the queue list to load conversation and AI Copilot metrics.</span>
+                                </div>
+                                <div id="ticketPriorityBadgeContainer"></div>
+                            </div>
+
+                            <!-- Timeline -->
+                            <div class="conversation-timeline" id="agentChatTimeline">
+                                <div style="text-align: center; color: var(--text-disabled); font-size: 0.9rem; padding: 6rem 1rem;">
+                                    <i class="fas fa-inbox" style="font-size: 3rem; display: block; margin-bottom: 1.25rem; color: var(--text-muted);"></i>
+                                    Select a ticket from the left panel to load the active thread history, public customer replies, internal notes, and AI Copilot suggestions.
+                                </div>
+                            </div>
+
+                            <!-- Input Console -->
+                            <div class="chat-input-console" id="agentInputConsole" style="display: none;">
+                                <!-- Toggle Row -->
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="toggle-group">
+                                        <div class="toggle-option active public" id="optPublicReply" onclick="setReplyType('public')">
+                                            <i class="fas fa-globe"></i> Public Response
+                                        </div>
+                                        <div class="toggle-option internal" id="optInternalNote" onclick="setReplyType('internal')">
+                                            <i class="fas fa-lock"></i> Internal Note
+                                        </div>
+                                    </div>
+                                    <div id="aiDraftStatusArea" style="display: none;">
+                                        <div class="ai-draft-loader">
+                                            <div class="typing-indicator">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                            <span style="font-size: 0.75rem; color: var(--brand);">AI Suggestion ready</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message Text Box -->
+                                <div class="chat-textarea-wrapper">
+                                    <textarea id="agentReplyText" class="chat-textarea" placeholder="Type public response to the user... (Use Shift+Enter for new line)"></textarea>
+                                    <button class="action-btn" id="btnAgentSendReply" style="height: 60px; width: 60px; justify-content: center; flex-shrink: 0;">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right AI Copilot Column -->
+                        <div class="side-copilot-pane" id="copilotSidebar" style="opacity: 0.5; pointer-events: none;">
+                            <!-- Section: AI Thread Summarizer -->
+                            <div class="copilot-section">
+                                <div class="copilot-header">
+                                    <i class="fas fa-wand-magic-sparkles"></i> GPT Thread Summarizer
+                                </div>
+                                <div class="copilot-box" id="aiThreadSummaryBox" style="font-size:0.8rem; min-height: 60px; color: var(--text-muted); font-style: italic;">
+                                    Select a ticket and click summarize to trigger real-time thread abstraction.
+                                </div>
+                                <button class="action-btn action-btn-outline" id="btnSummarizeThread" style="padding:0.4rem; font-size: 0.75rem; justify-content: center; width: 100%;">
+                                    <i class="fas fa-brain"></i> Summarize Thread
+                                </button>
+                            </div>
+
+                            <!-- Section: pgvector Resolution Hints -->
+                            <div class="copilot-section">
+                                <div class="copilot-header">
+                                    <i class="fas fa-shield-halved"></i> pgvector Similarity Hints
+                                </div>
+                                <div id="copilotKbMatches" style="display:flex; flex-direction:column; gap:0.5rem;">
+                                    <div class="copilot-box" style="font-size: 0.8rem; color: var(--text-disabled); text-align: center;">No matches found.</div>
+                                </div>
+                            </div>
+
+                            <!-- Section: AI Assistant Draft -->
+                            <div class="copilot-section">
+                                <div class="copilot-header">
+                                    <i class="fas fa-robot"></i> LLM Draft Assistant
+                                </div>
+                                <div class="copilot-box copilot-box-ai" id="copilotDraftBox" style="font-size:0.8rem; max-height: 180px; overflow-y: auto;">
+                                    No active prompt analysis.
+                                </div>
+                                <button class="action-btn" id="btnApplyAiDraft" style="padding:0.4rem; font-size: 0.75rem; justify-content: center; width: 100%;" disabled>
+                                    <i class="fas fa-arrow-left-long"></i> Insert Draft Into Textarea
+                                </button>
+                            </div>
+
+                            <!-- Section: Ticket Metadata controls -->
+                            <div class="copilot-section" style="border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+                                <div class="copilot-header" style="color: var(--text-heading); margin-bottom: 0.25rem;">
+                                    <i class="fas fa-sliders"></i> Ticket Properties
+                                </div>
+                                
+                                <div class="field-group" style="gap: 0.25rem; margin-bottom: 0.50rem;">
+                                    <label style="font-size: 0.7rem;">Status</label>
+                                    <select id="propStatus" class="text-input" style="padding: 0.4rem; font-size: 0.8rem;">
+                                        <option value="OPEN">Open</option>
+                                        <option value="IN_PROGRESS">In Progress</option>
+                                        <option value="RESOLVED">Resolved</option>
+                                        <option value="CLOSED">Closed</option>
+                                    </select>
+                                </div>
+                                <div class="field-group" style="gap: 0.25rem; margin-bottom: 0.50rem;">
+                                    <label style="font-size: 0.7rem;">Priority</label>
+                                    <select id="propPriority" class="text-input" style="padding: 0.4rem; font-size: 0.8rem;">
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                                <div class="field-group" style="gap: 0.25rem; margin-bottom: 0.75rem;">
+                                    <label style="font-size: 0.7rem;">Assignee</label>
+                                    <select id="propAssignee" class="text-input" style="padding: 0.4rem; font-size: 0.8rem;">
+                                        <!-- Injected in agent.js -->
+                                    </select>
+                                </div>
+
+                                <button class="action-btn" id="btnUpdateProperties" style="padding: 0.45rem; font-size: 0.75rem; justify-content: center; width: 100%;">
+                                    <i class="fas fa-floppy-disk"></i> Apply Ticket Updates
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 2: PERFORMANCE REPORTS
+                   ──────────────────────────────────────────────────────── -->
+                <section id="reportsTab" class="tab-content tab-content-scrollable">
+                    <div class="report-section" style="border: none; background: transparent; padding: 0;">
+                        <h2 style="font-size: 1.5rem; color: var(--text-heading); font-weight: 700;">Sarah's Daily Telemetry Dashboard</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 1.5rem;">SLA compliance matrices, response speed thresholds, and satisfaction ratings.</p>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metric-card-row">
+                        <div class="dashboard-card">
+                            <div class="card-header-row">
+                                <span class="card-title-text" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">SLA Compliance</span>
+                                <i class="fas fa-clock" style="color: var(--brand);"></i>
+                            </div>
+                            <div style="padding: 1rem 0 0.5rem 0;">
+                                <div class="percentage-circle">
+                                    <div class="percentage-circle-inner">
+                                        <strong style="font-size: 1.25rem; color: var(--text-heading);">96.8%</strong>
+                                        <span style="font-size: 0.6rem; color: var(--text-muted);">Compliance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="card-header-row">
+                                    <span class="card-title-text" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Average First Response</span>
+                                    <i class="fas fa-bolt" style="color: var(--brand);"></i>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-heading); margin-top: 1rem;">14.5m</div>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--status-resolved);"><i class="fas fa-arrow-trend-down"></i> -3.2 mins faster than SLA (18m)</span>
+                        </div>
+
+                        <div class="dashboard-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="card-header-row">
+                                    <span class="card-title-text" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Resolved Today</span>
+                                    <i class="fas fa-circle-check" style="color: var(--status-resolved);"></i>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-heading); margin-top: 1rem;" id="metricResolvedToday">8</div>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">Next target bonus: 12 resolutions</span>
+                        </div>
+
+                        <div class="dashboard-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div class="card-header-row">
+                                    <span class="card-title-text" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Sarah Jenkins CSAT</span>
+                                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                                </div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-heading); margin-top: 1rem;" id="metricCsatScore">4.8</div>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--status-resolved);"><i class="fas fa-face-smile"></i> Top tier agent rating</span>
+                        </div>
+                    </div>
+
+                    <!-- Split layout: CSAT reviews list and SLA warnings list -->
+                    <div class="card-grid" style="grid-template-columns: 1.2fr 0.8fr;">
+                        <!-- Left reviews -->
+                        <div class="dashboard-card">
+                            <div class="card-header-row" style="margin-bottom: 1rem;">
+                                <h3 class="card-title-text"><i class="fas fa-star-half-stroke" style="color: var(--brand); margin-right: 0.5rem;"></i> My Verified Customer Reviews</h3>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">Direct feedback ratings left by clients on resolved tickets assigned to you.</p>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="agentCsatReviewsContainer">
+                                <!-- Loaded dynamically from agent.js -->
+                            </div>
+                        </div>
+
+                        <!-- Right breaches -->
+                        <div class="dashboard-card" style="align-self: start;">
+                            <div class="card-header-row" style="margin-bottom: 1rem;">
+                                <h3 class="card-title-text" style="color: var(--priority-high);"><i class="fas fa-triangle-exclamation" style="margin-right: 0.5rem;"></i> Pending SLA Breach Hazards</h3>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">Tickets approaching maximum first-response limits.</p>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="agentSlaHazardsContainer">
+                                <!-- Loaded dynamically from agent.js -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 3: KB DRAFTS PORTAL
+                   ──────────────────────────────────────────────────────── -->
+                <section id="draftsTab" class="tab-content tab-content-scrollable">
+                    <div class="card-grid" style="grid-template-columns: 1.1fr 0.9fr;">
+                        
+                        <!-- Submit new article draft form -->
+                        <div class="dashboard-card">
+                            <div class="card-header-row" style="margin-bottom: 1.5rem;">
+                                <h3 class="card-title-text"><i class="fas fa-pen-nib" style="color: var(--brand); margin-right: 0.5rem;"></i> Submit Knowledge Base Resolution Draft</h3>
+                            </div>
+                            
+                            <form id="agentKbDraftForm" class="form-layout">
+                                <div class="field-group">
+                                    <label for="draftTitleInput">Article Title</label>
+                                    <input type="text" id="draftTitleInput" class="text-input" placeholder="e.g. Setting up custom HTTP timeout thresholds in Axios" required>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="draftCategorySelect">Category</label>
+                                    <select id="draftCategorySelect" class="text-input">
+                                        <!-- Injected in agent.js -->
+                                    </select>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="draftBodyInput">Guide Content (HTML/Markdown allowed)</label>
+                                    <textarea id="draftBodyInput" class="text-input" style="min-height: 180px; resize: vertical; font-size: 0.85rem;" placeholder="Outline the diagnostic symptoms, and clear step-by-step actions for customer deflection..." required></textarea>
+                                </div>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <button type="submit" class="action-btn"><i class="fas fa-paper-plane"></i> Submit Draft for Admin Review</button>
+                                    <button type="reset" class="action-btn action-btn-outline">Reset Form</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- List of current drafts and approval states -->
+                        <div class="dashboard-card" style="align-self: start;">
+                            <div class="card-header-row" style="margin-bottom: 1rem;">
+                                <h3 class="card-title-text"><i class="fas fa-book-open" style="color: var(--brand); margin-right: 0.5rem;"></i> Draft Review Tracker</h3>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                                Articles submitted by support agents. Admins must verify drafts before they are converted into pgvector database embeddings for customer-facing self-service.
+                            </p>
+                            
+                            <div style="border: 1px solid var(--border-subtle); border-radius: 0.5rem; background-color: rgba(0,0,0,0.1); overflow: hidden;" id="agentDraftsListContainer">
+                                <!-- Loaded dynamically in agent.js -->
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Page Footer inside workspace -->
+            <footer style="padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); text-align: center; font-size: 0.8rem; color: var(--text-muted); background-color: var(--bg-sidebar); flex-shrink: 0;">
+                Aegis Agent Console • Powered by pgvector Vector Embedding Copilot
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- Article Reader Modal Overlay (for reading articles from Similarity list) -->
+    <div id="agentModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h4 id="agentModalTitle">Article Details</h4>
+                <button class="close-btn" id="agentModalCloseBtn" title="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="agentModalBody">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="modal-footer" id="agentModalFooter">
+                <button class="action-btn" id="agentModalCloseActionBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Script binding controller -->
+    <script src="agent.js"></script>
+</body>
+</html>

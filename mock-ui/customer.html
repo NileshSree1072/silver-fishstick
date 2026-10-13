@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Helpdesk - Support Portal</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Base layout variables -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Custom Customer overrides -->
+    <style>
+        .kb-search-hero {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(37, 99, 235, 0.03));
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kb-search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 1.5rem auto 0 auto;
+        }
+
+        .kb-search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            font-size: 1rem;
+        }
+
+        .kb-search-box i {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .rating-star-interactive {
+            font-size: 1.5rem;
+            color: var(--text-disabled);
+            cursor: pointer;
+            transition: color 0.1s;
+        }
+
+        .rating-star-interactive.hovered,
+        .rating-star-interactive.selected {
+            color: #fbbf24;
+        }
+        
+        .ticket-chat-split {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 180px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: var(--bg-card);
+        }
+
+        .ticket-list-pane {
+            border-right: 1px solid var(--border-subtle);
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ticket-chat-pane {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .article-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .article-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+            <div>
+                <!-- Brand Header -->
+                <div class="sidebar-header">
+                    <div class="brand-icon" style="background: linear-gradient(135deg, var(--brand), #2563eb);">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <span class="brand-name">AEGIS PORTAL</span>
+                </div>
+
+                <!-- Navigation List -->
+                <ul class="menu-list">
+                    <li class="menu-item active" data-tab="searchKb">
+                        <a href="#kb"><i class="fas fa-search"></i> Search & KB</a>
+                    </li>
+                    <li class="menu-item" data-tab="submitRequest">
+                        <a href="#submit"><i class="fas fa-pen-to-square"></i> File a Ticket</a>
+                    </li>
+                    <li class="menu-item" data-tab="myTickets">
+                        <a href="#my-tickets"><i class="fas fa-folder-open"></i> My Support Tickets</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar Footer Controls -->
+            <div class="sidebar-footer">
+                <!-- Administrative consoles quick links -->
+                <div style="display:flex; flex-direction:column; gap:0.5rem; padding: 0 0.5rem 0.5rem 0.5rem;">
+                    <a href="agent.html" class="action-btn action-btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem;">
+                        <i class="fas fa-headset"></i> Agent Console
+                    </a>
+                    <a href="admin.html" class="action-btn action-btn-outline" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem;">
+                        <i class="fas fa-shield-halved"></i> Admin Console
+                    </a>
+                </div>
+
+                <!-- Logged In User Profile -->
+                <div class="user-profile-badge">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, var(--brand), #3b82f6);">ND</div>
+                    <div class="user-info">
+                        <span class="user-name" style="font-weight: 600; display: block; font-size: 0.9rem; color: var(--text-heading);">Nilesh Dev</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Customer</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Workspace -->
+        <div class="workspace">
+            
+            <!-- Topbar Header -->
+            <header class="topbar">
+                <div class="view-title" id="currentViewTitle">Search & KB</div>
+                <div class="topbar-actions">
+                    <!-- Connection Status Badge -->
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--status-resolved); background-color: var(--status-resolved-bg); padding: 0.25rem 0.6rem; border-radius: 1rem; display: flex; align-items: center; gap: 0.35rem;">
+                        <span style="width: 6px; height: 6px; background-color: var(--status-resolved); border-radius: 50%; display: inline-block;"></span>
+                        Live Connection
+                    </span>
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" id="themeToggleBtn" title="Toggle Theme" style="background: none; border: none; color: var(--text-body); cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background-color: var(--border-subtle); transition: background-color 0.2s;">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Workspace Content Area -->
+            <div class="workspace-content">
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 1: SEARCH & KNOWLEDGE BASE BROWSER
+                   ──────────────────────────────────────────────────────── -->
+                <section id="searchKb" class="tab-content active">
+                    <div class="kb-search-hero">
+                        <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-heading);">How can we help you today?</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Scan our self-service knowledge base using pgvector semantic query embeddings.</p>
+                        
+                        <div class="kb-search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="kbSearchInput" class="text-input" placeholder="Type keywords or symptoms (e.g., timezone deadlock error)...">
+                        </div>
+                    </div>
+
+                    <!-- Search deflection results box -->
+                    <div id="searchDeflectionResultsBox" style="display: none; margin-bottom: 2rem;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.75rem; text-transform: uppercase;">
+                            <span style="width: 6px; height: 6px; background-color: var(--brand); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+                            AI Semantic Matches (pgvector similarity search)
+                        </div>
+                        <div id="kbSearchResultsGrid" class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Standard Categories browsing -->
+                    <div id="kbCategoryDefaultSection">
+                        <h3 style="font-size: 1rem; color: var(--text-heading); font-weight: 600; margin-bottom: 1rem;">Browse Resolutions by Category</h3>
+                        <div class="card-grid" id="kbCategoryDirectoryGrid">
+                            <!-- Populated from customer.js -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 2: SUBMIT TICKET FORM (WITH DEFLECTION)
+                   ──────────────────────────────────────────────────────── -->
+                <section id="submitRequest" class="tab-content">
+                    <div class="card-grid" style="grid-template-columns: 1.2fr 0.8fr;">
+                        
+                        <!-- Submit form -->
+                        <div class="dashboard-card">
+                            <div class="card-header-row" style="margin-bottom: 1.5rem;">
+                                <h3 class="card-title-text"><i class="fas fa-pen-nib" style="color: var(--brand); margin-right: 0.5rem;"></i> Submit Support Ticket</h3>
+                            </div>
+                            
+                            <form id="customerTicketForm" class="form-layout">
+                                <div class="field-group">
+                                    <label for="ticketTitleInput">Short Title</label>
+                                    <input type="text" id="ticketTitleInput" class="text-input" placeholder="Brief summary of the issue (e.g. Azure Blob SAS connection fails)" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="field-group">
+                                        <label for="ticketCategorySelect">Category</label>
+                                        <select id="ticketCategorySelect" class="text-input"></select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label for="ticketPrioritySelect">Priority Level</label>
+                                        <select id="ticketPrioritySelect" class="text-input">
+                                            <option value="low">Low - General inquiry</option>
+                                            <option value="medium" selected>Medium - Core blocker</option>
+                                            <option value="high">High - Production crash</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="ticketDescInput">Full Description & Reproduction Steps</label>
+                                    <textarea id="ticketDescInput" class="text-input" style="min-height: 140px; resize: vertical;" placeholder="Include stack traces, environment variables, or recent settings changes..." required></textarea>
+                                </div>
+
+                                <div class="field-group">
+                                    <label><i class="fas fa-paperclip" style="margin-right:0.25rem;"></i> Add Attachments</label>
+                                    <input type="file" id="ticketAttachment" class="text-input" style="padding: 0.5rem;" accept=".pdf,.png,.jpg,.docx,.zip">
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">Max size 10MB (PDF, PNG, JPG, ZIP)</span>
+                                </div>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <button type="submit" class="action-btn"><i class="fas fa-paper-plane"></i> File Support Ticket</button>
+                                    <button type="reset" class="action-btn action-btn-outline">Reset Forms</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Real-time Deflection Side Card -->
+                        <div class="dashboard-card" style="align-self: start;">
+                            <div class="card-header-row">
+                                <h3 class="card-title-text"><i class="fas fa-wand-magic-sparkles" style="color: var(--brand); margin-right: 0.5rem;"></i> Real-Time RAG Deflection</h3>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+                                As you type your ticket title, pgvector scans for existing resolutions. Confirming a match resolves your issue immediately, deflecting ticket filing overhead.
+                            </p>
+                            
+                            <!-- Deflection Matches container -->
+                            <div id="formDeflectionContainer" style="display: none;">
+                                <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand); display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.75rem; text-transform: uppercase;">
+                                    <span style="width: 6px; height: 6px; background-color: var(--brand); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+                                    Immediate Resolution Recommendations
+                                </div>
+                                <div id="formDeflectionResults" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    <!-- Populated from customer.js -->
+                                </div>
+                            </div>
+
+                            <!-- Deflection Idle state -->
+                            <div id="formDeflectionIdle" style="text-align: center; padding: 2rem 1rem; color: var(--text-disabled); border: 1px dashed var(--border-subtle); border-radius: 0.5rem;">
+                                <i class="fas fa-keyboard" style="font-size: 2rem; margin-bottom: 0.75rem; display: block; color: var(--text-muted);"></i>
+                                <span style="font-size: 0.85rem;">Start typing a title to match automated solutions.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ────────────────────────────────────────────────────────
+                   TAB 3: MY TICKETS VIEW (CHAT + RATINGS REVIEW)
+                   ──────────────────────────────────────────────────────── -->
+                <section id="myTickets" class="tab-content">
+                    <div class="ticket-chat-split">
+                        
+                        <!-- Left Tickets List -->
+                        <div class="ticket-list-pane">
+                            <div style="padding:1rem; border-bottom:1px solid var(--border-subtle); background-color:rgba(0,0,0,0.05);">
+                                <span style="font-size: 0.8rem; font-weight:700; color:var(--text-heading); text-transform:uppercase;">My Support History</span>
+                            </div>
+                            <div id="customerTicketList" style="flex:1; overflow-y:auto; padding:0.75rem; display:flex; flex-direction:column; gap:0.5rem;">
+                                <!-- Loaded dynamically from customer.js -->
+                            </div>
+                        </div>
+
+                        <!-- Right Chat Timeline Pane -->
+                        <div class="ticket-chat-pane">
+                            <div class="conversation-header" style="border-bottom:1px solid var(--border-subtle); padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h3 id="chatTicketTitle" style="font-size:1rem; font-weight:700; color:var(--text-heading);">Select a ticket</h3>
+                                    <span id="chatTicketMeta" style="font-size:0.8rem; color:var(--text-muted);">Open ticket to view history and messages</span>
+                                </div>
+                                <div id="ticketRatingHeaderStatus">
+                                    <!-- Rating score display if rated -->
+                                </div>
+                            </div>
+
+                            <!-- Scrollable Chat bubbles -->
+                            <div class="conversation-timeline" id="chatTimeline" style="flex:1; overflow-y:auto; padding:1.5rem; background-color:rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:1.25rem;">
+                                <div style="text-align:center; color:var(--text-disabled); font-size:0.9rem; padding: 4rem 1rem;">
+                                    <i class="fas fa-comments" style="font-size:2.5rem; display:block; margin-bottom:1rem; color:var(--text-muted);"></i>
+                                    Select a ticket from the left panel to display messages and action reviews.
+                                </div>
+                            </div>
+
+                            <!-- Rating Submission Container (Triggers only when ticket is RESOLVED and not yet rated) -->
+                            <div id="chatRatingBox" class="copilot-box copilot-box-ai" style="display: none; border-radius:0; border-left:none; border-right:none; border-bottom:none; border-color: rgba(16, 185, 129, 0.2); padding: 1.25rem;">
+                                <div style="font-weight:700; color:var(--text-heading); margin-bottom:0.25rem; font-size:0.85rem;"><i class="fas fa-face-smile" style="color:var(--brand); margin-right:0.25rem;"></i> Rate Your Support Resolution</div>
+                                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem;">Your feedback helps refine auto-resolution thresholds and agent performance indicators.</p>
+                                
+                                <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:0.75rem;">
+                                    <div class="rating-stars" style="display:flex; gap:0.4rem;">
+                                        <i class="far fa-star rating-star-interactive" data-star="1"></i>
+                                        <i class="far fa-star rating-star-interactive" data-star="2"></i>
+                                        <i class="far fa-star rating-star-interactive" data-star="3"></i>
+                                        <i class="far fa-star rating-star-interactive" data-star="4"></i>
+                                        <i class="far fa-star rating-star-interactive" data-star="5"></i>
+                                    </div>
+                                    <strong id="ratingScoreLabel" style="font-size:0.85rem; color:var(--brand);">Select Score</strong>
+                                </div>
+
+                                <div style="display:flex; gap:0.75rem;">
+                                    <input type="text" id="ratingCommentInput" class="text-input" style="flex:1; padding:0.45rem;" placeholder="Add comments, e.g. AI fixed it quickly! (Optional)">
+                                    <button id="btnSubmitTicketRating" class="action-btn" style="padding:0.45rem 1rem; font-size:0.8rem;"><i class="fas fa-paper-plane"></i> Submit Review</button>
+                                </div>
+                            </div>
+
+                            <!-- Message text submission -->
+                            <div class="chat-input-console" id="chatInputArea" style="display:none; padding:1rem; border-top:1px solid var(--border-subtle);">
+                                <div class="chat-textarea-wrapper">
+                                    <textarea id="chatReplyText" class="chat-textarea" placeholder="Type reply message to your support representative..."></textarea>
+                                    <button id="btnSendReply" class="action-btn" style="height: 60px; width: 60px; justify-content: center; flex-shrink: 0;"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Page Footer inside workspace -->
+            <footer style="padding: 1.25rem 2rem; border-top: 1px solid var(--border-subtle); text-align: center; font-size: 0.8rem; color: var(--text-muted); background-color: var(--bg-sidebar); flex-shrink: 0;">
+                Aegis Customer Portal • Secured pgvector Deflection Engine
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- Article Reader Modal Overlay -->
+    <div id="customerModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h4 id="custModalTitle">Article Title</h4>
+                <button class="close-btn" id="custModalCloseBtn" title="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="custModalBody">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="modal-footer" id="custModalFooter">
+                <button class="action-btn" id="custModalCloseActionBtn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Script binding controller -->
+    <script src="customer.js"></script>
+</body>
+</html>

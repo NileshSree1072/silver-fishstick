@@ -1,0 +1,357 @@
+
+install_output.txt:50:2026-05-21T14:05:20.635+05:30  WARN 1872 --- 
+[helpdesk-backend] [           main] o.s.w.c.s.GenericWebApplicationContext   
+: Exception encountered during context initialization - cancelling refresh 
+attempt: org.springframework.beans.factory.BeanCreationException: Error 
+creating bean with name 'entityManagerFactory' defined in class path resource [
+org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]
+: Failed to initialize dependency 'flywayInitializer' of LoadTimeWeaverAware 
+bean 'entityManagerFactory': Error creating bean with name 'flywayInitializer' 
+defined in class path resource [org/springframework/boot/autoconfigure/flyway/F
+lywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection 
+from database: FATAL: invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:53:Error Code : 0
+install_output.txt:54:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:60:    + CategoryInfo          : NotSpecified: (:String) 
+[], RemoteException
+install_output.txt:61:    + FullyQualifiedErrorId : NativeCommandError
+install_output.txt:228:   ErrorMvcAutoConfiguration matched:
+install_output.txt:233:   ErrorMvcAutoConfiguration#basicErrorController 
+matched:
+install_output.txt:235:org.springframework.boot.web.servlet.error.ErrorControll
+er; SearchStrategy: 
+install_output.txt:238:   ErrorMvcAutoConfiguration#errorAttributes matched:
+install_output.txt:240:org.springframework.boot.web.servlet.error.ErrorAttribut
+es; SearchStrategy: 
+install_output.txt:243:   
+ErrorMvcAutoConfiguration.DefaultErrorViewResolverConfiguration#conventionEr
+install_output.txt:248:org.springframework.boot.autoconfigure.web.servlet.error
+.ErrorViewResolver; 
+install_output.txt:251:   
+ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration matched:
+install_output.txt:252:      - @ConditionalOnBooleanProperty 
+(server.error.whitelabel.enabled=true) 
+install_output.txt:254:      - ErrorTemplate Missing did not find error 
+template view 
+install_output.txt:255:(ErrorMvcAutoConfiguration.ErrorTemplateMissingCondition
+)
+install_output.txt:257:   
+ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#beanNameViewResol
+install_output.txt:263:   
+ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#defaultErrorView 
+install_output.txt:265:      - @ConditionalOnMissingBean (names: error; 
+SearchStrategy: all) did not 
+install_output.txt:268:   FlywayAutoConfiguration matched:
+install_output.txt:269:      - @ConditionalOnClass found required class 
+'org.flywaydb.core.Flyway' 
+install_output.txt:271:      - @ConditionalOnBooleanProperty 
+(spring.flyway.enabled=true) matched 
+install_output.txt:274:FlywayAutoConfiguration.FlywayDataSourceCondition.Flyway
+UrlCondition 
+install_output.txt:275:@ConditionalOnProperty (spring.flyway.url) did not find 
+property 
+install_output.txt:276:'spring.flyway.url'; NestedCondition on 
+FlywayAutoConfiguration.FlywayDataSourc
+install_output.txt:280:FlywayAutoConfiguration.FlywayDataSourceCondition.DataSo
+urceBeanCondition 
+install_output.txt:282:bean 'dataSource' 
+(FlywayAutoConfiguration.FlywayDataSourceCondition)
+install_output.txt:284:   FlywayAutoConfiguration.FlywayConfiguration matched:
+install_output.txt:287:      - @ConditionalOnMissingBean (types: 
+org.flywaydb.core.Flyway; 
+install_output.txt:290:   
+FlywayAutoConfiguration.FlywayConfiguration#flywayConnectionDetails matched:
+install_output.txt:292:org.springframework.boot.autoconfigure.flyway.FlywayConn
+ectionDetails; 
+install_output.txt:295:   
+FlywayAutoConfiguration.FlywayConfiguration#flywayInitializer matched:
+install_output.txt:297:org.springframework.boot.autoconfigure.flyway.FlywayMigr
+ationInitializer; 
+install_output.txt:300:   
+FlywayAutoConfiguration.FlywayConfiguration.PostgresqlConfiguration matched:
+install_output.txt:302:'org.flywaydb.database.postgresql.PostgreSQLConfiguratio
+nExtension' 
+install_output.txt:554:   PersistenceExceptionTranslationAutoConfiguration 
+matched:
+install_output.txt:556:ation.PersistenceExceptionTranslationPostProcessor' 
+(OnClassCondition)
+install_output.txt:558:   
+PersistenceExceptionTranslationAutoConfiguration#persistenceExceptionTransla
+install_output.txt:561:(spring.dao.exceptiontranslation.enabled=true) matched 
+(OnPropertyCondition)
+install_output.txt:563:rsistenceExceptionTranslationPostProcessor; 
+SearchStrategy: all) did not find 
+install_output.txt:1471:   ErrorWebFluxAutoConfiguration:
+install_output.txt:1478:   
+FlywayAutoConfiguration.FlywayConfiguration.OracleConfiguration:
+install_output.txt:1481:'org.flywaydb.database.oracle.OracleConfigurationExtens
+ion' (OnClassCondition)
+install_output.txt:1483:   
+FlywayAutoConfiguration.FlywayConfiguration.SqlServerConfiguration:
+install_output.txt:1486:'org.flywaydb.database.sqlserver.SQLServerConfiguration
+Extension' 
+install_output.txt:2356:Error starting ApplicationContext. To display the 
+condition evaluation report re-run your application with 'debug' enabled.
+install_output.txt:2357:2026-05-21T14:05:20.673+05:30 ERROR 1872 --- 
+[helpdesk-backend] [           main] o.s.boot.SpringApplication               
+: Application run failed
+install_output.txt:2359:org.springframework.beans.factory.BeanCreationException
+: Error creating bean with name 'entityManagerFactory' defined in class path 
+resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfigurat
+ion.class]: Failed to initialize dependency 'flywayInitializer' of 
+LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 
+'flywayInitializer' defined in class path resource [org/springframework/boot/au
+toconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable 
+to obtain connection from database: FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2362:Error Code : 0
+install_output.txt:2363:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2461:Caused by: 
+org.springframework.beans.factory.BeanCreationException: Error creating bean 
+with name 'flywayInitializer' defined in class path resource [org/springframewo
+rk/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]
+: Unable to obtain connection from database: FATAL: invalid value for 
+parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2464:Error Code : 0
+install_output.txt:2465:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2476:Caused by: 
+org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain 
+connection from database: FATAL: invalid value for parameter "TimeZone": 
+"Asia/Calcutta"
+install_output.txt:2479:Error Code : 0
+install_output.txt:2480:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2514:   
+WebMvcAutoConfiguration.ProblemDetailsErrorHandlingConfiguration:
+install_output.txt:2607:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:71) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2608:	at org.flywaydb.core.internal.jdbc.JdbcConnectionFacto
+ry.<init>(JdbcConnectionFactory.java:76) ~[flyway-core-11.7.2.jar:na]
+install_output.txt:2609:	at 
+org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:136) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2610:	at org.flywaydb.core.Flyway.migrate(Flyway.java:188) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2611:	at org.springframework.boot.autoconfigure.flyway.Flywa
+yMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66) 
+~[spring-boot-autoconfigure-3.5.14.jar:3.5.14]
+install_output.txt:2615:Caused by: org.postgresql.util.PSQLException: FATAL: 
+invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2616:	at org.postgresql.core.v3.QueryExecutorImpl.receiveErr
+orResponse(QueryExecutorImpl.java:2875) ~[postgresql-42.7.10.jar:42.7.10]
+install_output.txt:2631:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:59) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2634:2026-05-21T14:05:20.688+05:30  WARN 1872 --- 
+[helpdesk-backend] [           main] o.s.test.context.TestContextManager      
+: Caught exception while allowing TestExecutionListener 
+[org.springframework.test.context.web.ServletTestExecutionListener] to prepare 
+test instance 
+[com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests@6630dd28]
+install_output.txt:2636:java.lang.IllegalStateException: Failed to load 
+ApplicationContext for [WebMergedContextConfiguration@65f5cae3 testClass = 
+com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests, locations = [], 
+classes = [com.helpdesk.helpdesk_backend.HelpdeskBackendApplication], 
+contextInitializerClasses = [], activeProfiles = [], propertySourceDescriptors 
+= [], propertySourceProperties = ["org.springframework.boot.test.context.Spring
+BootTestContextBootstrapper=true"], contextCustomizers = [org.springframework.b
+oot.test.context.filter.ExcludeFilterContextCustomizer@2462cb01, org.springfram
+ework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonO
+bjectContextCustomizer@1e13529a, 
+org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.spri
+ngframework.boot.test.web.client.TestRestTemplateContextCustomizer@19b89d4, org
+.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer@2
+4c22fe, org.springframework.boot.test.web.reactor.netty.DisableReactorResourceF
+actoryGlobalResourcesContextCustomizerFactory$DisableReactorResourceFactoryGlob
+alResourcesContextCustomizerCustomizer@7bf3a5d8, org.springframework.boot.test.
+autoconfigure.OnFailureConditionReportContextCustomizerFactory$OnFailureConditi
+onReportContextCustomizer@44be0077, org.springframework.boot.test.autoconfigure
+.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabili
+tyContextCustomizer@1f, org.springframework.boot.test.autoconfigure.properties.
+PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure
+.web.servlet.WebDriverContextCustomizer@bb9e6dc, 
+org.springframework.test.context.support.DynamicPropertiesContextCustomizer@0, 
+org.springframework.boot.test.context.SpringBootTestAnnotation@da9f75e2], 
+resourceBasePath = "src/main/webapp", contextLoader = 
+org.springframework.boot.test.context.SpringBootContextLoader, parent = null]
+install_output.txt:2718:Caused by: 
+org.springframework.beans.factory.BeanCreationException: Error creating bean 
+with name 'entityManagerFactory' defined in class path resource [org/springfram
+ework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to 
+initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 
+'entityManagerFactory': Error creating bean with name 'flywayInitializer' 
+defined in class path resource [org/springframework/boot/autoconfigure/flyway/F
+lywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection 
+from database: FATAL: invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2721:Error Code : 0
+install_output.txt:2722:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2741:Caused by: 
+org.springframework.beans.factory.BeanCreationException: Error creating bean 
+with name 'flywayInitializer' defined in class path resource [org/springframewo
+rk/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]
+: Unable to obtain connection from database: FATAL: invalid value for 
+parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2744:Error Code : 0
+install_output.txt:2745:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2756:Caused by: 
+org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain 
+connection from database: FATAL: invalid value for parameter "TimeZone": 
+"Asia/Calcutta"
+install_output.txt:2759:Error Code : 0
+install_output.txt:2760:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2762:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:71) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2763:	at org.flywaydb.core.internal.jdbc.JdbcConnectionFacto
+ry.<init>(JdbcConnectionFactory.java:76) ~[flyway-core-11.7.2.jar:na]
+install_output.txt:2764:	at 
+org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:136) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2765:	at org.flywaydb.core.Flyway.migrate(Flyway.java:188) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2766:	at org.springframework.boot.autoconfigure.flyway.Flywa
+yMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66) 
+~[spring-boot-autoconfigure-3.5.14.jar:3.5.14]
+install_output.txt:2770:Caused by: org.postgresql.util.PSQLException: FATAL: 
+invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2771:	at org.postgresql.core.v3.QueryExecutorImpl.receiveErr
+orResponse(QueryExecutorImpl.java:2875) ~[postgresql-42.7.10.jar:42.7.10]
+install_output.txt:2786:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:59) 
+~[flyway-core-11.7.2.jar:na]
+install_output.txt:2789:[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 
+0, Time elapsed: 5.245 s <<< FAILURE! -- in 
+com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests
+install_output.txt:2790:[ERROR] 
+com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests.contextLoads -- 
+Time elapsed: 0.019 s <<< ERROR!
+install_output.txt:2791:java.lang.IllegalStateException: Failed to load 
+ApplicationContext for [WebMergedContextConfiguration@65f5cae3 testClass = 
+com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests, locations = [], 
+classes = [com.helpdesk.helpdesk_backend.HelpdeskBackendApplication], 
+contextInitializerClasses = [], activeProfiles = [], propertySourceDescriptors 
+= [], propertySourceProperties = ["org.springframework.boot.test.context.Spring
+BootTestContextBootstrapper=true"], contextCustomizers = [org.springframework.b
+oot.test.context.filter.ExcludeFilterContextCustomizer@2462cb01, org.springfram
+ework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonO
+bjectContextCustomizer@1e13529a, 
+org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.spri
+ngframework.boot.test.web.client.TestRestTemplateContextCustomizer@19b89d4, org
+.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer@2
+4c22fe, org.springframework.boot.test.web.reactor.netty.DisableReactorResourceF
+actoryGlobalResourcesContextCustomizerFactory$DisableReactorResourceFactoryGlob
+alResourcesContextCustomizerCustomizer@7bf3a5d8, org.springframework.boot.test.
+autoconfigure.OnFailureConditionReportContextCustomizerFactory$OnFailureConditi
+onReportContextCustomizer@44be0077, org.springframework.boot.test.autoconfigure
+.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabili
+tyContextCustomizer@1f, org.springframework.boot.test.autoconfigure.properties.
+PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure
+.web.servlet.WebDriverContextCustomizer@bb9e6dc, 
+org.springframework.test.context.support.DynamicPropertiesContextCustomizer@0, 
+org.springframework.boot.test.context.SpringBootTestAnnotation@da9f75e2], 
+resourceBasePath = "src/main/webapp", contextLoader = 
+org.springframework.boot.test.context.SpringBootContextLoader, parent = null]
+install_output.txt:2812:Caused by: 
+org.springframework.beans.factory.BeanCreationException: Error creating bean 
+with name 'entityManagerFactory' defined in class path resource [org/springfram
+ework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to 
+initialize dependency 'flywayInitializer' of LoadTimeWeaverAware bean 
+'entityManagerFactory': Error creating bean with name 'flywayInitializer' 
+defined in class path resource [org/springframework/boot/autoconfigure/flyway/F
+lywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection 
+from database: FATAL: invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2815:Error Code : 0
+install_output.txt:2816:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2835:Caused by: 
+org.springframework.beans.factory.BeanCreationException: Error creating bean 
+with name 'flywayInitializer' defined in class path resource [org/springframewo
+rk/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]
+: Unable to obtain connection from database: FATAL: invalid value for 
+parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2838:Error Code : 0
+install_output.txt:2839:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2850:Caused by: 
+org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain 
+connection from database: FATAL: invalid value for parameter "TimeZone": 
+"Asia/Calcutta"
+install_output.txt:2853:Error Code : 0
+install_output.txt:2854:Message    : FATAL: invalid value for parameter 
+"TimeZone": "Asia/Calcutta"
+install_output.txt:2856:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:71)
+install_output.txt:2857:	at org.flywaydb.core.internal.jdbc.JdbcConnectionFacto
+ry.<init>(JdbcConnectionFactory.java:76)
+install_output.txt:2858:	at 
+org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:136)
+install_output.txt:2859:	at org.flywaydb.core.Flyway.migrate(Flyway.java:188)
+install_output.txt:2860:	at org.springframework.boot.autoconfigure.flyway.Flywa
+yMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+install_output.txt:2864:Caused by: org.postgresql.util.PSQLException: FATAL: 
+invalid value for parameter "TimeZone": "Asia/Calcutta"
+install_output.txt:2865:	at org.postgresql.core.v3.QueryExecutorImpl.receiveErr
+orResponse(QueryExecutorImpl.java:2875)
+install_output.txt:2880:	at 
+org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:59)
+install_output.txt:2886:[ERROR] Errors: 
+install_output.txt:2887:[ERROR]   HelpdeskBackendApplicationTests.contextLoads 
++ IllegalState Failed to load ApplicationContext for 
+[WebMergedContextConfiguration@65f5cae3 testClass = 
+com.helpdesk.helpdesk_backend.HelpdeskBackendApplicationTests, locations = [], 
+classes = [com.helpdesk.helpdesk_backend.HelpdeskBackendApplication], 
+contextInitializerClasses = [], activeProfiles = [], propertySourceDescriptors 
+= [], propertySourceProperties = ["org.springframework.boot.test.context.Spring
+BootTestContextBootstrapper=true"], contextCustomizers = [org.springframework.b
+oot.test.context.filter.ExcludeFilterContextCustomizer@2462cb01, org.springfram
+ework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonO
+bjectContextCustomizer@1e13529a, 
+org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.spri
+ngframework.boot.test.web.client.TestRestTemplateContextCustomizer@19b89d4, org
+.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer@2
+4c22fe, org.springframework.boot.test.web.reactor.netty.DisableReactorResourceF
+actoryGlobalResourcesContextCustomizerFactory$DisableReactorResourceFactoryGlob
+alResourcesContextCustomizerCustomizer@7bf3a5d8, org.springframework.boot.test.
+autoconfigure.OnFailureConditionReportContextCustomizerFactory$OnFailureConditi
+onReportContextCustomizer@44be0077, org.springframework.boot.test.autoconfigure
+.actuate.observability.ObservabilityContextCustomizerFactory$DisableObservabili
+tyContextCustomizer@1f, org.springframework.boot.test.autoconfigure.properties.
+PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure
+.web.servlet.WebDriverContextCustomizer@bb9e6dc, 
+org.springframework.test.context.support.DynamicPropertiesContextCustomizer@0, 
+org.springframework.boot.test.context.SpringBootTestAnnotation@da9f75e2], 
+resourceBasePath = "src/main/webapp", contextLoader = 
+org.springframework.boot.test.context.SpringBootContextLoader, parent = null]
+install_output.txt:2889:[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 
+0
+install_output.txt:2892:[INFO] BUILD FAILURE
+install_output.txt:2897:[ERROR] Failed to execute goal 
+org.apache.maven.plugins:maven-surefire-plugin:3.5.5:test (default-test) on 
+project helpdesk-backend: 
+install_output.txt:2898:[ERROR] 
+install_output.txt:2899:[ERROR] See 
+C:\Users\niles\Desktop\Helpdesk\helpdesk-backend\target\surefire-reports for 
+the individual test results.
+install_output.txt:2900:[ERROR] See dump files (if any exist) [date].dump, 
+[date]-jvmRun[N].dump and [date].dumpstream.
+install_output.txt:2901:[ERROR] -> [Help 1]
+install_output.txt:2902:[ERROR] 
+install_output.txt:2903:[ERROR] To see the full stack trace of the errors, 
+re-run Maven with the -e switch.
+install_output.txt:2904:[ERROR] Re-run Maven using the -X switch to enable 
+full debug logging.
+install_output.txt:2905:[ERROR] 
+install_output.txt:2906:[ERROR] For more information about the errors and 
+possible solutions, please read the following articles:
+install_output.txt:2907:[ERROR] [Help 1] 
+http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
+
+
