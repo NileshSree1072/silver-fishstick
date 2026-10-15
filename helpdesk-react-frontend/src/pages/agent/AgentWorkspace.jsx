@@ -293,6 +293,10 @@ const AgentWorkspace = ({ activeTab }) => {
   const selectTicketForWorkspace = async (ticket) => {
     setSelectedTicket(ticket);
     localStorage.setItem('helpdesk_selected_agent_ticket_id', ticket.id);
+    setReplyMsg('');
+    setIsInternal(false);
+    clearReplyAttachments();
+    if (replyMsgRef.current) replyMsgRef.current.style.height = 'auto';
     setReplies([]); setRepliesLoading(true);
     setAiSummary(''); setAiDraft('');
     setLinkedTickets([]); setLinkTargetId('');
@@ -501,15 +505,33 @@ const AgentWorkspace = ({ activeTab }) => {
   const handleSendReply = async (e) => {
     if (e) e.preventDefault();
     if (!selectedTicket || (!replyMsg.trim() && replyAttachments.length === 0)) return;
+
+    const outgoingMsg = replyMsg;
+    const outgoingAttachments = [...replyAttachments];
+
+    // Optimistically clear the message box immediately for instantaneous user feedback
+    setReplyMsg('');
+    setIsInternal(false);
+    clearReplyAttachments();
+    if (replyMsgRef.current) {
+      replyMsgRef.current.style.height = 'auto';
+    }
+
     setSendingReply(true);
     try {
-      const res = await sendReplyRequest(replyMsg);
-      setReplies(prev => prev.some(r => r.id && res.data.id && r.id.toString().toLowerCase() === res.data.id.toString().toLowerCase()) ? prev : [...prev, res.data]);
-      setReplyMsg(''); setIsInternal(false);
-      clearReplyAttachments();
+      const res = await sendReplyRequest(outgoingMsg, outgoingAttachments);
+      if (res?.data) {
+        setReplies(prev => prev.some(r => r.id && res.data.id && r.id.toString().toLowerCase() === res.data.id.toString().toLowerCase()) ? prev : [...prev, res.data]);
+      }
       reloadTicket(selectedTicket.id);
-    } catch { addToast('Failed to send reply.', 'Error', 'error'); }
-    finally { setSendingReply(false); }
+    } catch {
+      // Restore on failure so agent does not lose input
+      setReplyMsg(outgoingMsg);
+      setReplyAttachments(outgoingAttachments);
+      addToast('Failed to send reply.', 'Error', 'error');
+    } finally {
+      setSendingReply(false);
+    }
   };
 
   const handleSummarizeThread = async () => {

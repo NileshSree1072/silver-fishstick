@@ -309,6 +309,9 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
   const selectTicketForChat = async (ticket) => {
     setSelectedTicket(ticket);
     localStorage.setItem('helpdesk_selected_customer_ticket_id', ticket.id);
+    setNewReply('');
+    clearReplyAttachments();
+    if (newReplyRef.current) newReplyRef.current.style.height = 'auto';
     setReplies([]);
     setRepliesLoading(true);
     setExistingRating(null);
@@ -427,16 +430,34 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
   };
 
   const handleSendReply = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!selectedTicket || (!newReply.trim() && replyAttachments.length === 0)) return;
+
+    const outgoingMsg = newReply;
+    const outgoingAttachments = [...replyAttachments];
+
+    // Optimistically clear the message box immediately for instantaneous user feedback
+    setNewReply('');
+    clearReplyAttachments();
+    if (newReplyRef.current) {
+      newReplyRef.current.style.height = 'auto';
+    }
+
     setSendingReply(true);
     try {
-      const res = await sendReplyRequest(newReply, false, replyAttachments);
-      setReplies(prev => prev.some(r => r.id && res.data.id && r.id.toString().toLowerCase() === res.data.id.toString().toLowerCase()) ? prev : [...prev, res.data]);
-      setNewReply('');
-      clearReplyAttachments();
-    } catch { addToast('Failed to send reply.', 'Error', 'error'); }
-    finally { setSendingReply(false); }
+      const res = await sendReplyRequest(outgoingMsg, false, outgoingAttachments);
+      if (res?.data) {
+        setReplies(prev => prev.some(r => r.id && res.data.id && r.id.toString().toLowerCase() === res.data.id.toString().toLowerCase()) ? prev : [...prev, res.data]);
+      }
+      reloadTicketDetails(selectedTicket.id);
+    } catch {
+      // Restore previous content on network or submission error
+      setNewReply(outgoingMsg);
+      setReplyAttachments(outgoingAttachments);
+      addToast('Failed to send reply.', 'Error', 'error');
+    } finally {
+      setSendingReply(false);
+    }
   };
 
   const handleReopenTicket = async () => {
@@ -1180,6 +1201,12 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
                         placeholder="Type your message to the support team or attach files..."
                         value={newReply} 
                         onChange={e => setNewReply(e.target.value)} 
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendReply(e);
+                          }
+                        }}
                         style={{ maxHeight: '192px' }}
                       />
                       <div className="flex flex-col gap-2 shrink-0">
