@@ -20,7 +20,7 @@ public interface SimilarTicketRepository extends JpaRepository<Ticket, UUID> {
         SELECT t.*, 
                1 - (t.embedding <=> CAST(:embedding AS vector)) AS similarity
         FROM tickets t
-        WHERE t.status = 'RESOLVED'
+        WHERE t.status IN ('RESOLVED', 'CLOSED')
           AND t.embedding IS NOT NULL
           AND 1 - (t.embedding <=> CAST(:embedding AS vector)) > :threshold
         ORDER BY t.embedding <=> CAST(:embedding AS vector)

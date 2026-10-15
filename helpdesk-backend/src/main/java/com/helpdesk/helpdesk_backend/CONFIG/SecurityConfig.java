@@ -38,7 +38,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth-> auth
                 // public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/knowledge").permitAll()
+                .requestMatchers("/api/knowledge", "/api/knowledge/**").permitAll()
+                .requestMatchers("/api/ai/search").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 // Swagger / OpenAPI

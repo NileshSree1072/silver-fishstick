@@ -1,11 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api, useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
-import { Loader2 } from 'lucide-react';
+import { 
+  Loader2, PanelLeftClose, PanelLeftOpen, PanelRightClose, 
+  PanelRightOpen, Maximize2, Minimize2, GripVertical, 
+  ChevronDown, ChevronUp, RefreshCw 
+} from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
 import SLAIndicator from '../../components/SLAIndicator';
 import ConfirmModal from '../../components/ConfirmModal';
 import ImageMarkupEditor from '../../components/ImageMarkupEditor';
+import FormattedMessage from '../../components/FormattedMessage';
+
+const DEFAULT_WORKSPACE_LAYOUT = {
+  leftWidth: 320,
+  rightWidth: 320,
+  leftCollapsed: false,
+  rightCollapsed: false,
+  middleMaximized: false,
+  summaryCollapsed: false,
+  linkedCollapsed: false,
+};
 
 const statusConfig = {
   OPEN:        { label: 'Open',        color: 'var(--status-open)', bg: 'var(--status-open-bg)' },
@@ -62,6 +77,67 @@ const StatusBadge = ({ status }) => {
 const AgentWorkspace = ({ activeTab }) => {
   const { user } = useAuth();
   const { subscribeToTicket, addToast } = useNotifications();
+
+  // Layout preferences persisted in localStorage
+  const [layout, setLayout] = useState(() => {
+    try {
+      const saved = localStorage.getItem('aegis_agent_workspace_layout_v1');
+      return saved ? { ...DEFAULT_WORKSPACE_LAYOUT, ...JSON.parse(saved) } : DEFAULT_WORKSPACE_LAYOUT;
+    } catch {
+      return DEFAULT_WORKSPACE_LAYOUT;
+    }
+  });
+
+  const updateLayout = (updater) => {
+    setLayout(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
+      try {
+        localStorage.setItem('aegis_agent_workspace_layout_v1', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const [resizing, setResizing] = useState(null); // 'left' | 'right' | null
+
+  const startResize = (type, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizing(type);
+    const startX = e.clientX;
+    const startLeft = layout.leftWidth;
+    const startRight = layout.rightWidth;
+
+    const onMouseMove = (moveEvt) => {
+      moveEvt.preventDefault();
+      if (type === 'left') {
+        const delta = moveEvt.clientX - startX;
+        const newW = Math.max(200, Math.min(540, startLeft + delta));
+        updateLayout(p => ({ ...p, leftWidth: newW, leftCollapsed: false, middleMaximized: false }));
+      } else if (type === 'right') {
+        const delta = startX - moveEvt.clientX;
+        const newW = Math.max(220, Math.min(560, startRight + delta));
+        updateLayout(p => ({ ...p, rightWidth: newW, rightCollapsed: false, middleMaximized: false }));
+      }
+    };
+
+    const onMouseUp = () => {
+      setResizing(null);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const isLeftCollapsed = layout.leftCollapsed || layout.middleMaximized;
+  const isRightCollapsed = layout.rightCollapsed || layout.middleMaximized;
+
 
   const [tickets, setTickets]           = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
@@ -605,136 +681,241 @@ const AgentWorkspace = ({ activeTab }) => {
 
       {/* ── QUEUE TAB ─────────────────────────────────────── */}
       {activeTab === 'queue' && (
-        <div className="flex-1 flex gap-4 h-full overflow-hidden anim-fade-in">
+        <div 
+          className="flex-1 flex gap-2 h-full overflow-hidden anim-fade-in relative"
+          style={{ userSelect: resizing ? 'none' : 'auto' }}
+        >
 
-          {/* Left panel: Queue lists */}
-          <div className="w-80 shrink-0 flex flex-col bg-surface-container-low border border-outline-variant/30 rounded-xl overflow-hidden h-full">
-            <div className="p-4 space-y-3 border-b border-outline-variant/30 bg-surface-container-high/30">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Ticket Queue</span>
-                <button onClick={fetchQueue} className="p-1 rounded-md text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">refresh</span>
-                </button>
+          {/* ── PANEL 1: TICKET QUEUE ──────────────────────────────────── */}
+          {isLeftCollapsed ? (
+            <div 
+              className="w-12 shrink-0 bg-surface-container-low border border-outline-variant/30 rounded-xl flex flex-col items-center py-3 overflow-hidden transition-all duration-200"
+            >
+              <button
+                onClick={() => updateLayout({ leftCollapsed: false, middleMaximized: false })}
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container cursor-pointer transition-colors"
+                title="Expand Ticket Queue"
+              >
+                <PanelLeftOpen size={16} />
+              </button>
+              <div className="my-2.5 w-6 border-b border-outline-variant/30" />
+              
+              <button 
+                onClick={fetchQueue} 
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container cursor-pointer transition-colors mb-2"
+                title="Refresh queue"
+              >
+                <RefreshCw size={13} />
+              </button>
+
+              {/* Quick queue count pill */}
+              <div 
+                onClick={() => updateLayout({ leftCollapsed: false, middleMaximized: false })}
+                className="flex flex-col items-center gap-1 cursor-pointer group px-1 text-center"
+                title={`Active queue: ${queueFilter.toUpperCase()} (${tickets.length} tickets)`}
+              >
+                <span className="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary">confirmation_number</span>
+                <span className="text-[10px] font-bold px-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  {tickets.length}
+                </span>
               </div>
 
-              {/* Toggle filters */}
-              <div className="flex p-0.5 gap-0.5 rounded-lg bg-surface-container-lowest border border-outline-variant/20">
-                {queueFilters.map(f => (
-                  <button 
-                    key={f} 
-                    onClick={() => setQueueFilter(f)}
-                    className={`flex-1 py-1.5 rounded-md text-[10px] font-bold capitalize cursor-pointer transition-all ${
-                      queueFilter === f 
-                        ? 'bg-primary text-surface-container-lowest shadow-sm' 
-                        : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
+              <div className="my-2 w-6 border-b border-outline-variant/30" />
 
-              <CustomSelect
-                options={[
-                  { value: '', label: 'All Statuses' },
-                  { value: 'OPEN', label: 'Open' },
-                  { value: 'IN_PROGRESS', label: 'In Progress' },
-                  { value: 'RESOLVED', label: 'Resolved' },
-                  { value: 'CLOSED', label: 'Closed' }
-                ]}
-                value={statusFilter}
-                onChange={val => setStatusFilter(val)}
-                placeholder="All Statuses"
-                triggerClassName="pl-3 pr-8 py-1.5 text-xs"
-              />
-
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/50">
-                <span className="material-symbols-outlined text-[14px] text-on-surface-variant">search</span>
-                <input
-                  className="flex-1 bg-transparent outline-none text-[11px] text-on-surface placeholder:text-on-surface-variant/50"
-                  placeholder="Search ID, title, customer..."
-                  value={ticketSearch}
-                  onChange={e => setTicketSearch(e.target.value)}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <CustomSelect
-                  options={[{ value: '', label: 'All Priorities' }, ...Object.entries(priorityConfig).map(([value, cfg]) => ({ value, label: cfg.label }))]}
-                  value={priorityFilter}
-                  onChange={setPriorityFilter}
-                  triggerClassName="pl-3 pr-8 py-1.5 text-[10px]"
-                />
-                <CustomSelect
-                  options={[{ value: '', label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-                  value={categoryFilter}
-                  onChange={setCategoryFilter}
-                  triggerClassName="pl-3 pr-8 py-1.5 text-[10px]"
-                />
-              </div>
-            </div>
-
-            <div className="flex-grow overflow-y-auto p-2 space-y-1 bg-surface-container-lowest/30">
-              {ticketsLoading ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-2 text-on-surface-variant">
-                  <Loader2 size={16} className="animate-spin text-primary" />
-                  <span className="text-xs">Loading queue...</span>
-                </div>
-              ) : tickets.length === 0 ? (
-                <div className="py-12 text-center text-on-surface-variant">
-                  <span className="material-symbols-outlined text-[32px] opacity-40 mb-1">inbox</span>
-                  <p className="text-xs">No tickets in this queue</p>
-                </div>
-              ) : (
-                tickets.map(t => {
-                  const isActive = selectedTicket?.id === t.id;
-                  const priorityColors = {
-                    URGENT: 'bg-error',
-                    HIGH: 'bg-error',
-                    MEDIUM: 'bg-primary',
-                    LOW: 'bg-secondary',
-                  };
-                  const pColor = priorityColors[t.priority] || 'bg-primary';
-
+              {/* Slim ticket dots */}
+              <div className="flex flex-col items-center gap-2 overflow-y-auto flex-1 w-full px-1">
+                {tickets.slice(0, 15).map(t => {
+                  const isSelected = selectedTicket?.id === t.id;
+                  const statusCol = statusConfig[t.status]?.color || 'var(--primary)';
                   return (
-                    <div 
-                      key={t.id} 
-                      onClick={() => selectTicketForWorkspace(t)}
-                      className={`flex gap-2.5 p-3 rounded-lg cursor-pointer transition-all ${
-                        isActive 
-                          ? 'bg-primary-container/10 border border-primary/30' 
-                          : 'border border-transparent hover:bg-surface-container'
-                      }`}
+                    <div
+                      key={t.id}
+                      onClick={() => {
+                        selectTicketForWorkspace(t);
+                      }}
+                      className="relative cursor-pointer group p-1"
+                      title={`${getTicketNumber(t)}: ${t.title}`}
                     >
-                      <div className={`w-0.5 rounded-full shrink-0 ${pColor}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <StatusBadge status={t.status} />
-                          <span className="text-[9px] font-mono text-primary">{getTicketNumber(t)}</span>
-                        </div>
-                        <p className="text-xs font-semibold text-on-surface truncate mb-0.5">{t.title}</p>
-                        <p className="text-[10px] text-on-surface-variant truncate">
-                          {t.createdByName || 'Unknown Client'} · {t.priority}
-                        </p>
-                        <div className="mt-1">
-                          <SLAIndicator ticket={t} />
-                        </div>
-                      </div>
+                      <div 
+                        className={`w-3 h-3 rounded-full transition-all ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-110' : 'hover:scale-125 opacity-70 hover:opacity-100'}`}
+                        style={{ background: statusCol }}
+                      />
                     </div>
                   );
-                })
-              )}
+                })}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div 
+              className="shrink-0 flex flex-col bg-surface-container-low border border-outline-variant/30 rounded-xl overflow-hidden h-full transition-all"
+              style={{
+                width: `${layout.leftWidth}px`,
+                transition: resizing === 'left' ? 'none' : 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            >
+              <div className="p-4 space-y-3 border-b border-outline-variant/30 bg-surface-container-high/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Ticket Queue</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={fetchQueue} className="p-1 rounded-md text-on-surface-variant hover:text-primary cursor-pointer transition-colors" title="Refresh queue">
+                      <span className="material-symbols-outlined text-[18px]">refresh</span>
+                    </button>
+                    <button 
+                      onClick={() => updateLayout({ leftCollapsed: true })} 
+                      className="p-1 rounded-md text-on-surface-variant hover:text-on-surface cursor-pointer transition-colors"
+                      title="Collapse Ticket Queue"
+                    >
+                      <PanelLeftClose size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Toggle filters */}
+                <div className="flex p-0.5 gap-0.5 rounded-lg bg-surface-container-lowest border border-outline-variant/20">
+                  {queueFilters.map(f => (
+                    <button 
+                      key={f} 
+                      onClick={() => setQueueFilter(f)}
+                      className={`flex-1 py-1.5 rounded-md text-[10px] font-bold capitalize cursor-pointer transition-all ${
+                        queueFilter === f 
+                          ? 'bg-primary text-surface-container-lowest shadow-sm' 
+                          : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+
+                <CustomSelect
+                  options={[
+                    { value: '', label: 'All Statuses' },
+                    { value: 'OPEN', label: 'Open' },
+                    { value: 'IN_PROGRESS', label: 'In Progress' },
+                    { value: 'RESOLVED', label: 'Resolved' },
+                    { value: 'CLOSED', label: 'Closed' }
+                  ]}
+                  value={statusFilter}
+                  onChange={val => setStatusFilter(val)}
+                  placeholder="All Statuses"
+                  triggerClassName="pl-3 pr-8 py-1.5 text-xs"
+                />
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/50">
+                  <span className="material-symbols-outlined text-[14px] text-on-surface-variant">search</span>
+                  <input
+                    className="flex-1 bg-transparent outline-none text-[11px] text-on-surface placeholder:text-on-surface-variant/50"
+                    placeholder="Search ID, title, customer..."
+                    value={ticketSearch}
+                    onChange={e => setTicketSearch(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <CustomSelect
+                    options={[{ value: '', label: 'All Priorities' }, ...Object.entries(priorityConfig).map(([value, cfg]) => ({ value, label: cfg.label }))]}
+                    value={priorityFilter}
+                    onChange={setPriorityFilter}
+                    triggerClassName="pl-3 pr-8 py-1.5 text-[10px]"
+                  />
+                  <CustomSelect
+                    options={[{ value: '', label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
+                    value={categoryFilter}
+                    onChange={setCategoryFilter}
+                    triggerClassName="pl-3 pr-8 py-1.5 text-[10px]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-grow overflow-y-auto p-2 space-y-1 bg-surface-container-lowest/30">
+                {ticketsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-10 gap-2 text-on-surface-variant">
+                    <Loader2 size={16} className="animate-spin text-primary" />
+                    <span className="text-xs">Loading queue...</span>
+                  </div>
+                ) : tickets.length === 0 ? (
+                  <div className="py-12 text-center text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[32px] opacity-40 mb-1">inbox</span>
+                    <p className="text-xs">No tickets in this queue</p>
+                  </div>
+                ) : (
+                  tickets.map(t => {
+                    const isActive = selectedTicket?.id === t.id;
+                    const priorityColors = {
+                      URGENT: 'bg-error',
+                      HIGH: 'bg-error',
+                      MEDIUM: 'bg-primary',
+                      LOW: 'bg-secondary',
+                    };
+                    const pColor = priorityColors[t.priority] || 'bg-primary';
+
+                    return (
+                      <div 
+                        key={t.id} 
+                        onClick={() => selectTicketForWorkspace(t)}
+                        className={`flex gap-2.5 p-3 rounded-lg cursor-pointer transition-all ${
+                          isActive 
+                            ? 'bg-primary-container/10 border border-primary/30' 
+                            : 'border border-transparent hover:bg-surface-container'
+                        }`}
+                      >
+                        <div className={`w-0.5 rounded-full shrink-0 ${pColor}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <StatusBadge status={t.status} />
+                            <span className="text-[9px] font-mono text-primary">{getTicketNumber(t)}</span>
+                          </div>
+                          <p className="text-xs font-semibold text-on-surface truncate mb-0.5">{t.title}</p>
+                          <p className="text-[10px] text-on-surface-variant truncate">
+                            {t.createdByName || 'Unknown Client'} · {t.priority}
+                          </p>
+                          <div className="mt-1">
+                            <SLAIndicator ticket={t} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── SPLITTER 1: Between Left and Middle ────────────────────── */}
+          {!isLeftCollapsed && (
+            <div
+              onMouseDown={(e) => startResize('left', e)}
+              onDoubleClick={() => updateLayout({ leftWidth: 320 })}
+              title="Drag to resize Ticket Queue (Double-click to reset 320px)"
+              className="group relative w-1.5 flex items-center justify-center cursor-col-resize shrink-0 select-none z-10 hover:w-2 transition-all -mx-0.5"
+            >
+              <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'left' ? 'bg-primary w-1' : 'bg-transparent group-hover:bg-primary/60'}`} />
+              <div className="absolute top-1/2 -translate-y-1/2 p-0.5 rounded bg-surface-container border border-outline-variant opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm">
+                <GripVertical size={10} className="text-on-surface-variant" />
+              </div>
+            </div>
+          )}
 
           {/* Center panel: Ticket detail and chat */}
-          <div className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl flex flex-col overflow-hidden h-full">
+          <div className="flex-1 min-w-[280px] bg-surface-container-low border border-outline-variant/30 rounded-xl flex flex-col overflow-hidden h-full transition-all">
             {selectedTicket ? (
               <>
                 {/* Chat Header details */}
                 <div className="px-5 py-4 border-b border-outline-variant/30 bg-surface-container flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shrink-0">
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-on-surface truncate mb-1">{selectedTicket.title}</h3>
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      {isLeftCollapsed && (
+                        <button
+                          onClick={() => updateLayout({ leftCollapsed: false, middleMaximized: false })}
+                          className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold bg-surface-container-high/70 border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-primary cursor-pointer shrink-0 transition-colors"
+                          title="Restore Ticket Queue"
+                        >
+                          <PanelLeftOpen size={12} className="text-primary" />
+                          <span>Queue ({tickets.length})</span>
+                        </button>
+                      )}
+                      <h3 className="text-sm font-semibold text-on-surface truncate">{selectedTicket.title}</h3>
+                    </div>
                     <div className="flex items-center gap-2 flex-wrap text-[10px] text-on-surface-variant">
                       <span className="font-mono text-primary">{getTicketNumber(selectedTicket)}</span>
                       <span>â€¢</span>
@@ -816,6 +997,25 @@ const AgentWorkspace = ({ activeTab }) => {
                         <span className="material-symbols-outlined text-[12px]">library_books</span> Draft KB
                       </button>
                     )}
+
+                    {isRightCollapsed && (
+                      <button
+                        onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false })}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold bg-surface-container-high/70 border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-secondary cursor-pointer shrink-0 transition-colors"
+                        title="Restore AI Copilot"
+                      >
+                        <PanelRightOpen size={12} className="text-secondary" />
+                        <span>Copilot</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => updateLayout(p => ({ ...p, middleMaximized: !p.middleMaximized }))}
+                      className="p-1.5 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface cursor-pointer transition-colors shrink-0"
+                      title={layout.middleMaximized ? "Restore standard layout" : "Maximize ticket conversation"}
+                    >
+                      {layout.middleMaximized ? <Minimize2 size={13} className="text-primary" /> : <Maximize2 size={13} />}
+                    </button>
                   </div>
                 </div>
 
@@ -831,7 +1031,7 @@ const AgentWorkspace = ({ activeTab }) => {
                       </div>
                       <span>{new Date(selectedTicket.createdAt).toLocaleString()}</span>
                     </div>
-                    <p className="text-xs text-on-surface leading-relaxed whitespace-pre-wrap font-body-md">{selectedTicket.description}</p>
+                    <FormattedMessage content={selectedTicket.description} className="text-xs text-on-surface font-body-md" />
                     
                     {/* Attachments grid */}
                     {ticketAttachments.length > 0 && (
@@ -923,7 +1123,7 @@ const AgentWorkspace = ({ activeTab }) => {
                             
                             {/* Message Message */}
                             {rep.message && rep.message.trim().length > 0 ? (
-                              <p className="whitespace-pre-wrap font-body-md" style={isInternalNote ? { color: '#f97316' } : {}}>{rep.message}</p>
+                              <FormattedMessage content={rep.message} className="font-body-md" style={isInternalNote ? { color: '#f97316' } : {}} />
                             ) : hasAttachments ? (
                               <p className="font-body-md text-on-surface-variant italic">Attachment sent</p>
                             ) : null}
@@ -1155,169 +1355,295 @@ const AgentWorkspace = ({ activeTab }) => {
                 )}
               </>
             ) : (
-              <div className="flex-grow flex flex-col items-center justify-center text-on-surface-variant gap-3 bg-surface-container-lowest/30">
+              <div className="flex-grow flex flex-col items-center justify-center text-on-surface-variant gap-3 bg-surface-container-lowest/30 p-4">
+                {(isLeftCollapsed || isRightCollapsed) && (
+                  <div className="flex items-center gap-2 mb-2">
+                    {isLeftCollapsed && (
+                      <button
+                        onClick={() => updateLayout({ leftCollapsed: false, middleMaximized: false })}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-primary cursor-pointer transition-colors"
+                      >
+                        <PanelLeftOpen size={14} className="text-primary" />
+                        <span>Show Queue ({tickets.length})</span>
+                      </button>
+                    )}
+                    {isRightCollapsed && (
+                      <button
+                        onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false })}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-secondary cursor-pointer transition-colors"
+                      >
+                        <PanelRightOpen size={14} className="text-secondary" />
+                        <span>Show Copilot</span>
+                      </button>
+                    )}
+                  </div>
+                )}
                 <span className="material-symbols-outlined text-[48px] opacity-25">chat</span>
                 <p className="text-xs">Select a ticket from the queue to start support collaboration.</p>
               </div>
             )}
           </div>
 
-          {/* Right panel: AI Copilot Assistant details */}
-          <div className="w-80 shrink-0 bg-surface-container-low border border-outline-variant/30 rounded-xl overflow-y-auto p-4 flex flex-col gap-4 h-full">
-            <div className="flex items-center gap-2 pb-3 border-b border-outline-variant/30">
-              <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">AI Copilot</span>
+          {/* ── SPLITTER 2: Between Middle and Right ───────────────────── */}
+          {!isRightCollapsed && (
+            <div
+              onMouseDown={(e) => startResize('right', e)}
+              onDoubleClick={() => updateLayout({ rightWidth: 320 })}
+              title="Drag to resize AI Copilot (Double-click to reset 320px)"
+              className="group relative w-1.5 flex items-center justify-center cursor-col-resize shrink-0 select-none z-10 hover:w-2 transition-all -mx-0.5"
+            >
+              <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'right' ? 'bg-primary w-1' : 'bg-transparent group-hover:bg-primary/60'}`} />
+              <div className="absolute top-1/2 -translate-y-1/2 p-0.5 rounded bg-surface-container border border-outline-variant opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm">
+                <GripVertical size={10} className="text-on-surface-variant" />
+              </div>
             </div>
+          )}
 
-            {selectedTicket ? (
-              <div className="space-y-4">
-                {/* SLA Resolution Details */}
-                <SLAIndicator ticket={selectedTicket} slaInfo={selectedTicketSla} showDetails={true} />
+          {/* ── PANEL 3: AI COPILOT ────────────────────────────────────── */}
+          {isRightCollapsed ? (
+            <div 
+              className="w-12 shrink-0 bg-surface-container-low border border-outline-variant/30 rounded-xl flex flex-col items-center py-3 overflow-hidden transition-all duration-200"
+            >
+              <button
+                onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false })}
+                className="p-1.5 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container cursor-pointer transition-colors"
+                title="Expand AI Copilot"
+              >
+                <PanelRightOpen size={16} />
+              </button>
+              <div className="my-2.5 w-6 border-b border-outline-variant/30" />
+              
+              <div 
+                onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false })}
+                className="flex flex-col items-center gap-1 cursor-pointer group"
+                title="AI Copilot"
+              >
+                <span className="material-symbols-outlined text-[18px] text-secondary group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  auto_awesome
+                </span>
+              </div>
 
-                {/* Reassignment Request Action */}
-                {selectedTicket.assignedToId && (
-                  <div className="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/40">
-                    <button
-                      onClick={() => {
-                        setReassignCategory('');
-                        setReassignReason('');
-                        setShowReassignModal(true);
-                      }}
-                      className="w-full bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg py-2 px-3 text-xs font-semibold text-primary flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">swap_horiz</span>
-                      Request Reassignment
-                    </button>
+              {selectedTicket && (
+                <>
+                  <div className="my-2 w-6 border-b border-outline-variant/30" />
+                  <div 
+                    onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false })}
+                    className="cursor-pointer group flex flex-col items-center gap-1"
+                    title="Ticket SLA Status"
+                  >
+                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary">timer</span>
                   </div>
-                )}
-
-                {/* Thread Summary Card */}
-                <div className="rounded-xl overflow-hidden border border-secondary/20">
-                  <div className="flex items-center justify-between px-3 py-2.5 bg-secondary/5 border-b border-secondary/15">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[12px]">summarize</span> Thread Summary
-                    </span>
-                    <button 
-                      onClick={handleSummarizeThread} 
-                      disabled={summarizing}
-                      className="text-[10px] font-semibold text-secondary hover:text-[#4cd7f6] flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
+                  {linkedTickets.length > 0 && (
+                    <div 
+                      onClick={() => updateLayout({ rightCollapsed: false, middleMaximized: false, linkedCollapsed: false })}
+                      className="cursor-pointer group flex flex-col items-center gap-0.5 mt-2"
+                      title={`${linkedTickets.length} Linked Cases`}
                     >
-                      <span className={`material-symbols-outlined text-[12px] ${summarizing ? 'animate-spin' : ''}`}>sync</span>
-                      Recalculate
-                    </button>
-                  </div>
-                  {aiSummary ? (
-                    <div className="p-3 bg-surface-container-lowest/40">
-                      <p className="text-xs leading-relaxed italic text-on-surface font-body-md">"{aiSummary}"</p>
+                      <span className="material-symbols-outlined text-[15px] text-on-surface-variant group-hover:text-primary">link</span>
+                      <span className="text-[9px] px-1 rounded-full font-bold bg-primary/10 text-primary border border-primary/20">
+                        {linkedTickets.length}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="p-4 text-center bg-surface-container-lowest/40">
-                      <button 
-                        onClick={handleSummarizeThread} 
-                        disabled={summarizing} 
-                        className="bg-secondary text-surface-container-lowest font-semibold py-1.5 px-4 rounded-lg text-xs hover:scale-98 transition-all cursor-pointer disabled:opacity-50"
+                  )}
+                </>
+              )}
+            </div>
+          ) : (
+            <div 
+              className="shrink-0 bg-surface-container-low border border-outline-variant/30 rounded-xl overflow-y-auto p-4 flex flex-col gap-4 h-full transition-all"
+              style={{
+                width: `${layout.rightWidth}px`,
+                transition: resizing === 'right' ? 'none' : 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="material-symbols-outlined text-secondary shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant truncate">AI Copilot</span>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button 
+                    onClick={() => updateLayout({ rightCollapsed: true })} 
+                    className="p-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors"
+                    title="Collapse AI Copilot panel"
+                  >
+                    <PanelRightClose size={13} />
+                  </button>
+                </div>
+              </div>
+
+              {selectedTicket ? (
+                <div className="space-y-4">
+                  {/* SLA Resolution Details */}
+                  <SLAIndicator ticket={selectedTicket} slaInfo={selectedTicketSla} showDetails={true} />
+
+                  {/* Reassignment Request Action */}
+                  {selectedTicket.assignedToId && (
+                    <div className="p-3 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/40">
+                      <button
+                        onClick={() => {
+                          setReassignCategory('');
+                          setReassignReason('');
+                          setShowReassignModal(true);
+                        }}
+                        className="w-full bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg py-2 px-3 text-xs font-semibold text-primary flex items-center justify-center gap-1.5 cursor-pointer transition-all"
                       >
-                        {summarizing ? 'Summarizing...' : 'Summarize Thread'}
+                        <span className="material-symbols-outlined text-[16px]">swap_horiz</span>
+                        Request Reassignment
                       </button>
                     </div>
                   )}
-                </div>
 
-                {/* Linked cases section */}
-                <div className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest/20">
-                  <div className="flex items-center justify-between px-3 py-2.5 border-b border-outline-variant/30 bg-surface-container-high/30">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px]">link</span> Linked Cases
-                    </span>
-                    {linkedTickets.length > 0 && (
-                      <button onClick={handleBulkResolve} className="text-[10px] font-semibold text-error hover:text-red-400 flex items-center gap-0.5 cursor-pointer">
-                        <span className="material-symbols-outlined text-[12px] icon-fill">check_circle</span> Resolve All
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="p-3 space-y-2">
-                    {linkedTickets.length === 0 ? (
-                      <p className="text-[10px] text-center py-2 text-on-surface-variant">No linked tickets</p>
-                    ) : (
-                      linkedTickets.map(lt => (
-                        <div key={lt.id} className="flex items-center justify-between rounded-lg px-2.5 py-1.5 bg-surface-container border border-outline-variant/20 text-xs">
-                          <button
-                            type="button"
-                            onClick={() => selectTicketForWorkspace(lt)}
-                            className="text-[10px] font-medium truncate flex-1 text-left text-on-surface hover:text-primary hover:underline cursor-pointer"
-                            title={`Open ticket: ${lt.title}`}
+                  {/* Thread Summary Card */}
+                  <div className="rounded-xl overflow-hidden border border-secondary/20">
+                    <div className="flex items-center justify-between px-3 py-2.5 bg-secondary/5 border-b border-secondary/15">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[12px]">summarize</span> Thread Summary
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          onClick={handleSummarizeThread} 
+                          disabled={summarizing}
+                          className="text-[10px] font-semibold text-secondary hover:text-[#4cd7f6] flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <span className={`material-symbols-outlined text-[12px] ${summarizing ? 'animate-spin' : ''}`}>sync</span>
+                          Recalculate
+                        </button>
+                        <button
+                          onClick={() => updateLayout(p => ({ ...p, summaryCollapsed: !p.summaryCollapsed }))}
+                          className="p-1 rounded hover:bg-secondary/10 cursor-pointer text-secondary"
+                          title={layout.summaryCollapsed ? "Expand Thread Summary" : "Shrink Thread Summary"}
+                        >
+                          {layout.summaryCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
+                        </button>
+                      </div>
+                    </div>
+                    {!layout.summaryCollapsed && (
+                      aiSummary ? (
+                        <div className="p-3 bg-surface-container-lowest/40">
+                          <p className="text-xs leading-relaxed italic text-on-surface font-body-md">"{aiSummary}"</p>
+                        </div>
+                      ) : (
+                        <div className="p-4 text-center bg-surface-container-lowest/40">
+                          <button 
+                            onClick={handleSummarizeThread} 
+                            disabled={summarizing} 
+                            className="bg-secondary text-surface-container-lowest font-semibold py-1.5 px-4 rounded-lg text-xs hover:scale-98 transition-all cursor-pointer disabled:opacity-50"
                           >
-                            {lt.title}
-                          </button>
-                          <button
-                            onClick={() => handleUnlinkTicket(lt.id)}
-                            className="ml-2 text-[9px] font-bold text-error bg-error/5 hover:bg-error/15 border border-error/20 rounded px-1.5 py-0.5 cursor-pointer"
-                          >
-                            Unlink
+                            {summarizing ? 'Summarizing...' : 'Summarize Thread'}
                           </button>
                         </div>
-                      ))
+                      )
                     )}
+                  </div>
 
-                    {/* Linking Autocomplete Form */}
-                    <form onSubmit={handleLinkTicket} className="flex gap-2 pt-3 border-t border-outline-variant/20 mt-2 flex-col">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          className="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-1.5 text-[10px] text-on-surface placeholder:text-on-surface-variant/40"
-                          placeholder="Link another ticket (type title)..."
-                          value={selectedLinkTicket ? selectedLinkTicket.title : linkSearch}
-                          onChange={e => {
-                            setLinkSearch(e.target.value);
-                            setSelectedLinkTicket(null);
-                            searchTicketsForLink(e.target.value);
-                          }}
-                          onFocus={() => linkSearch && setShowLinkDropdown(linkResults.length > 0)}
-                          autoComplete="off"
-                        />
-                        {selectedLinkTicket && (
-                          <button type="button" onClick={() => { setSelectedLinkTicket(null); setLinkSearch(''); }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface cursor-pointer">
-                            <span className="material-symbols-outlined text-[14px]">close</span>
+                  {/* Linked cases section */}
+                  <div className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest/20">
+                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-outline-variant/30 bg-surface-container-high/30">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[14px]">link</span> Linked Cases
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {linkedTickets.length > 0 && (
+                          <button onClick={handleBulkResolve} className="text-[10px] font-semibold text-error hover:text-red-400 flex items-center gap-0.5 cursor-pointer">
+                            <span className="material-symbols-outlined text-[12px] icon-fill">check_circle</span> Resolve All
                           </button>
                         )}
-                        
-                        {showLinkDropdown && (
-                          <div className="absolute top-full left-0 right-0 z-50 bg-surface-container-high border border-outline-variant rounded-lg mt-1 max-h-40 overflow-y-auto shadow-xl divide-y divide-outline-variant/30">
-                            {linkSearching && <p className="text-[10px] p-2 text-on-surface-variant">Searching...</p>}
-                            {linkResults.map(t => (
-                              <button 
-                                key={t.id} 
-                                type="button"
-                                onClick={() => { setSelectedLinkTicket(t); setShowLinkDropdown(false); }}
-                                className="w-full text-left p-2 hover:bg-primary/10 transition-colors"
-                              >
-                                <p className="text-[10px] font-semibold text-on-surface truncate">{t.title}</p>
-                                <p className="text-[8px] text-on-surface-variant mt-0.5">{t.status} · {t.priority}</p>
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                        <button
+                          onClick={() => updateLayout(p => ({ ...p, linkedCollapsed: !p.linkedCollapsed }))}
+                          className="p-1 rounded hover:bg-surface-container cursor-pointer text-on-surface-variant hover:text-on-surface"
+                          title={layout.linkedCollapsed ? "Expand Linked Cases" : "Shrink Linked Cases"}
+                        >
+                          {layout.linkedCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
+                        </button>
                       </div>
-                      <button 
-                        type="submit" 
-                        disabled={linking || !selectedLinkTicket} 
-                        className="w-full bg-primary text-on-primary hover:bg-[#5a52f0] py-1 px-3 rounded-lg text-[10px] font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {linking ? 'Linking...' : 'Link Ticket'}
-                      </button>
-                    </form>
+                    </div>
+                    
+                    {!layout.linkedCollapsed && (
+                      <div className="p-3 space-y-2">
+                        {linkedTickets.length === 0 ? (
+                          <p className="text-[10px] text-center py-2 text-on-surface-variant">No linked tickets</p>
+                        ) : (
+                          linkedTickets.map(lt => (
+                            <div key={lt.id} className="flex items-center justify-between rounded-lg px-2.5 py-1.5 bg-surface-container border border-outline-variant/20 text-xs">
+                              <button
+                                type="button"
+                                onClick={() => selectTicketForWorkspace(lt)}
+                                className="text-[10px] font-medium truncate flex-1 text-left text-on-surface hover:text-primary hover:underline cursor-pointer"
+                                title={`Open ticket: ${lt.title}`}
+                              >
+                                {lt.title}
+                              </button>
+                              <button
+                                onClick={() => handleUnlinkTicket(lt.id)}
+                                className="ml-2 text-[9px] font-bold text-error bg-error/5 hover:bg-error/15 border border-error/20 rounded px-1.5 py-0.5 cursor-pointer"
+                              >
+                                Unlink
+                              </button>
+                            </div>
+                          ))
+                        )}
+
+                        {/* Linking Autocomplete Form */}
+                        <form onSubmit={handleLinkTicket} className="flex gap-2 pt-3 border-t border-outline-variant/20 mt-2 flex-col">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              className="w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-1.5 text-[10px] text-on-surface placeholder:text-on-surface-variant/40"
+                              placeholder="Link another ticket (type title)..."
+                              value={selectedLinkTicket ? selectedLinkTicket.title : linkSearch}
+                              onChange={e => {
+                                setLinkSearch(e.target.value);
+                                setSelectedLinkTicket(null);
+                                searchTicketsForLink(e.target.value);
+                              }}
+                              onFocus={() => linkSearch && setShowLinkDropdown(linkResults.length > 0)}
+                              autoComplete="off"
+                            />
+                            {selectedLinkTicket && (
+                              <button type="button" onClick={() => { setSelectedLinkTicket(null); setLinkSearch(''); }}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface cursor-pointer">
+                                <span className="material-symbols-outlined text-[14px]">close</span>
+                              </button>
+                            )}
+                            
+                            {showLinkDropdown && (
+                              <div className="absolute top-full left-0 right-0 z-50 bg-surface-container-high border border-outline-variant rounded-lg mt-1 max-h-40 overflow-y-auto shadow-xl divide-y divide-outline-variant/30">
+                                {linkSearching && <p className="text-[10px] p-2 text-on-surface-variant">Searching...</p>}
+                                {linkResults.map(t => (
+                                  <button 
+                                    key={t.id} 
+                                    type="button"
+                                    onClick={() => { setSelectedLinkTicket(t); setShowLinkDropdown(false); }}
+                                    className="w-full text-left p-2 hover:bg-primary/10 transition-colors"
+                                  >
+                                    <p className="text-[10px] font-semibold text-on-surface truncate">{t.title}</p>
+                                    <p className="text-[8px] text-on-surface-variant mt-0.5">{t.status} · {t.priority}</p>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button 
+                            type="submit" 
+                            disabled={linking || !selectedLinkTicket} 
+                            className="w-full bg-primary text-on-primary hover:bg-[#5a52f0] py-1 px-3 rounded-lg text-[10px] font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {linking ? 'Linking...' : 'Link Ticket'}
+                          </button>
+                        </form>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center py-8 text-on-surface-variant">
-                <span className="material-symbols-outlined text-[28px] opacity-25">smart_toy</span>
-                <p className="text-[11px] leading-relaxed">Open a ticket in the workspace to utilize AI Summary tools.</p>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center py-8 text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[28px] opacity-25">smart_toy</span>
+                  <p className="text-[11px] leading-relaxed">Open a ticket in the workspace to utilize AI Summary tools.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

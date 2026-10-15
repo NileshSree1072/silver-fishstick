@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import AppLogo from '../components/AppLogo';
 
 const Login = ({ onRegisterRedirect }) => {
   const { login, isBackendConnected } = useAuth();
-  const [email, setEmail]           = useState('');
-  const [password, setPassword]     = useState('');
-  const [showPass, setShowPass]     = useState(false);
-  const [error, setError]           = useState('');
-  const [loading, setLoading]       = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,9 +39,7 @@ const Login = ({ onRegisterRedirect }) => {
       <main className="relative z-10 w-full max-w-[440px] px-lg py-xl">
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-xl">
-          <div className="w-12 h-12 bg-surface-container-high rounded-xl border border-outline-variant flex items-center justify-center mb-md shadow-lg shadow-black/20">
-            <span className="material-symbols-outlined text-primary text-[28px] icon-fill">auto_awesome</span>
-          </div>
+          <AppLogo size={36} variant="badge" className="mb-md" />
           <h1 className="font-headline-lg text-headline-lg font-bold text-primary mb-xs tracking-tight">helpdeskAI</h1>
           <p className="font-body-md text-body-md text-on-surface-variant">Enterprise Support Platform</p>
         </div>
@@ -79,12 +78,12 @@ const Login = ({ onRegisterRedirect }) => {
                 <div className="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none">
                   <span className="material-symbols-outlined text-outline text-[18px]">mail</span>
                 </div>
-                <input 
-                  className="field pl-10 pr-md py-[10px]" 
-                  id="email" 
-                  name="email" 
-                  placeholder="name@company.com" 
-                  required 
+                <input
+                  className="field pl-10 pr-md py-[10px]"
+                  id="email"
+                  name="email"
+                  placeholder="name@company.com"
+                  required
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -102,19 +101,19 @@ const Login = ({ onRegisterRedirect }) => {
                 <div className="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none">
                   <span className="material-symbols-outlined text-outline text-[18px]">lock</span>
                 </div>
-                <input 
-                  className="field pl-10 pr-11 py-[10px]" 
-                  id="password" 
-                  name="password" 
-                  placeholder="••••••••" 
-                  required 
+                <input
+                  className="field pl-10 pr-11 py-[10px]"
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  required
                   type={showPass ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                 />
-                <button 
-                  aria-label="Toggle password visibility" 
-                  className="absolute inset-y-0 right-0 pr-sm flex items-center text-outline hover:text-on-surface transition-colors cursor-pointer" 
+                <button
+                  aria-label="Toggle password visibility"
+                  className="absolute inset-y-0 right-0 pr-sm flex items-center text-outline hover:text-on-surface transition-colors cursor-pointer"
                   type="button"
                   onClick={() => setShowPass(!showPass)}
                 >
@@ -124,14 +123,14 @@ const Login = ({ onRegisterRedirect }) => {
             </div>
 
             {/* Primary Action */}
-            <button 
-              className="w-full mt-lg bg-primary-container text-on-primary-container font-label-sm text-label-sm font-semibold py-[12px] px-md rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-[#5a52f0] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface active:scale-[0.98] transition-all flex items-center justify-center gap-sm group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
+            <button
+              className="w-full mt-lg bg-primary-container text-on-primary-container font-label-sm text-label-sm font-semibold py-[12px] px-md rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-[#5a52f0] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface active:scale-[0.98] transition-all flex items-center justify-center gap-sm group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={loading || !isBackendConnected}
             >
               {loading ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" /> 
+                  <span className="w-4 h-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />
                   Signing In...
                 </>
               ) : (
@@ -151,8 +150,8 @@ const Login = ({ onRegisterRedirect }) => {
           </div>
 
           {/* Register Redirect Button */}
-          <button 
-            className="w-full bg-transparent border border-outline-variant text-on-surface font-label-sm text-label-sm font-medium py-[10px] px-md rounded-lg hover:bg-surface-container-high focus:outline-none focus:ring-2 focus:ring-outline transition-colors flex items-center justify-center gap-sm cursor-pointer" 
+          <button
+            className="w-full bg-transparent border border-outline-variant text-on-surface font-label-sm text-label-sm font-medium py-[10px] px-md rounded-lg hover:bg-surface-container-high focus:outline-none focus:ring-2 focus:ring-outline transition-colors flex items-center justify-center gap-sm cursor-pointer"
             type="button"
             onClick={onRegisterRedirect}
           >

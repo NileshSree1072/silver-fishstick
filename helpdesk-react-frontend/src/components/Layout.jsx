@@ -3,6 +3,7 @@ import { api, useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import CustomSelect from './CustomSelect';
 import ProfileModal from './ProfileModal';
+import AppLogo from './AppLogo';
 
 const getInitials = (name) => {
   if (!name) return 'U';
@@ -177,13 +178,11 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
       <aside className="hidden md:flex flex-col bg-surface-container-low border-r border-outline-variant w-sidebar-width h-full fixed left-0 top-0 z-50 p-md justify-between transition-all duration-300">
         <div>
           {/* Brand */}
-          <div className="mb-xl px-sm pt-sm flex items-center gap-sm">
-            <div className="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-primary-container text-[18px] icon-fill">auto_awesome</span>
-            </div>
+          <div className="mb-xl px-sm pt-sm flex items-center gap-3">
+            <AppLogo size={26} variant="badge" />
             <div>
-              <h1 className="font-title-md text-title-md font-bold text-primary leading-none">helpdeskAI</h1>
-              <p className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Enterprise Support</p>
+              <h1 className="font-title-md text-title-md font-bold text-primary leading-none tracking-tight">helpdeskAI</h1>
+              <p className="font-label-sm text-label-sm text-on-surface-variant mt-1">Enterprise Support</p>
             </div>
           </div>
 
@@ -310,7 +309,10 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
             <button className="md:hidden text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high">
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <span className="font-title-md text-title-md font-bold text-primary md:hidden">helpdeskAI</span>
+            <div className="flex items-center gap-2 md:hidden">
+              <AppLogo size={20} />
+              <span className="font-title-md text-title-md font-bold text-primary">helpdeskAI</span>
+            </div>
             
             {/* Desktop Brand indicators */}
             <div className="hidden md:flex items-center gap-2">

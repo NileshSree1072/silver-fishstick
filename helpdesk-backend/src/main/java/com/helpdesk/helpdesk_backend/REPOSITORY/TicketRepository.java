@@ -235,4 +235,19 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     List<Ticket> findByCreatedByAndCreatedAtBetween(User user, LocalDateTime from, LocalDateTime to);
     
     List<Ticket> findByCreatedBy(User user);
+
+    @Query("""
+        SELECT t FROM Ticket t
+        WHERE t.status IN (
+            com.helpdesk.helpdesk_backend.ENUM.TicketStatus.RESOLVED,
+            com.helpdesk.helpdesk_backend.ENUM.TicketStatus.CLOSED
+        )
+          AND (LOWER(t.title)       LIKE LOWER(CONCAT('%', :q, '%'))
+           OR  LOWER(t.description) LIKE LOWER(CONCAT('%', :q, '%')))
+        ORDER BY t.resolvedAt DESC NULLS LAST, t.updatedAt DESC
+    """)
+    List<Ticket> findResolvedOrClosedMatching(
+        @Param("q") String q,
+        Pageable pageable
+    );
 }

@@ -4,6 +4,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import { Loader2 } from 'lucide-react';
 import CustomSelect from '../../components/CustomSelect';
 import ImageMarkupEditor from '../../components/ImageMarkupEditor';
+import FormattedMessage from '../../components/FormattedMessage';
 
 const statusConfig = {
   OPEN:        { label: 'Open',        color: 'var(--status-open)', bg: 'var(--status-open-bg)' },
@@ -962,7 +963,7 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
                       </div>
                       <span>{new Date(selectedTicket.createdAt).toLocaleString()}</span>
                     </div>
-                    <p className="text-xs text-on-surface leading-relaxed whitespace-pre-wrap font-body-md">{selectedTicket.description}</p>
+                    <FormattedMessage content={selectedTicket.description} className="text-xs text-on-surface font-body-md" />
                     
                     {/* Attachments grid */}
                     {ticketAttachments.length > 0 && (
@@ -1040,7 +1041,7 @@ const CustomerPortal = ({ activeTab, setActiveTab }) => {
                             
                             {/* Message Message */}
                             {rep.message && rep.message.trim().length > 0 ? (
-                              <p className="whitespace-pre-wrap font-body-md">{rep.message}</p>
+                              <FormattedMessage content={rep.message} className="font-body-md" />
                             ) : hasAttachments ? (
                               <p className="font-body-md text-on-surface-variant italic">Attachment sent</p>
                             ) : null}

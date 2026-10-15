@@ -1,9 +1,13 @@
 package com.helpdesk.helpdesk_backend.SERVICE;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+
+import com.helpdesk.helpdesk_backend.ENTITY.KnowledgeArticle;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +20,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.helpdesk.helpdesk_backend.ENTITY.Reply;
 import com.helpdesk.helpdesk_backend.ENTITY.Ticket;
 import com.helpdesk.helpdesk_backend.ENTITY.User;
+import com.helpdesk.helpdesk_backend.ENUM.AgentAvailabilityStatus;
+import com.helpdesk.helpdesk_backend.ENUM.Role;
 import com.helpdesk.helpdesk_backend.EXCEPTION.NotFoundException;
 import com.helpdesk.helpdesk_backend.REPOSITORY.KnowledgeRepository;
 import com.helpdesk.helpdesk_backend.REPOSITORY.ReplyRepository;
@@ -88,43 +94,59 @@ public class AIService {
             ticket.setEmbedding(embedding);
             ticketRepo.save(ticket);
 
-            // 3. Search for similar resolved tickets and knowledge articles
+            // 3. Search for similar resolved tickets and knowledge articles via vector search
             String embeddingStr = toPostgresVector(embedding);
             List<Object[]> similarTickets = similarTicketRepo
                     .findSimilarResolvedTickets(embeddingStr, similarityThreshold, 3);
             List<Object[]> similarArticles = similarTicketRepo
                     .findSimilarKnowledgeArticles(embeddingStr, similarityThreshold, 3);
 
-            if (similarTickets.isEmpty() && similarArticles.isEmpty()) {
+            // 4. Build context from vector results, or fallback to keyword matching
+            String context = buildContext(similarTickets, similarArticles);
+            if (context.isBlank()) {
+                context = buildKeywordContext(ticket);
+            }
+
+            if (context.isBlank()) {
                 log.info("No similar tickets or knowledge articles found for: {}", ticket.getTitle());
                 activityService.aiFailed(ticket, "No similar ticket above threshold");
                 return; // needs human agent
             }
 
-            // 4. Build context from similar tickets + their solutions
-            String context = buildContext(similarTickets, similarArticles);
-
             // 5. Generate AI reply using GPT
             String aiReply = generateReply(ticket, context);
 
             // 6. Save AI reply and mark ticket resolved
-            User botUser = userRepo.findById(botUserId)
-                    .orElseThrow(() -> new NotFoundException("User", botUserId));
+            User botUser = userRepo.findById(botUserId).orElseGet(() -> {
+                return userRepo.findByEmail("ai-bot@helpdesk.com").orElseGet(() -> {
+                    User u = User.builder()
+                            .id(botUserId)
+                            .name("Aegis AI Assistant")
+                            .email("ai-bot@helpdesk.com")
+                            .password("NO_LOGIN_SYSTEM_AI")
+                            .role(Role.AGENT)
+                            .isActive(true)
+                            .availabilityStatus(AgentAvailabilityStatus.ONLINE)
+                            .maxActiveTickets(100)
+                            .build();
+                    return userRepo.save(u);
+                });
+            });
             replyService.saveAiReply(ticket, aiReply, botUser);
 
             log.info("AI auto-resolved ticket: {}", ticket.getTitle());
-            double maxScore = 0.0;
+            double maxScore = 0.85;
             if (!similarTickets.isEmpty()) {
                 Object[] row = similarTickets.get(0);
                 double score = row[row.length - 1] instanceof Number ? ((Number) row[row.length - 1]).doubleValue()
-                        : 0.0;
+                        : 0.85;
                 if (score > maxScore)
                     maxScore = score;
             }
             if (!similarArticles.isEmpty()) {
                 Object[] row = similarArticles.get(0);
                 double score = row[row.length - 1] instanceof Number ? ((Number) row[row.length - 1]).doubleValue()
-                        : 0.0;
+                        : 0.85;
                 if (score > maxScore)
                     maxScore = score;
             }
@@ -162,6 +184,9 @@ public class AIService {
                 .findSimilarKnowledgeArticles(embeddingStr, similarityThreshold, 3);
 
         String context = buildContext(similarTickets, similarArticles);
+        if (context.isBlank()) {
+            context = buildKeywordContext(ticket);
+        }
 
         return generateReply(ticket, context);
     }
@@ -248,60 +273,168 @@ public class AIService {
     // ── STEP D: Semantic search before ticket submission ─────────
 
     public List<Map<String, Object>> semanticSearch(String query) {
-        float[] embedding = embeddingService.embed(query);
-        String embeddingStr = toPostgresVector(embedding);
-
-        List<Object[]> ticketResults = similarTicketRepo
-                .findSimilarResolvedTickets(embeddingStr, similarityThreshold, 5);
-
-        List<Object[]> articleResults = similarTicketRepo
-                .findSimilarKnowledgeArticles(embeddingStr, similarityThreshold, 5);
-
+        if (query == null || query.trim().length() < 2) {
+            return List.of();
+        }
+        String cleanQuery = query.trim();
         List<Map<String, Object>> results = new ArrayList<>();
+        Set<UUID> seenIds = new HashSet<>();
 
-        ticketResults.forEach(row -> {
-            UUID ticketId = UUID.fromString(row[0].toString());
-            ticketRepo.findById(ticketId).ifPresent(t -> {
-                double score = row[row.length - 1] instanceof Number
-                        ? ((Number) row[row.length - 1]).doubleValue()
-                        : 0.0;
-                // Get last agent reply as the resolution snippet
-                List<Reply> replies = replyRepo.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(t);
-                String desc = replies.isEmpty()
-                        ? t.getDescription()
-                        : replies.get(replies.size() - 1).getMessage();
-                results.add(Map.of(
-                        "type", "ticket",
-                        "title", t.getTitle(),
-                        "description", desc,
-                        "score", score,
-                        "similarity", score));
-            });
-        });
-
-        articleResults.forEach(row -> {
-            UUID articleId = UUID.fromString(row[0].toString());
-            knowledgeRepository.findById(articleId).ifPresent(a -> {
-                double score = row[row.length - 1] instanceof Number
-                        ? ((Number) row[row.length - 1]).doubleValue()
-                        : 0.0;
+        // 1. Text search published knowledge base articles
+        List<KnowledgeArticle> textArticles = knowledgeRepository.searchPublishedArticles(cleanQuery);
+        if (textArticles.isEmpty() && cleanQuery.contains(" ")) {
+            for (String word : cleanQuery.split("\\s+")) {
+                if (word.length() >= 3) {
+                    textArticles.addAll(knowledgeRepository.searchPublishedArticles(word));
+                }
+            }
+        }
+        for (KnowledgeArticle a : textArticles) {
+            if (seenIds.add(a.getId())) {
                 results.add(Map.of(
                         "type", "article",
                         "title", a.getTitle(),
                         "content", a.getContent(),
                         "description", a.getContent(),
                         "categoryName", a.getCategory() != null ? a.getCategory().getName() : "General",
-                        "score", score,
-                        "similarity", score));
+                        "score", 0.95,
+                        "similarity", 0.95));
+            }
+        }
+
+        // 2. Text search resolved/closed tickets
+        List<Ticket> textTickets = ticketRepo.findResolvedOrClosedMatching(cleanQuery, org.springframework.data.domain.PageRequest.of(0, 5));
+        if (textTickets.isEmpty() && cleanQuery.contains(" ")) {
+            for (String word : cleanQuery.split("\\s+")) {
+                if (word.length() >= 3) {
+                    textTickets.addAll(ticketRepo.findResolvedOrClosedMatching(word, org.springframework.data.domain.PageRequest.of(0, 3)));
+                }
+            }
+        }
+        for (Ticket t : textTickets) {
+            if (seenIds.add(t.getId())) {
+                List<Reply> replies = replyRepo.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(t);
+                String desc = replies.isEmpty() ? t.getDescription() : replies.get(replies.size() - 1).getMessage();
+                results.add(Map.of(
+                        "type", "ticket",
+                        "title", t.getTitle(),
+                        "description", desc,
+                        "score", 0.90,
+                        "similarity", 0.90));
+            }
+        }
+
+        // 3. Vector similarity search
+        try {
+            float[] embedding = embeddingService.embed(cleanQuery);
+            String embeddingStr = toPostgresVector(embedding);
+
+            List<Object[]> ticketResults = similarTicketRepo
+                    .findSimilarResolvedTickets(embeddingStr, similarityThreshold, 5);
+
+            List<Object[]> articleResults = similarTicketRepo
+                    .findSimilarKnowledgeArticles(embeddingStr, similarityThreshold, 5);
+
+            ticketResults.forEach(row -> {
+                UUID ticketId = UUID.fromString(row[0].toString());
+                if (seenIds.add(ticketId)) {
+                    ticketRepo.findById(ticketId).ifPresent(t -> {
+                        double score = row[row.length - 1] instanceof Number
+                                ? ((Number) row[row.length - 1]).doubleValue()
+                                : 0.0;
+                        List<Reply> replies = replyRepo.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(t);
+                        String desc = replies.isEmpty()
+                                ? t.getDescription()
+                                : replies.get(replies.size() - 1).getMessage();
+                        results.add(Map.of(
+                                "type", "ticket",
+                                "title", t.getTitle(),
+                                "description", desc,
+                                "score", score,
+                                "similarity", score));
+                    });
+                }
             });
-        });
+
+            articleResults.forEach(row -> {
+                UUID articleId = UUID.fromString(row[0].toString());
+                if (seenIds.add(articleId)) {
+                    knowledgeRepository.findById(articleId).ifPresent(a -> {
+                        double score = row[row.length - 1] instanceof Number
+                                ? ((Number) row[row.length - 1]).doubleValue()
+                                : 0.0;
+                        results.add(Map.of(
+                                "type", "article",
+                                "title", a.getTitle(),
+                                "content", a.getContent(),
+                                "description", a.getContent(),
+                                "categoryName", a.getCategory() != null ? a.getCategory().getName() : "General",
+                                "score", score,
+                                "similarity", score));
+                    });
+                }
+            });
+        } catch (Exception e) {
+            log.warn("Vector search failed during deflection: {}", e.getMessage());
+        }
 
         // Sort combined results by similarity descending
         results.sort((a, b) -> Double.compare(
                 (Double) b.get("similarity"),
                 (Double) a.get("similarity")));
 
-        return results;
+        return results.size() > 5 ? results.subList(0, 5) : results;
+    }
+
+    private String buildKeywordContext(Ticket ticket) {
+        StringBuilder context = new StringBuilder();
+        String title = ticket.getTitle();
+        if (title != null && !title.isBlank()) {
+            List<KnowledgeArticle> articles = new ArrayList<>(knowledgeRepository.searchPublishedArticles(title));
+            if (articles.isEmpty() && title.contains(" ")) {
+                for (String word : title.split("\\s+")) {
+                    String clean = word.toLowerCase().replaceAll("[^a-z0-9]", "");
+                    if (clean.length() >= 4 && !EmbeddingService.STOP_WORDS.contains(clean)) {
+                        articles.addAll(knowledgeRepository.searchPublishedArticles(clean));
+                    }
+                }
+            }
+            if (!articles.isEmpty()) {
+                context.append("Relevant knowledge base articles:\n\n");
+                for (KnowledgeArticle a : articles.stream().distinct().limit(3).toList()) {
+                    context.append("Title: ").append(a.getTitle()).append("\n");
+                    context.append(a.getContent()).append("\n\n");
+                }
+            }
+
+            List<Ticket> similar = new ArrayList<>(ticketRepo.findResolvedOrClosedMatching(title, org.springframework.data.domain.PageRequest.of(0, 3)));
+            if (similar.isEmpty()) {
+                String searchSource = title + (ticket.getDescription() != null ? " " + ticket.getDescription() : "");
+                for (String word : searchSource.split("\\s+")) {
+                    String cleanWord = word.toLowerCase().replaceAll("[^a-z0-9]", "");
+                    if (cleanWord.length() >= 4 && !EmbeddingService.STOP_WORDS.contains(cleanWord)) {
+                        List<Ticket> wordMatches = ticketRepo.findResolvedOrClosedMatching(cleanWord, org.springframework.data.domain.PageRequest.of(0, 3));
+                        for (Ticket wt : wordMatches) {
+                            if (!wt.getId().equals(ticket.getId()) && similar.stream().noneMatch(s -> s.getId().equals(wt.getId()))) {
+                                similar.add(wt);
+                            }
+                        }
+                    }
+                    if (similar.size() >= 3) break;
+                }
+            }
+
+            for (Ticket st : similar) {
+                if (!st.getId().equals(ticket.getId())) {
+                    List<Reply> replies = replyRepo.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(st);
+                    if (!replies.isEmpty()) {
+                        context.append("Previously resolved ticket solution for \"").append(st.getTitle()).append("\":\n");
+                        context.append(replies.get(replies.size() - 1).getMessage()).append("\n\n");
+                    }
+                }
+            }
+        }
+        return context.toString();
     }
 
     // ── PRIVATE HELPERS ──────────────────────────────────────────

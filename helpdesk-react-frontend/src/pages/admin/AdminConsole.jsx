@@ -11,6 +11,7 @@ import UserPerformance from './UserPerformance';
 import TicketAuditLog from './TicketAuditLog';
 import BreachLog from './BreachLog';
 import TransferLog from './TransferLog';
+import AgentManagementTab from './AgentManagementTab';
 import {
   Users, Sliders, CheckSquare, LayoutDashboard, Sparkles, RefreshCw,
   TrendingUp, Award, UserPlus, Trash2, Edit2,
@@ -910,7 +911,7 @@ const AdminConsole = ({ activeTab }) => {
                     ) : publishedArticles.map(art => (
                       <div key={art.id}
                         className="flex items-center justify-between p-4 rounded-xl transition-all"
-                        style={{ background: editingArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: `1px solid ${editingArticle?.id === art.id ? 'rgba(16,185,129,0.2)' : 'var(--border-subtle)'}` }}>
+                        style={{ background: editingArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: '1px solid ' + (editingArticle?.id === art.id ? 'rgba(16,185,129,0.2)' : 'var(--border-subtle)') }}>
                         <div className="flex-1 min-w-0 mr-4">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
@@ -989,588 +990,57 @@ const AdminConsole = ({ activeTab }) => {
         </div>
       )}
 
-
-
       {/* ── AGENT MANAGEMENT TAB ─────────────────────────── */}
       {activeTab === 'agents' && (
-        <div className="flex gap-4 h-full overflow-hidden anim-fade-in">
-
-          {/* PANEL 1: Agent Roster */}
-          <div className="w-72 shrink-0 card flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="flex items-center gap-2">
-                <UserCog size={14} style={{ color: 'var(--brand)' }} />
-                <span className="text-xs font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>Agents</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                  style={{ background: 'var(--bg-input)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}>
-                  {agentStats.length}
-                </span>
-              </div>
-              <button onClick={fetchAgentStats} className="p-1.5 rounded-lg cursor-pointer" style={{ color: 'var(--text-muted)' }}>
-                <RefreshCw size={13} />
-              </button>
-            </div>
-
-            {/* Search */}
-            <div className="px-3 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                <Search size={11} style={{ color: 'var(--text-muted)' }} />
-                <input className="flex-1 bg-transparent text-xs outline-none" placeholder="Search agents..."
-                  style={{ color: 'var(--text-body)' }}
-                  value={agentSearchQuery} onChange={e => setAgentSearchQuery(e.target.value)} />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
-              {agentStatsLoading ? (
-                <div className="flex items-center justify-center gap-2 py-10" style={{ color: 'var(--text-muted)' }}>
-                  <Loader2 size={16} className="animate-spin" />
-                </div>
-              ) : agentStats
-                  .filter(a => !agentSearchQuery || a.name?.toLowerCase().includes(agentSearchQuery.toLowerCase()))
-                  .map(agent => {
-                const isSelected = selectedAgentMgmt?.agentId === agent.agentId;
-                const load = getAgentLoad(agent);
-                const loadColor = load > 5 ? '#ef4444' : load > 2 ? '#f59e0b' : 'var(--brand)';
-                const availability = getAvailabilityMeta(agent.availabilityStatus, agent.isActive);
-                const lastAct = agent.lastActivity
-                  ? (() => { const diff = Date.now() - new Date(agent.lastActivity).getTime(); const m = Math.floor(diff/60000); return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ago`; })()
-                  : 'No activity';
-                return (
-                  <div key={agent.agentId}
-                    onClick={() => selectAgentMgmt(agent)}
-                    className="p-3 rounded-xl cursor-pointer transition-all"
-                    style={{
-                      background: isSelected ? 'var(--brand-dim)' : 'var(--bg-input)',
-                      border: isSelected ? '1px solid rgba(16,185,129,0.25)' : '1px solid var(--border-subtle)',
-                    }}
-                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
-                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-input)'; }}>
-
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <div className="relative shrink-0">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
-                          style={{ background: 'var(--brand-dim)', color: 'var(--brand)' }}>
-                          {getInitials(agent.name)}
-                        </div>
-                        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                          style={{ background: availability.color, borderColor: 'var(--bg-card)' }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-heading)' }}>{agent.name}</p>
-                        {agent.category && (
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
-                            style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--brand)' }}>
-                            {agent.category}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
-                        style={{ color: availability.color, background: `${availability.color}18` }}>
-                        {availability.label}
-                      </span>
-                      <span className="text-[9px] font-semibold" style={{ color: agent.assignable ? 'var(--brand)' : 'var(--text-disabled)' }}>
-                        {load}/{agent.maxActiveTickets || 10} capacity
-                      </span>
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="grid grid-cols-3 gap-1 text-center">
-                      {[['Open', agent.openTickets || 0, loadColor], ['Progress', agent.inProgressTickets || 0, '#f59e0b'], ['Resolved', agent.resolvedTickets || 0, 'var(--brand)']].map(([lbl, val, col]) => (
-                        <div key={lbl} className="rounded-lg py-1" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                          <p className="text-[11px] font-bold" style={{ color: col }}>{val}</p>
-                          <p className="text-[9px]" style={{ color: 'var(--text-disabled)' }}>{lbl}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Activity row */}
-                    <div className="flex items-center justify-between mt-2 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                      <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-                        <span style={{ color: 'var(--text-disabled)' }}>💬 </span>{agent.replyCount || 0} replies
-                      </span>
-                      <span className="text-[10px]" style={{ color: 'var(--text-disabled)' }}>{lastAct}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* PANEL 2: Agent's Tickets */}
-          <div className="flex-1 card flex flex-col overflow-hidden">
-            {selectedAgentMgmt ? (
-              <>
-                {/* Header */}
-                <div className="px-5 py-3 flex flex-col gap-3" style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}>
-                  
-                  {/* Top Row: Title, Stats & Availability */}
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>
-                          {selectedAgentMgmt.name}'s Tickets
-                        </h3>
-                        <CustomSelect
-                          options={AGENT_AVAILABILITY_OPTIONS}
-                          value={selectedAgentMgmt.availabilityStatus || 'OFFLINE'}
-                          onChange={val => handleAgentAvailabilityChange(selectedAgentMgmt.agentId, val)}
-                          placeholder="Availability"
-                          className="!w-auto"
-                          optionsClassName="!w-64 !left-0 !right-auto"
-                          renderTrigger={(selectedOption) => {
-                            const meta = getAvailabilityMeta(selectedOption?.value || 'OFFLINE', selectedAgentMgmt.isActive);
-                            return (
-                              <button
-                                type="button"
-                                className="flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-surface-container border border-outline-variant hover:bg-surface-container-high transition-colors cursor-pointer animate-none"
-                                style={{ background: 'var(--bg-input)', borderColor: 'var(--border-subtle)' }}
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: meta.color }} />
-                                <span style={{ color: meta.color }}>{selectedOption?.label || 'Offline'}</span>
-                                <span className="material-symbols-outlined text-[12px] text-on-surface-variant shrink-0">expand_more</span>
-                              </button>
-                            );
-                          }}
-                          renderOption={(opt, isSelected) => {
-                            const meta = getAvailabilityMeta(opt.value);
-                            return (
-                              <div className="flex items-start gap-2 flex-1 min-w-0">
-                                <span className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ background: meta.color }} />
-                                <div className="min-w-0">
-                                  <p className="font-semibold text-[10px]" style={{ color: isSelected ? 'var(--brand)' : 'var(--text-heading)' }}>{opt.label}</p>
-                                  <p className="text-[9px]" style={{ color: 'var(--text-muted)' }}>{opt.description}</p>
-                                </div>
-                              </div>
-                            );
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        {[['Total', selectedAgentMgmt.totalTickets || 0, 'var(--text-muted)'],
-                          ['Open', selectedAgentMgmt.openTickets || 0, '#ef4444'],
-                          ['In Progress', selectedAgentMgmt.inProgressTickets || 0, '#f59e0b'],
-                          ['Resolved', selectedAgentMgmt.resolvedTickets || 0, 'var(--brand)']
-                        ].map(([lbl, val, col]) => (
-                          <span key={lbl} className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                            style={{ background: 'var(--bg-input)', color: col, border: '1px solid var(--border-subtle)' }}>
-                            {val} {lbl}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Row: Ticket Filters */}
-                  <div className="flex flex-wrap items-center gap-2 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.03)' }}>
-                    <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg flex-1 min-w-[150px]" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
-                      <Search size={11} style={{ color: 'var(--text-muted)' }} />
-                      <input
-                        className="bg-transparent text-[11px] outline-none w-full"
-                        placeholder="Search tickets..."
-                        style={{ color: 'var(--text-body)' }}
-                        value={agentTicketSearch}
-                        onChange={e => setAgentTicketSearch(e.target.value)}
-                      />
-                    </div>
-                    <CustomSelect
-                      options={[
-                        { value: '', label: 'All Statuses' },
-                        { value: 'OPEN', label: 'Open' },
-                        { value: 'IN_PROGRESS', label: 'In Progress' },
-                        { value: 'RESOLVED', label: 'Resolved' },
-                        { value: 'CLOSED', label: 'Closed' }
-                      ]}
-                      value={agentTicketStatus}
-                      onChange={val => setAgentTicketStatus(val)}
-                      placeholder="All Statuses"
-                      className="!w-auto"
-                      triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-heading)] font-medium py-1.5 px-2.5 text-[11px] min-w-[110px]"
-                    />
-                    <CustomSelect
-                      options={[{ value: '', label: 'All Priorities' }, 'URGENT', 'HIGH', 'MEDIUM', 'LOW'].map(v => typeof v === 'string' ? { value: v, label: v } : v)}
-                      value={agentTicketPriority}
-                      onChange={setAgentTicketPriority}
-                      className="!w-auto"
-                      triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-heading)] font-medium py-1.5 px-2.5 text-[11px] min-w-[110px]"
-                    />
-                    <CustomSelect
-                      options={[{ value: '', label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-                      value={agentTicketCategory}
-                      onChange={setAgentTicketCategory}
-                      className="!w-auto"
-                      triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-heading)] font-medium py-1.5 px-2.5 text-[11px] min-w-[120px]"
-                    />
-                  </div>
-                </div>
-
-                {/* Ticket list */}
-                <div className="flex-1 overflow-auto">
-                  {agentTicketsLoading ? (
-                    <div className="flex items-center justify-center gap-2 py-16" style={{ color: 'var(--text-muted)' }}>
-                      <Loader2 size={18} className="animate-spin" />
-                    </div>
-                  ) : agentTickets.length === 0 ? (
-                    <div className="flex flex-col items-center gap-2 py-16" style={{ color: 'var(--text-muted)' }}>
-                      <Inbox size={36} className="opacity-20" />
-                      <p className="text-sm">No tickets for this filter</p>
-                    </div>
-                  ) : (
-                    <table className="w-full text-left border-collapse" style={{ fontSize: 12 }}>
-                      <thead>
-                        <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                          {['Ticket', 'Customer', 'Priority', 'Status', 'Created', 'Reassign'].map(h => (
-                            <th key={h} className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider"
-                              style={{ color: 'var(--text-muted)', background: 'var(--bg-input)', whiteSpace: 'nowrap' }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {agentTickets.map(t => {
-                          const statusCfg = { OPEN: '#60a5fa', IN_PROGRESS: '#f59e0b', RESOLVED: '#34d399', CLOSED: '#6b7280' };
-                          const priCfg = { URGENT: '#ef4444', HIGH: '#f97316', MEDIUM: '#f59e0b', LOW: '#6b7280' };
-                          return (
-                            <tr key={t.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}
-                              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card-hover)'}
-                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                              <td className="px-4 py-3" style={{ maxWidth: 220 }}>
-                                <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-heading)' }} title={t.title}>{t.title}</p>
-                                <p className="text-[10px] font-mono mt-0.5" style={{ color: 'var(--brand)' }}>{getTicketNumber(t)}</p>
-                              </td>
-                              <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>{t.createdByName}</td>
-                              <td className="px-4 py-3">
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                  style={{ color: priCfg[t.priority] || '#888', background: `${priCfg[t.priority] || '#888'}18` }}>
-                                  {t.priority}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                  style={{ color: statusCfg[t.status] || '#888', background: `${statusCfg[t.status] || '#888'}18` }}>
-                                  {t.status?.replace('_', ' ')}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-[10px]" style={{ color: 'var(--text-muted)' }}>{formatDate(t.createdAt)}</td>
-                              <td className="px-4 py-3">
-                                {reassignTicketId === t.id ? (
-                                  <div className="flex items-center gap-1.5">
-                                    <CustomSelect
-                                      options={[
-                                        { value: '', label: 'Pick agent…' },
-                                        ...agentStats
-                                          .filter(a => a.agentId !== selectedAgentMgmt?.agentId && a.assignable)
-                                          .map(a => ({
-                                            value: a.agentId,
-                                            label: `${a.name} (${getAgentLoad(a)}/${a.maxActiveTickets || 10})`
-                                          }))
-                                      ]}
-                                      value=""
-                                      onChange={val => { if (val) handleAssignTicket(t.id, val); }}
-                                      placeholder="Pick agent…"
-                                      className="!w-auto"
-                                      triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1 px-1.5 text-[10px] max-w-[130px]"
-                                      optionsClassName="!min-w-[180px] !right-0 !left-auto"
-                                    />
-                                    <button onClick={() => setReassignTicketId(null)} className="cursor-pointer" style={{ color: 'var(--text-muted)' }}>
-                                      <X size={12} />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <button onClick={() => setReassignTicketId(t.id)}
-                                    className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-lg cursor-pointer transition-all"
-                                    style={{ background: 'var(--bg-input)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
-                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--brand)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}>
-                                    <ArrowRightLeft size={11} /> Reassign
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center gap-3" style={{ color: 'var(--text-muted)' }}>
-                <UserCog size={40} className="opacity-20" />
-                <p className="text-sm">Select an agent to view their tickets</p>
-              </div>
-            )}
-          </div>
-
-          {/* PANEL 3: Reassignments & Unassigned Queue */}
-          <div className="w-80 shrink-0 flex flex-col gap-4 overflow-hidden h-full">
-            
-            {/* SUB-PANEL 3A: Pending Reassignments */}
-            <div className="flex-1 card flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-subtle">
-                <div className="flex items-center gap-2">
-                  <ArrowRightLeft size={14} style={{ color: 'var(--brand)' }} />
-                  <span className="text-xs font-bold font-heading text-heading">Reassignments</span>
-                  {reassignRequests.length > 0 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                      style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
-                      {reassignRequests.length}
-                    </span>
-                  )}
-                </div>
-                <button onClick={fetchReassignRequests} className="p-1.5 rounded-lg cursor-pointer text-muted hover:text-heading">
-                  <RefreshCw size={13} />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                {reassignRequestsLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-8" style={{ color: 'var(--text-muted)' }}>
-                    <Loader2 size={16} className="animate-spin" />
-                  </div>
-                ) : reassignRequests.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-1.5 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
-                    <CheckCircle2 size={24} className="opacity-25" style={{ color: 'var(--brand)' }} />
-                    <p className="text-[11px] font-medium">Clear Queue!</p>
-                    <p className="text-[9px]">No pending reassignments</p>
-                  </div>
-                ) : (
-                  reassignRequests.map(req => {
-                    const targetCat = req.targetCategoryName;
-                    const groupMembers = agentStats.filter(a => a.assignable && targetCat && a.category === targetCat);
-                    const otherAgents = agentStats.filter(a => a.assignable && (!targetCat || a.category !== targetCat));
-
-                    return (
-                      <div key={req.id} className="p-3 rounded-xl border border-subtle bg-input space-y-2">
-                        <div className="min-w-0">
-                          <p className="text-xs font-semibold leading-snug text-heading truncate" title={req.ticketTitle}>
-                            {req.ticketTitle}
-                          </p>
-                          <p className="text-[9px] text-muted mt-0.5">
-                            Requested by <strong className="text-heading font-medium">{req.requestedByName}</strong>
-                          </p>
-                          {req.targetCategoryName && (
-                            <div className="flex items-center gap-1 mt-1 text-[9px] font-semibold text-brand">
-                              <span className="material-symbols-outlined text-[10px]">arrow_forward</span>
-                              <span>Target: {req.targetCategoryName}</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {req.reason && (
-                          <p className="text-[10px] italic leading-normal p-2 rounded-lg bg-card/30 text-body font-medium">
-                            "{req.reason}"
-                          </p>
-                        )}
-
-                        {/* Direct Assign Options */}
-                        <div className="text-[9px] space-y-1">
-                          <span className="text-muted block font-semibold">Assign to Group Member (Optional):</span>
-                          <CustomSelect
-                            options={[
-                              { value: '', label: 'None (Leave Unassigned)' },
-                              ...(groupMembers.length > 0 ? [{ label: `--- Members of ${targetCat} ---`, disabled: true, value: '' }] : []),
-                              ...groupMembers.map(a => ({
-                                value: a.agentId,
-                                label: `${a.name} (${getAgentLoad(a)}/${a.maxActiveTickets || 10})`
-                              })),
-                              ...(otherAgents.length > 0 ? [{ label: '--- Other Active Agents ---', disabled: true, value: '' }] : []),
-                              ...otherAgents.map(a => ({
-                                value: a.agentId,
-                                label: `${a.name} (${a.category || 'No Cat'})`
-                              }))
-                            ]}
-                            value={selectedAssignees[req.id] || ''}
-                            onChange={val => setSelectedAssignees(prev => ({ ...prev, [req.id]: val }))}
-                            placeholder="Select assignee..."
-                            triggerClassName="!bg-[var(--bg-card)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1 px-1.5 text-[10px]"
-                          />
-                        </div>
-
-                        <div className="flex items-center gap-2 pt-1 border-t border-subtle/50">
-                          <button
-                            onClick={() => handleResolveReassignRequest(req.id, true, selectedAssignees[req.id])}
-                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleResolveReassignRequest(req.id, false)}
-                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* SUB-PANEL 3B: Assign Unassigned Tickets */}
-            <div className="flex-1 card flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-subtle">
-                <div className="flex items-center gap-2">
-                  <Inbox size={14} style={{ color: 'var(--brand)' }} />
-                  <span className="text-xs font-bold font-heading text-heading">Unassigned</span>
-                  {unassignedTickets.length > 0 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                      style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444' }}>
-                      {unassignedTickets.length}
-                    </span>
-                  )}
-                </div>
-                <button onClick={fetchUnassignedTickets} className="p-1.5 rounded-lg cursor-pointer text-muted hover:text-heading">
-                  <RefreshCw size={13} />
-                </button>
-              </div>
-
-              <div className="px-3 py-2 border-b border-subtle space-y-2 bg-card/30">
-                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-input border border-subtle">
-                  <Search size={11} className="text-muted" />
-                  <input
-                    className="flex-1 bg-transparent text-[11px] outline-none text-body"
-                    placeholder="Search ID, title, customer..."
-                    value={unassignedSearch}
-                    onChange={e => setUnassignedSearch(e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <CustomSelect
-                    options={[{ value: '', label: 'All Statuses' }, { value: 'OPEN', label: 'Open' }, { value: 'IN_PROGRESS', label: 'In Progress' }, { value: 'RESOLVED', label: 'Resolved' }, { value: 'CLOSED', label: 'Closed' }]}
-                    value={unassignedStatus}
-                    onChange={setUnassignedStatus}
-                    triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1.5 px-2 text-[10px]"
-                  />
-                  <CustomSelect
-                    options={[{ value: '', label: 'All Priorities' }, 'URGENT', 'HIGH', 'MEDIUM', 'LOW'].map(v => typeof v === 'string' ? { value: v, label: v } : v)}
-                    value={unassignedPriority}
-                    onChange={setUnassignedPriority}
-                    triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1.5 px-2 text-[10px]"
-                  />
-                </div>
-                <CustomSelect
-                  options={[{ value: '', label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-                  value={unassignedCategory}
-                  onChange={setUnassignedCategory}
-                  triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1.5 px-2 text-[10px]"
-                />
-              </div>
-
-              {unassignedTickets.length > 0 && (
-                <div className="px-3 py-2 border-b border-subtle flex flex-col gap-1.5 bg-card/40">
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider text-muted cursor-pointer select-none">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-subtle bg-input text-brand focus:ring-0 focus:ring-offset-0 cursor-pointer w-3.5 h-3.5"
-                        checked={unassignedTickets.length > 0 && selectedUnassignedIds.length === unassignedTickets.length}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedUnassignedIds(unassignedTickets.map(t => t.id));
-                          } else {
-                            setSelectedUnassignedIds([]);
-                          }
-                        }}
-                      />
-                      Select All
-                    </label>
-                    {selectedUnassignedIds.length > 0 && (
-                      <span className="text-[9px] font-bold text-brand uppercase tracking-wider">
-                        {selectedUnassignedIds.length} selected
-                      </span>
-                    )}
-                  </div>
-                  {selectedUnassignedIds.length > 0 && (
-                    <div className="pt-1.5 border-t border-dashed border-subtle">
-                      <CustomSelect
-                        options={[
-                          { value: '', label: 'Bulk assign to agent…' },
-                          ...agentStats
-                            .filter(a => a.assignable)
-                            .map(a => ({
-                              value: a.agentId,
-                              label: `${a.name} (${getAgentLoad(a)}/${a.maxActiveTickets || 10})`
-                            }))
-                        ]}
-                        value=""
-                        onChange={val => { if (val) handleBulkAssign(val); }}
-                        placeholder="Bulk assign to agent…"
-                        triggerClassName="!bg-[var(--bg-input)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1.5 px-2 text-[10px]"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="flex-grow overflow-y-auto p-2 space-y-2">
-                {unassignedLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-10" style={{ color: 'var(--text-muted)' }}>
-                    <Loader2 size={16} className="animate-spin" />
-                  </div>
-                ) : unassignedTickets.length === 0 ? (
-                  <div className="flex flex-col items-center gap-2 py-10" style={{ color: 'var(--text-muted)' }}>
-                    <CheckCircle2 size={28} className="opacity-30" style={{ color: 'var(--brand)' }} />
-                    <p className="text-xs">All tickets are assigned!</p>
-                  </div>
-                ) : unassignedTickets.map(t => {
-                  const priColor = { URGENT: '#ef4444', HIGH: '#f97316', MEDIUM: '#f59e0b', LOW: '#6b7280' }[t.priority] || '#888';
-                  const isChecked = selectedUnassignedIds.includes(t.id);
-                  return (
-                    <div key={t.id} className={`p-3 rounded-xl transition-all border ${isChecked ? 'border-brand bg-brand-dim ring-1 ring-brand' : 'border-subtle bg-input'}`}>
-                      <div className="flex items-start gap-2.5 mb-2">
-                        <input 
-                          type="checkbox" 
-                          className="mt-0.5 rounded border-subtle bg-input text-brand focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0 w-3.5 h-3.5"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedUnassignedIds(prev => [...prev, t.id]);
-                            } else {
-                              setSelectedUnassignedIds(prev => prev.filter(id => id !== t.id));
-                            }
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <p className="text-xs font-semibold leading-snug text-heading truncate">{t.title}</p>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0"
-                              style={{ color: priColor, background: `${priColor}18` }}>
-                              {t.priority}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-muted">
-                            <span className="font-mono text-brand">{getTicketNumber(t)}</span> · by {t.createdByName} · {formatDate(t.createdAt)}
-                          </p>
-                        </div>
-                      </div>
-                      {!isChecked && (
-                        <CustomSelect
-                          options={[
-                            { value: '', label: 'Assign to agent…' },
-                            ...agentStats
-                              .filter(a => a.assignable)
-                              .map(a => ({
-                                value: a.agentId,
-                                label: `${a.name} (${getAgentLoad(a)}/${a.maxActiveTickets || 10})`
-                              }))
-                          ]}
-                          value=""
-                          onChange={val => { if (val) handleAssignTicket(t.id, val); }}
-                          placeholder="Assign to agent…"
-                          triggerClassName="!bg-[var(--bg-card)] !border-[var(--border-subtle)] !text-[var(--text-body)] py-1.5 px-2 text-[10px]"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+        <AgentManagementTab
+          agentStats={agentStats}
+          agentStatsLoading={agentStatsLoading}
+          fetchAgentStats={fetchAgentStats}
+          selectedAgentMgmt={selectedAgentMgmt}
+          selectAgentMgmt={selectAgentMgmt}
+          agentTickets={agentTickets}
+          agentTicketsLoading={agentTicketsLoading}
+          agentTicketStatus={agentTicketStatus}
+          setAgentTicketStatus={setAgentTicketStatus}
+          agentTicketSearch={agentTicketSearch}
+          setAgentTicketSearch={setAgentTicketSearch}
+          agentTicketPriority={agentTicketPriority}
+          setAgentTicketPriority={setAgentTicketPriority}
+          agentTicketCategory={agentTicketCategory}
+          setAgentTicketCategory={setAgentTicketCategory}
+          unassignedTickets={unassignedTickets}
+          unassignedLoading={unassignedLoading}
+          fetchUnassignedTickets={fetchUnassignedTickets}
+          unassignedSearch={unassignedSearch}
+          setUnassignedSearch={setUnassignedSearch}
+          unassignedStatus={unassignedStatus}
+          setUnassignedStatus={setUnassignedStatus}
+          unassignedPriority={unassignedPriority}
+          setUnassignedPriority={setUnassignedPriority}
+          unassignedCategory={unassignedCategory}
+          setUnassignedCategory={setUnassignedCategory}
+          selectedUnassignedIds={selectedUnassignedIds}
+          setSelectedUnassignedIds={setSelectedUnassignedIds}
+          reassignRequests={reassignRequests}
+          reassignRequestsLoading={reassignRequestsLoading}
+          fetchReassignRequests={fetchReassignRequests}
+          selectedAssignees={selectedAssignees}
+          setSelectedAssignees={setSelectedAssignees}
+          reassignTicketId={reassignTicketId}
+          setReassignTicketId={setReassignTicketId}
+          agentSearchQuery={agentSearchQuery}
+          setAgentSearchQuery={setAgentSearchQuery}
+          categories={categories}
+          handleAssignTicket={handleAssignTicket}
+          handleBulkAssign={handleBulkAssign}
+          handleResolveReassignRequest={handleResolveReassignRequest}
+          handleAgentAvailabilityChange={handleAgentAvailabilityChange}
+          getInitials={getInitials}
+          formatDate={formatDate}
+          getTicketNumber={getTicketNumber}
+          getAgentLoad={getAgentLoad}
+          getAvailabilityMeta={getAvailabilityMeta}
+        />
       )}
 
       {/* ── SETTINGS TAB ──────────────────────────────────── */}

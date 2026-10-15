@@ -196,18 +196,55 @@ public class EmbeddingService {
         return result;
     }
 
+    public static final java.util.Set<String> STOP_WORDS = java.util.Set.of(
+        "the", "a", "an", "is", "it", "to", "for", "in", "on", "at", "by", "of", "and", "or", "with",
+        "this", "that", "these", "those", "am", "are", "was", "were", "be", "been", "being", "have", "has",
+        "had", "do", "does", "did", "from", "as", "if", "my", "your", "his", "her", "their", "our"
+    );
+
     private float[] generateMockEmbedding(String text) {
-        float[] vector = new float[1536];
-        long seed = text != null ? text.hashCode() : 0L;
-        java.util.Random rand = new java.util.Random(seed);
+        final int DIM = 3072;
+        float[] vector = new float[DIM];
+        if (text == null || text.isBlank()) {
+            return vector;
+        }
+
+        String normalized = text.toLowerCase().replaceAll("[^a-z0-9\\s]", " ");
+        String[] tokens = normalized.trim().split("\\s+");
+
+        for (String token : tokens) {
+            if (token.isBlank()) continue;
+            boolean isStopWord = STOP_WORDS.contains(token);
+            float tokenWeight = isStopWord ? 0.15f : (token.length() >= 4 ? 1.5f : 0.8f);
+
+            int hash1 = Math.abs((token + "_h1").hashCode()) % DIM;
+            int hash2 = Math.abs((token + "_h2").hashCode()) % DIM;
+            int hash3 = Math.abs((token + "_h3").hashCode()) % DIM;
+            int hash4 = Math.abs((token + "_h4").hashCode()) % DIM;
+            int hash5 = Math.abs((token + "_h5").hashCode()) % DIM;
+
+            vector[hash1] += tokenWeight;
+            vector[hash2] += tokenWeight * 0.8f;
+            vector[hash3] += tokenWeight * 0.6f;
+            vector[hash4] += tokenWeight * 0.4f;
+            vector[hash5] += tokenWeight * 0.2f;
+
+            if (token.length() >= 3 && !isStopWord) {
+                for (int i = 0; i <= token.length() - 3; i++) {
+                    String trigram = token.substring(i, i + 3);
+                    int triHash = Math.abs((trigram + "_tri").hashCode()) % DIM;
+                    vector[triHash] += 0.35f;
+                }
+            }
+        }
+
         double sumSq = 0.0;
-        for (int i = 0; i < 1536; i++) {
-            vector[i] = (float) (rand.nextGaussian());
+        for (int i = 0; i < DIM; i++) {
             sumSq += vector[i] * vector[i];
         }
         float norm = (float) Math.sqrt(sumSq);
         if (norm > 0.0f) {
-            for (int i = 0; i < 1536; i++) {
+            for (int i = 0; i < DIM; i++) {
                 vector[i] /= norm;
             }
         }

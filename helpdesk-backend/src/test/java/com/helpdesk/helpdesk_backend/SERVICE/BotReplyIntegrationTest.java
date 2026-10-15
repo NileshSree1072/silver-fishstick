@@ -40,14 +40,14 @@ public class BotReplyIntegrationTest {
     @Test
     public void testAutoBotReplyAndResolution() throws Exception {
         // Find the user who will create the ticket
-        User creator = userRepo.findByEmail("test@gmail.com")
+        User creator = userRepo.findByEmail("nilesh@helpdesk.com")
                 .orElseThrow(() -> new RuntimeException("Test user not found"));
 
-        // Create request identical to "Sample ticket C" to trigger matching
+        // Create request matching the resolved password reset ticket
         CreateTicketRequest request = new CreateTicketRequest();
-        request.setTitle("Sample ticket C");
-        request.setDescription("sample ticket to check email services");
-        request.setCategoryId(UUID.fromString("93d60e6e-7ed8-49b8-9729-4ca6de54bf55")); // Authentication
+        request.setTitle("Forgot password to my account");
+        request.setDescription("I forgot the password to my account and cannot log in. Please send reset instructions.");
+        request.setCategoryId(null);
 
         // Submit the ticket (this triggers autoAssign and async aiService.processNewTicket)
         TicketResponse response = ticketService.createTicket(request, creator);
@@ -92,14 +92,14 @@ public class BotReplyIntegrationTest {
     @Test
     public void testAutoBotReplyFromKnowledgeArticle() throws Exception {
         // Find the user who will create the ticket
-        User creator = userRepo.findByEmail("test@gmail.com")
+        User creator = userRepo.findByEmail("nilesh@helpdesk.com")
                 .orElseThrow(() -> new RuntimeException("Test user not found"));
 
         // Create a ticket that matches the "How to reset your account password" KB article
         CreateTicketRequest request = new CreateTicketRequest();
         request.setTitle("Password reset");
         request.setDescription("I need to reset my account password. I forgot the password and got locked out.");
-        request.setCategoryId(UUID.fromString("93d60e6e-7ed8-49b8-9729-4ca6de54bf55")); // Authentication
+        request.setCategoryId(null);
 
         // Submit the ticket
         TicketResponse response = ticketService.createTicket(request, creator);
@@ -145,6 +145,27 @@ public class BotReplyIntegrationTest {
     private SimilarTicketRepository similarTicketRepo;
     @Autowired
     private EmbeddingService embeddingService;
+    @Autowired
+    private com.helpdesk.helpdesk_backend.REPOSITORY.KnowledgeRepository knowledgeRepo;
+
+    @Test
+    public void reembedAllExistingTicketsAndArticles() {
+        List<Ticket> tickets = ticketRepo.findAll();
+        for (Ticket t : tickets) {
+            float[] vec = embeddingService.embedTicket(t.getTitle(), t.getDescription());
+            t.setEmbedding(vec);
+            ticketRepo.save(t);
+            System.out.println("Re-embedded ticket: " + t.getTicketNumber() + " - " + t.getTitle());
+        }
+
+        List<com.helpdesk.helpdesk_backend.ENTITY.KnowledgeArticle> articles = knowledgeRepo.findAll();
+        for (com.helpdesk.helpdesk_backend.ENTITY.KnowledgeArticle a : articles) {
+            float[] vec = embeddingService.embed(a.getTitle() + " " + a.getContent());
+            a.setEmbedding(vec);
+            knowledgeRepo.save(a);
+            System.out.println("Re-embedded article: " + a.getTitle());
+        }
+    }
 
     @Test
     public void printSimilarity() {
@@ -175,20 +196,27 @@ public class BotReplyIntegrationTest {
 
     @Test
     public void printTicketSimilarity() {
-        float[] embedding = embeddingService.embed("Sample ticket C sample ticket to check email services");
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < embedding.length; i++) {
-            sb.append(embedding[i]);
-            if (i < embedding.length - 1) sb.append(",");
-        }
-        sb.append("]");
-        String embeddingStr = sb.toString();
+        String[] queries = {
+            "i forgot the password",
+            "I cannot log in, password reset required",
+            "Docker Desktop WSL 2 integration error",
+            "VPN connection drops repeatedly"
+        };
+        for (String q : queries) {
+            System.out.println("=== QUERY: " + q + " ===");
+            float[] embedding = embeddingService.embed(q);
+            StringBuilder sb = new StringBuilder("[");
+            for (int i = 0; i < embedding.length; i++) {
+                sb.append(embedding[i]);
+                if (i < embedding.length - 1) sb.append(",");
+            }
+            sb.append("]");
+            String embeddingStr = sb.toString();
 
-        List<Object[]> results = similarTicketRepo.findSimilarResolvedTickets(embeddingStr, 0.0, 5);
-        System.out.println("====== TICKET SIMILARITY RESULTS ======");
-        for (Object[] row : results) {
-            System.out.println("TITLE: " + row[1] + " | SIMILARITY: " + row[row.length - 1]);
+            List<Object[]> results = similarTicketRepo.findSimilarResolvedTickets(embeddingStr, 0.0, 3);
+            for (Object[] row : results) {
+                System.out.println("TICKET: " + row[1] + " | SIMILARITY: " + row[row.length - 1]);
+            }
         }
-        System.out.println("=======================================");
     }
 }
