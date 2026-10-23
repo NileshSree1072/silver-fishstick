@@ -181,6 +181,14 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
         items.push({ group: 'Go to', icon: 'swap_horiz', label: `Switch to ${CONSOLE_TITLES[c].toLowerCase()}`, run: () => switchConsole(c) });
       });
     }
+    if (activeConsole === 'admin') {
+      items.push({
+        group: 'Actions',
+        icon: 'help',
+        label: 'Guided Tour: Admin Features & Shortcuts',
+        run: () => window.dispatchEvent(new CustomEvent('aegis:start-admin-tour')),
+      });
+    }
     items.push(
       { group: 'Actions', icon: 'contrast', label: theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme', run: () => setTheme(t => (t === 'dark' ? 'light' : 'dark')) },
       { group: 'Actions', icon: 'keyboard', label: 'Keyboard shortcuts', hint: '?', run: () => setShortcutsOpen(true) },
@@ -247,6 +255,7 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
             return (
               <button
                 key={item.id}
+                id={`tour-nav-${item.id}`}
                 onClick={() => setActiveTab(item.id)}
                 aria-current={isActive ? 'page' : undefined}
                 className={`w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-left text-[13.5px] font-medium transition-colors cursor-pointer ${
@@ -336,6 +345,7 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
           </h1>
 
           <button
+            id="tour-search-bar"
             onClick={() => setPaletteOpen(true)}
             className="ml-auto md:ml-6 flex items-center gap-2 w-auto md:w-[300px] lg:w-[360px] px-2.5 py-1.5 rounded-lg border border-outline-variant bg-background text-[13px] text-on-surface-variant hover:border-outline transition-colors cursor-pointer"
             aria-label="Open command menu"
@@ -384,6 +394,18 @@ const Layout = ({ children, activeConsole, setActiveConsole, activeTab, setActiv
               <span className="hidden sm:flex items-center gap-1.5 px-2 text-[12px] text-danger-text">
                 <span className="w-1.5 h-1.5 rounded-full bg-danger" /> Offline
               </span>
+            )}
+
+            {activeConsole === 'admin' && (
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('aegis:start-admin-tour'))}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 transition-all text-[12.5px] font-medium cursor-pointer shadow-xs hover:shadow-sm"
+                title="Admin Features & Shortcuts Tour"
+                aria-label="Guided Tour and Help"
+              >
+                <span className="material-symbols-outlined !text-[17px]">help</span>
+                <span className="hidden sm:inline">Help & Tour</span>
+              </button>
             )}
 
             <button

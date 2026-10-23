@@ -17,6 +17,13 @@ const AGENT = [
   [['Enter'], 'Send (Shift+Enter for a new line)'],
 ];
 
+const ADMIN = [
+  [['Ctrl', 'K'], 'Command palette & global search'],
+  [['?'], 'Keyboard shortcuts reference'],
+  [['Esc'], 'Dismiss modals, popovers & drawers'],
+  [['←', '→'], 'Guided tour step navigation'],
+];
+
 const ShortcutsDialog = ({ open, onClose, console: activeConsole }) => {
   useEffect(() => {
     if (!open) return undefined;
@@ -29,6 +36,7 @@ const ShortcutsDialog = ({ open, onClose, console: activeConsole }) => {
 
   const sections = [['General', GLOBAL]];
   if (activeConsole === 'agent') sections.push(['Ticket workspace', AGENT]);
+  if (activeConsole === 'admin') sections.push(['Admin navigation', ADMIN]);
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/30 anim-fade-in" onClick={onClose}>
@@ -60,6 +68,22 @@ const ShortcutsDialog = ({ open, onClose, console: activeConsole }) => {
             </div>
           ))}
         </div>
+        {activeConsole === 'admin' && (
+          <div className="px-5 py-3 border-t border-outline-variant bg-surface-container-low flex items-center justify-between">
+            <span className="text-[12px] text-on-surface-variant">Want an interactive walkthrough?</span>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                setTimeout(() => window.dispatchEvent(new CustomEvent('aegis:start-admin-tour')), 50);
+              }}
+              className="btn btn-primary btn-sm text-[12px] flex items-center gap-1.5 cursor-pointer"
+            >
+              <span className="material-symbols-outlined !text-[16px]">help</span>
+              <span>Start 8-Step Tour</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

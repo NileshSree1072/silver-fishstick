@@ -110,7 +110,7 @@ function MainApp() {
         <AgentWorkspace activeTab={activeTab} />
       )}
       {activeConsole === 'admin' && (
-        <AdminConsole activeTab={activeTab} />
+        <AdminConsole activeTab={activeTab} setActiveTab={setActiveTab} />
       )}
     </Layout>
   );

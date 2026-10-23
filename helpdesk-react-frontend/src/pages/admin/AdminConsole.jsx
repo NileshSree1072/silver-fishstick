@@ -12,13 +12,14 @@ import TicketAuditLog from './TicketAuditLog';
 import BreachLog from './BreachLog';
 import TransferLog from './TransferLog';
 import AgentManagementTab from './AgentManagementTab';
+import AdminTourModal from '../../components/admin/AdminTourModal';
 import {
   Users, Sliders, CheckSquare, LayoutDashboard, Sparkles, RefreshCw,
   TrendingUp, Award, UserPlus, Trash2, Edit2,
   FolderKanban, Plus, ShieldAlert, Check, X, Shield, Eye,
   Loader2, Activity, ToggleLeft, ToggleRight, BookOpen, Tag,
   Clock, FileText, BarChart2, UserCog, Ticket, Search,
-  ArrowRightLeft, ChevronDown, AlertCircle, CheckCircle2, Inbox
+  ArrowRightLeft, ChevronDown, AlertCircle, CheckCircle2, Inbox, HelpCircle
 } from 'lucide-react';
 
 const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : '?';
@@ -69,8 +70,17 @@ const getAvailabilityMeta = (status, isActive = true) => {
 
 const getAgentLoad = (agent) => (agent.openTickets || 0) + (agent.inProgressTickets || 0);
 
-const AdminConsole = ({ activeTab }) => {
+const AdminConsole = ({ activeTab, setActiveTab }) => {
   const { addToast } = useNotifications();
+
+  // Guided Tour
+  const [showTour, setShowTour] = useState(false);
+
+  useEffect(() => {
+    const handleStartTour = () => setShowTour(true);
+    window.addEventListener('aegis:start-admin-tour', handleStartTour);
+    return () => window.removeEventListener('aegis:start-admin-tour', handleStartTour);
+  }, []);
 
   // Dashboard
   const [stats, setStats] = useState({ totalTickets:0, openTickets:0, progressTickets:0, resolvedTickets:0, closedTickets:0, averageRating:4.6, totalRatings:0 });
@@ -575,6 +585,28 @@ const AdminConsole = ({ activeTab }) => {
       {activeTab === 'dashboard' && (
         <div className="flex flex-col gap-4 h-full overflow-hidden pr-1 anim-fade-in">
           
+          {/* Dashboard Header Bar */}
+          <div className="flex items-center justify-between gap-3 pb-1 border-b border-outline-variant/60">
+            <div>
+              <h2 className="text-base font-bold text-on-surface" style={{ fontFamily: 'var(--font-heading)' }}>
+                System Overview
+              </h2>
+              <p className="text-[12px] text-on-surface-variant">Real-time system health, ticket queues & live activity</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                id="tour-admin-help-btn"
+                onClick={() => setShowTour(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/25 bg-primary/10 hover:bg-primary/20 text-primary transition-all text-xs font-semibold cursor-pointer shadow-xs hover:shadow-sm"
+                title="Start Guided Tour of Features & Shortcuts"
+              >
+                <HelpCircle size={15} />
+                <span>Help & Tour</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-mono font-medium">8 Steps</span>
+              </button>
+            </div>
+          </div>
+
           {/* Stats cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
             {[
@@ -1241,6 +1273,14 @@ const AdminConsole = ({ activeTab }) => {
         variant={confirmModal.variant}
         onConfirm={confirmModal.onConfirm}
         onCancel={closeConfirm}
+      />
+
+      {/* ── GUIDED TOUR MODAL ──────────────────────────── */}
+      <AdminTourModal
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
     </div>
   );
