@@ -1,6 +1,6 @@
 package com.helpdesk.helpdesk_backend.EXCEPTION;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.stream.Collectors;
 
@@ -54,6 +54,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(403)
                 .body(new ErrorResponse(403, "Access denied"));
+    }
+
+    // Wrong email/password, disabled account, etc. — never reveal which one
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(org.springframework.security.core.AuthenticationException ex) {
+        return ResponseEntity.status(401)
+                .body(new ErrorResponse(401, "Incorrect email or password"));
     }
 
     @ExceptionHandler(Exception.class)

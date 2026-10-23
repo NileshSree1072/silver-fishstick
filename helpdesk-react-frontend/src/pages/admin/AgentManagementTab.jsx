@@ -262,7 +262,7 @@ const AgentManagementTab = ({
                 .map(agent => {
               const isSelected = selectedAgentMgmt?.agentId === agent.agentId;
               const load = getAgentLoad(agent);
-              const loadColor = load > 5 ? '#ef4444' : load > 2 ? '#f59e0b' : 'var(--brand)';
+              const loadColor = load > 5 ? 'var(--danger)' : load > 2 ? 'var(--warning)' : 'var(--brand)';
               const availability = getAvailabilityMeta(agent.availabilityStatus, agent.isActive);
               const lastAct = agent.lastActivity
                 ? (() => { const diff = Date.now() - new Date(agent.lastActivity).getTime(); const m = Math.floor(diff/60000); return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : `${Math.floor(m/60)}h ago`; })()
@@ -273,7 +273,7 @@ const AgentManagementTab = ({
                   className="p-3 rounded-xl cursor-pointer transition-all"
                   style={{
                     background: isSelected ? 'var(--brand-dim)' : 'var(--bg-input)',
-                    border: isSelected ? '1px solid rgba(16,185,129,0.25)' : '1px solid var(--border-subtle)',
+                    border: isSelected ? '1px solid color-mix(in srgb, var(--brand) 25%, transparent)' : '1px solid var(--border-subtle)',
                   }}
                   onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-card-hover)'; }}
                   onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'var(--bg-input)'; }}>
@@ -291,7 +291,7 @@ const AgentManagementTab = ({
                       <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-heading)' }}>{agent.name}</p>
                       {agent.category && (
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
-                          style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--brand)' }}>
+                          style={{ background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)' }}>
                           {agent.category}
                         </span>
                       )}
@@ -300,7 +300,7 @@ const AgentManagementTab = ({
 
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
-                      style={{ color: availability.color, background: `${availability.color}18` }}>
+                      style={{ color: availability.color, background: `color-mix(in srgb, ${availability.color} 9%, transparent)` }}>
                       {availability.label}
                     </span>
                     <span className="text-[9px] font-semibold" style={{ color: agent.assignable ? 'var(--brand)' : 'var(--text-disabled)' }}>
@@ -310,8 +310,8 @@ const AgentManagementTab = ({
 
                   {/* Stats row */}
                   <div className="grid grid-cols-3 gap-1 text-center">
-                    {[['Open', agent.openTickets || 0, loadColor], ['Progress', agent.inProgressTickets || 0, '#f59e0b'], ['Resolved', agent.resolvedTickets || 0, 'var(--brand)']].map(([lbl, val, col]) => (
-                      <div key={lbl} className="rounded-lg py-1" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    {[['Open', agent.openTickets || 0, loadColor], ['Progress', agent.inProgressTickets || 0, 'var(--warning)'], ['Resolved', agent.resolvedTickets || 0, 'var(--brand)']].map(([lbl, val, col]) => (
+                      <div key={lbl} className="rounded-lg py-1" style={{ background: 'color-mix(in srgb, var(--text-heading) 3%, transparent)' }}>
                         <p className="text-[11px] font-bold" style={{ color: col }}>{val}</p>
                         <p className="text-[9px]" style={{ color: 'var(--text-disabled)' }}>{lbl}</p>
                       </div>
@@ -340,7 +340,7 @@ const AgentManagementTab = ({
           title="Drag to resize Agents roster (Double-click to reset 288px)"
           className="group relative w-1.5 flex items-center justify-center cursor-col-resize shrink-0 select-none z-10 hover:w-2 transition-all -mx-0.5"
         >
-          <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'left' ? 'bg-emerald-500 w-1' : 'bg-transparent group-hover:bg-emerald-500/60'}`} />
+          <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'left' ? 'bg-success w-1' : 'bg-transparent group-hover:bg-success/60'}`} />
           <div className="absolute top-1/2 -translate-y-1/2 p-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm">
             <GripVertical size={10} className="text-muted" />
           </div>
@@ -408,8 +408,8 @@ const AgentManagementTab = ({
                   </div>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     {[['Total', selectedAgentMgmt.totalTickets || 0, 'var(--text-muted)'],
-                      ['Open', selectedAgentMgmt.openTickets || 0, '#ef4444'],
-                      ['In Progress', selectedAgentMgmt.inProgressTickets || 0, '#f59e0b'],
+                      ['Open', selectedAgentMgmt.openTickets || 0, 'var(--danger)'],
+                      ['In Progress', selectedAgentMgmt.inProgressTickets || 0, 'var(--warning)'],
                       ['Resolved', selectedAgentMgmt.resolvedTickets || 0, 'var(--brand)']
                     ].map(([lbl, val, col]) => (
                       <span key={lbl} className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
@@ -443,7 +443,7 @@ const AgentManagementTab = ({
               </div>
 
               {/* Bottom Row: Ticket Filters */}
-              <div className="flex flex-wrap items-center gap-2 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+              <div className="flex flex-wrap items-center gap-2 pt-2" style={{ borderTop: '1px solid color-mix(in srgb, var(--text-heading) 3%, transparent)' }}>
                 <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg flex-1 min-w-[150px]" style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }}>
                   <Search size={11} style={{ color: 'var(--text-muted)' }} />
                   <input
@@ -508,8 +508,8 @@ const AgentManagementTab = ({
                   </thead>
                   <tbody>
                     {agentTickets.map(t => {
-                      const statusCfg = { OPEN: '#60a5fa', IN_PROGRESS: '#f59e0b', RESOLVED: '#34d399', CLOSED: '#6b7280' };
-                      const priCfg = { URGENT: '#ef4444', HIGH: '#f97316', MEDIUM: '#f59e0b', LOW: '#6b7280' };
+                      const statusCfg = { OPEN: 'var(--brand)', IN_PROGRESS: 'var(--warning)', RESOLVED: 'var(--success)', CLOSED: 'var(--text-muted)' };
+                      const priCfg = { URGENT: 'var(--danger)', HIGH: 'var(--warning)', MEDIUM: 'var(--warning)', LOW: 'var(--text-muted)' };
                       return (
                         <tr key={t.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}
                           onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card-hover)'}
@@ -521,13 +521,13 @@ const AgentManagementTab = ({
                           <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>{t.createdByName}</td>
                           <td className="px-4 py-3">
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ color: priCfg[t.priority] || '#888', background: `${priCfg[t.priority] || '#888'}18` }}>
+                              style={{ color: priCfg[t.priority] || 'var(--text-muted)', background: `color-mix(in srgb, ${priCfg[t.priority] || 'var(--text-muted)'} 9%, transparent)` }}>
                               {t.priority}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ color: statusCfg[t.status] || '#888', background: `${statusCfg[t.status] || '#888'}18` }}>
+                              style={{ color: statusCfg[t.status] || 'var(--text-muted)', background: `color-mix(in srgb, ${statusCfg[t.status] || 'var(--text-muted)'} 9%, transparent)` }}>
                               {t.status?.replace('_', ' ')}
                             </span>
                           </td>
@@ -560,7 +560,7 @@ const AgentManagementTab = ({
                               <button onClick={() => setReassignTicketId(t.id)}
                                 className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-lg cursor-pointer transition-all"
                                 style={{ background: 'var(--bg-input)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
-                                onMouseEnter={e => { e.currentTarget.style.color = 'var(--brand)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)'; }}
+                                onMouseEnter={e => { e.currentTarget.style.color = 'var(--brand)'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--brand) 30%, transparent)'; }}
                                 onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}>
                                 <ArrowRightLeft size={11} /> Reassign
                               </button>
@@ -590,7 +590,7 @@ const AgentManagementTab = ({
           title="Drag to resize Queue panels (Double-click to reset 320px)"
           className="group relative w-1.5 flex items-center justify-center cursor-col-resize shrink-0 select-none z-10 hover:w-2 transition-all -mx-0.5"
         >
-          <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'right' ? 'bg-emerald-500 w-1' : 'bg-transparent group-hover:bg-emerald-500/60'}`} />
+          <div className={`w-0.5 h-full rounded-full transition-colors ${resizing === 'right' ? 'bg-success w-1' : 'bg-transparent group-hover:bg-success/60'}`} />
           <div className="absolute top-1/2 -translate-y-1/2 p-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm">
             <GripVertical size={10} className="text-muted" />
           </div>
@@ -619,7 +619,7 @@ const AgentManagementTab = ({
             >
               <ArrowRightLeft size={14} className="text-muted group-hover:text-heading" />
               {reassignRequests.length > 0 && (
-                <span className="text-[9px] px-1 py-0.2 rounded-full font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                <span className="text-[9px] px-1 py-0.2 rounded-full font-bold bg-warning/20 text-warning-text border border-warning/30">
                   {reassignRequests.length}
                 </span>
               )}
@@ -631,7 +631,7 @@ const AgentManagementTab = ({
             >
               <Inbox size={14} className="text-muted group-hover:text-heading" />
               {unassignedTickets.length > 0 && (
-                <span className="text-[9px] px-1 py-0.2 rounded-full font-bold bg-rose-500/20 text-rose-500 border border-rose-500/30">
+                <span className="text-[9px] px-1 py-0.2 rounded-full font-bold bg-danger/20 text-danger-text border border-danger/30">
                   {unassignedTickets.length}
                 </span>
               )}
@@ -667,7 +667,7 @@ const AgentManagementTab = ({
                 <span className="text-xs font-bold font-heading text-heading truncate">Reassignments</span>
                 {reassignRequests.length > 0 && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                    style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
+                    style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)' }}>
                     {reassignRequests.length}
                   </span>
                 )}
@@ -774,13 +774,13 @@ const AgentManagementTab = ({
                         <div className="flex items-center gap-2 pt-1 border-t border-subtle/50">
                           <button
                             onClick={() => handleResolveReassignRequest(req.id, true, selectedAssignees[req.id])}
-                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-success/20 bg-success/10 text-success-text hover:bg-success/20"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => handleResolveReassignRequest(req.id, false)}
-                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                            className="flex-1 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider text-center cursor-pointer transition-all border border-danger/20 bg-danger/10 text-danger-text hover:bg-danger/20"
                           >
                             Reject
                           </button>
@@ -801,7 +801,7 @@ const AgentManagementTab = ({
               title="Drag to resize Reassignments vs Unassigned height (Double-click to reset 50%)"
               className="group relative h-1.5 flex items-center justify-center cursor-row-resize shrink-0 select-none z-10 hover:h-2 transition-all -my-0.5"
             >
-              <div className={`h-0.5 w-full rounded-full transition-colors ${resizing === 'horizontal' ? 'bg-emerald-500 h-1' : 'bg-transparent group-hover:bg-emerald-500/60'}`} />
+              <div className={`h-0.5 w-full rounded-full transition-colors ${resizing === 'horizontal' ? 'bg-success h-1' : 'bg-transparent group-hover:bg-success/60'}`} />
               <div className="absolute left-1/2 -translate-x-1/2 p-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm">
                 <GripHorizontal size={10} className="text-muted" />
               </div>
@@ -827,7 +827,7 @@ const AgentManagementTab = ({
                 <span className="text-xs font-bold font-heading text-heading truncate">Unassigned</span>
                 {unassignedTickets.length > 0 && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                    style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444' }}>
+                    style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)' }}>
                     {unassignedTickets.length}
                   </span>
                 )}
@@ -941,7 +941,7 @@ const AgentManagementTab = ({
                       <p className="text-xs">All tickets are assigned!</p>
                     </div>
                   ) : unassignedTickets.map(t => {
-                    const priColor = { URGENT: '#ef4444', HIGH: '#f97316', MEDIUM: '#f59e0b', LOW: '#6b7280' }[t.priority] || '#888';
+                    const priColor = { URGENT: 'var(--danger)', HIGH: 'var(--warning)', MEDIUM: 'var(--warning)', LOW: 'var(--text-muted)' }[t.priority] || 'var(--text-muted)';
                     const isChecked = selectedUnassignedIds.includes(t.id);
                     return (
                       <div key={t.id} className={`p-3 rounded-xl transition-all border ${isChecked ? 'border-brand bg-brand-dim ring-1 ring-brand' : 'border-subtle bg-input'}`}>
@@ -962,7 +962,7 @@ const AgentManagementTab = ({
                             <div className="flex items-start justify-between gap-2 mb-1">
                               <p className="text-xs font-semibold leading-snug text-heading truncate">{t.title}</p>
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0"
-                                style={{ color: priColor, background: `${priColor}18` }}>
+                                style={{ color: priColor, background: `color-mix(in srgb, ${priColor} 9%, transparent)` }}>
                                 {t.priority}
                               </span>
                             </div>

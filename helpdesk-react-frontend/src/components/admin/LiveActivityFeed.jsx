@@ -6,16 +6,17 @@ import toast from 'react-hot-toast';
 import { Trash2 } from 'lucide-react';
 
 const EVENT_CONFIGS = {
-  TICKET_CREATED:     { icon: '🎫', color: '#0070f3', bg: 'rgba(0, 112, 243, 0.1)' },
-  TICKET_ASSIGNED:    { icon: '👤', color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.1)' },
-  TICKET_RESOLVED:    { icon: '✅', color: '#00c896', bg: 'rgba(0, 200, 150, 0.1)' },
-  AI_RESOLVED:        { icon: '🤖', color: '#00c896', bg: 'rgba(0, 200, 150, 0.1)' },
-  AI_FAILED:          { icon: '⚠️', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
-  SLA_WARNING:        { icon: '⏱️', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
-  SLA_BREACH:         { icon: '🔴', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.1)' },
-  AGENT_REPLIED:      { icon: '💬', color: '#0070f3', bg: 'rgba(0, 112, 243, 0.1)' },
-  EMBEDDING_COMPUTED: { icon: '🔢', color: '#64748b', bg: 'rgba(100, 116, 139, 0.1)' },
-  SYSTEM_ERROR:       { icon: '❌', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.1)' }
+  TICKET_CREATED:     { icon: 'confirmation_number', color: 'var(--brand)', bg: 'color-mix(in srgb, var(--brand) 10%, transparent)' },
+  TICKET_ASSIGNED:    { icon: 'person_add', color: 'var(--ai)', bg: 'color-mix(in srgb, var(--ai) 10%, transparent)' },
+  TICKET_RESOLVED:    { icon: 'task_alt', color: 'var(--success-text)', bg: 'color-mix(in srgb, var(--success) 10%, transparent)' },
+  AI_RESOLVED:        { icon: 'auto_awesome', color: 'var(--success-text)', bg: 'color-mix(in srgb, var(--success) 10%, transparent)' },
+  AI_SUGGESTED:       { icon: 'lightbulb', color: 'var(--ai)', bg: 'color-mix(in srgb, var(--ai) 10%, transparent)' },
+  AI_FAILED:          { icon: 'report', color: 'var(--warning-text)', bg: 'color-mix(in srgb, var(--warning) 10%, transparent)' },
+  SLA_WARNING:        { icon: 'schedule', color: 'var(--warning-text)', bg: 'color-mix(in srgb, var(--warning) 10%, transparent)' },
+  SLA_BREACH:         { icon: 'error', color: 'var(--danger-text)', bg: 'color-mix(in srgb, var(--danger) 10%, transparent)' },
+  AGENT_REPLIED:      { icon: 'chat', color: 'var(--brand)', bg: 'color-mix(in srgb, var(--brand) 10%, transparent)' },
+  EMBEDDING_COMPUTED: { icon: 'data_object', color: 'var(--text-muted)', bg: 'color-mix(in srgb, var(--text-muted) 10%, transparent)' },
+  SYSTEM_ERROR:       { icon: 'cancel', color: 'var(--danger-text)', bg: 'color-mix(in srgb, var(--danger) 10%, transparent)' }
 };
 
 const LiveActivityFeed = ({ className = '' }) => {
@@ -80,9 +81,9 @@ const LiveActivityFeed = ({ className = '' }) => {
       {/* Header */}
       <div className="px-5 py-4 flex items-center justify-between border-b border-subtle">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 live-pulse"></span>
-            <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400">LIVE</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-success/10 border border-success/25">
+            <span className="w-1.5 h-1.5 rounded-full bg-success live-pulse"></span>
+            <span className="text-[9px] font-black uppercase tracking-wider text-success-text">LIVE</span>
           </div>
           <h3 className="text-sm font-bold tracking-tight text-heading font-heading">
             System Activity
@@ -95,7 +96,7 @@ const LiveActivityFeed = ({ className = '' }) => {
         {events.length > 0 && (
           <button 
             onClick={handleClear}
-            className="flex items-center gap-1.5 text-[10px] font-bold text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors cursor-pointer bg-red-500/10 dark:bg-red-500/20 border border-red-500/20 px-2.5 py-1.5 rounded-lg"
+            className="flex items-center gap-1.5 text-[10px] font-bold text-danger-text hover:text-danger-text dark:hover:text-danger-text transition-colors cursor-pointer bg-danger/10 border border-danger/20 px-2.5 py-1.5 rounded-lg"
           >
             <Trash2 size={11} />
             Clear
@@ -117,7 +118,7 @@ const LiveActivityFeed = ({ className = '' }) => {
           </div>
         ) : (
           events.map((event, idx) => {
-            const config = EVENT_CONFIGS[event.type] || { icon: '📢', color: '#64748b', bg: 'rgba(100, 116, 139, 0.1)' };
+            const config = EVENT_CONFIGS[event.type] || { icon: '📢', color: 'var(--text-muted)', bg: 'color-mix(in srgb, var(--text-muted) 10%, transparent)' };
             const isError = event.level === 'ERROR';
             const isWarn = event.level === 'WARN';
             
@@ -142,9 +143,9 @@ const LiveActivityFeed = ({ className = '' }) => {
                 <div className="flex items-start gap-3 min-w-0 flex-1">
                   <div 
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0 border border-subtle"
-                    style={{ backgroundColor: config.bg }}
+                    style={{ backgroundColor: config.bg, color: config.color }}
                   >
-                    {config.icon}
+                    <span className="material-symbols-outlined !text-[16px]">{config.icon}</span>
                   </div>
                   
                   <div className="min-w-0 flex-1">

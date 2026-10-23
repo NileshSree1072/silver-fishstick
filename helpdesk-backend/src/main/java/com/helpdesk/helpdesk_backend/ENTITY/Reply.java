@@ -47,6 +47,10 @@ public class Reply {
     @Builder.Default
     private boolean isAiGenerated = false;
 
+    // JSON list of sources the AI reply was grounded on
+    @Column(columnDefinition = "TEXT")
+    private String aiSources;
+
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 

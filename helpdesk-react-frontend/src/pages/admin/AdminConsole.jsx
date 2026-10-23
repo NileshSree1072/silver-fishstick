@@ -53,17 +53,17 @@ const AGENT_AVAILABILITY_OPTIONS = [
 
 const availabilityMeta = {
   ONLINE: { label: 'Online', color: 'var(--brand)' },
-  AWAY: { label: 'Away', color: '#f59e0b' },
-  BUSY: { label: 'Busy', color: '#ef4444' },
-  ON_BREAK: { label: 'On Break', color: '#38bdf8' },
-  IN_MEETING: { label: 'In Meeting', color: '#a78bfa' },
-  TRAINING: { label: 'Training', color: '#818cf8' },
-  IDLE: { label: 'Idle', color: '#94a3b8' },
-  OFFLINE: { label: 'Offline', color: '#6b7280' },
+  AWAY: { label: 'Away', color: 'var(--warning-text)' },
+  BUSY: { label: 'Busy', color: 'var(--danger-text)' },
+  ON_BREAK: { label: 'On Break', color: 'var(--brand)' },
+  IN_MEETING: { label: 'In Meeting', color: 'var(--ai)' },
+  TRAINING: { label: 'Training', color: 'var(--brand)' },
+  IDLE: { label: 'Idle', color: 'var(--text-muted)' },
+  OFFLINE: { label: 'Offline', color: 'var(--text-muted)' },
 };
 
 const getAvailabilityMeta = (status, isActive = true) => {
-  if (!isActive) return { label: 'Inactive', color: '#6b7280' };
+  if (!isActive) return { label: 'Inactive', color: 'var(--text-muted)' };
   return availabilityMeta[status] || availabilityMeta.OFFLINE;
 };
 
@@ -557,9 +557,9 @@ const AdminConsole = ({ activeTab }) => {
   };
 
   const roleColors = {
-    ADMIN: { bg: 'rgba(139,92,246,0.12)', text: '#a78bfa' },
-    AGENT: { bg: 'rgba(16,185,129,0.12)',  text: '#34d399' },
-    USER:  { bg: 'rgba(59,130,246,0.12)',  text: '#60a5fa' },
+    ADMIN: { bg: 'color-mix(in srgb, var(--ai) 12%, transparent)', text: 'var(--ai)' },
+    AGENT: { bg: 'color-mix(in srgb, var(--brand) 12%, transparent)',  text: 'var(--success-text)' },
+    USER:  { bg: 'color-mix(in srgb, var(--brand) 12%, transparent)',  text: 'var(--brand)' },
   };
 
   const logColor = (type) => {
@@ -582,7 +582,7 @@ const AdminConsole = ({ activeTab }) => {
               { label: 'Open',           value: stats.openTickets,     accent: 'var(--status-open)',      sub: 'awaiting' },
               { label: 'In Progress',    value: stats.progressTickets, accent: 'var(--status-progress)', sub: 'active agents' },
               { label: 'Resolved',       value: stats.resolvedTickets, accent: 'var(--status-resolved)', sub: 'completed' },
-              { label: 'CSAT',           value: `${stats.averageRating.toFixed(1)}/5`, accent: '#facc15', sub: `${stats.totalRatings} reviews` },
+              { label: 'CSAT',           value: `${stats.averageRating.toFixed(1)}/5`, accent: 'var(--warning)', sub: `${stats.totalRatings} reviews` },
             ].map(({ label, value, accent, sub }) => (
               <div key={label} className="card p-4 flex flex-col gap-1.5" style={{ position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: accent, borderRadius: '14px 14px 0 0', opacity: 0.8 }} />
@@ -772,7 +772,7 @@ const AdminConsole = ({ activeTab }) => {
               Pending Approval
               {pendingArticles.length > 0 && (
                 <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
-                  style={{ background: kbSubView === 'pending' ? 'rgba(255,255,255,0.25)' : 'rgba(245,158,11,0.2)', color: kbSubView === 'pending' ? '#fff' : '#f59e0b' }}>
+                  style={{ background: kbSubView === 'pending' ? 'rgba(255,255,255,0.25)' : 'color-mix(in srgb, var(--warning) 20%, transparent)', color: kbSubView === 'pending' ? '#fff' : 'var(--warning)' }}>
                   {pendingArticles.length}
                 </span>
               )}
@@ -817,11 +817,11 @@ const AdminConsole = ({ activeTab }) => {
                     ) : pendingArticles.map(art => (
                       <div key={art.id}
                         className="flex items-center justify-between p-4 rounded-xl transition-all"
-                        style={{ background: previewArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: `1px solid ${previewArticle?.id === art.id ? 'rgba(16,185,129,0.2)' : 'var(--border-subtle)'}` }}>
+                        style={{ background: previewArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: `1px solid ${previewArticle?.id === art.id ? 'color-mix(in srgb, var(--brand) 20%, transparent)' : 'var(--border-subtle)'}` }}>
                         <div className="flex-1 min-w-0 mr-4">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
-                              style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
+                              style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)' }}>
                               {art.categoryName || 'Uncategorized'}
                             </span>
                             <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
@@ -838,13 +838,13 @@ const AdminConsole = ({ activeTab }) => {
                           </button>
                           <button onClick={() => handlePublishArticle(art.id)}
                             className="p-2 rounded-lg cursor-pointer transition-colors"
-                            style={{ background: 'var(--brand-dim)', border: '1px solid rgba(16,185,129,0.25)', color: 'var(--brand)' }}
+                            style={{ background: 'var(--brand-dim)', border: '1px solid color-mix(in srgb, var(--brand) 25%, transparent)', color: 'var(--brand)' }}
                             title="Publish article">
                             <Check size={14} />
                           </button>
                           <button onClick={() => handleDeleteArticle(art.id)}
                             className="p-2 rounded-lg cursor-pointer transition-colors"
-                            style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}
+                            style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)', color: 'var(--danger-text)' }}
                             title="Delete draft">
                             <Trash2 size={14} />
                           </button>
@@ -890,7 +890,7 @@ const AdminConsole = ({ activeTab }) => {
                       <BookOpen size={15} style={{ color: 'var(--brand)' }} />
                       <span className="text-sm font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>Published Articles</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                        style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid rgba(16,185,129,0.2)' }}>
+                        style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
                         {publishedArticles.length} live
                       </span>
                     </div>
@@ -911,7 +911,7 @@ const AdminConsole = ({ activeTab }) => {
                     ) : publishedArticles.map(art => (
                       <div key={art.id}
                         className="flex items-center justify-between p-4 rounded-xl transition-all"
-                        style={{ background: editingArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: '1px solid ' + (editingArticle?.id === art.id ? 'rgba(16,185,129,0.2)' : 'var(--border-subtle)') }}>
+                        style={{ background: editingArticle?.id === art.id ? 'var(--brand-dim)' : 'var(--bg-input)', border: '1px solid ' + (editingArticle?.id === art.id ? 'color-mix(in srgb, var(--brand) 20%, transparent)' : 'var(--border-subtle)') }}>
                         <div className="flex-1 min-w-0 mr-4">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
@@ -927,19 +927,19 @@ const AdminConsole = ({ activeTab }) => {
                         <div className="flex items-center gap-2 shrink-0">
                           <button onClick={() => openEditArticle(art)}
                             className="p-2 rounded-lg cursor-pointer transition-colors"
-                            style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', color: '#60a5fa' }}
+                            style={{ background: 'color-mix(in srgb, var(--brand) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)', color: 'var(--brand)' }}
                             title="Edit article">
                             <Edit2 size={14} />
                           </button>
                           <button onClick={() => handleUnpublishArticle(art.id)}
                             className="p-2 rounded-lg cursor-pointer transition-colors"
-                            style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', color: '#f59e0b' }}
+                            style={{ background: 'color-mix(in srgb, var(--warning) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 20%, transparent)', color: 'var(--warning-text)' }}
                             title="Unpublish (move to drafts)">
                             <AlertCircle size={14} />
                           </button>
                           <button onClick={() => handleDeleteArticle(art.id)}
                             className="p-2 rounded-lg cursor-pointer transition-colors"
-                            style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}
+                            style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)', color: 'var(--danger-text)' }}
                             title="Delete permanently">
                             <Trash2 size={14} />
                           </button>
@@ -1079,7 +1079,7 @@ const AdminConsole = ({ activeTab }) => {
                       <Edit2 size={13} />
                     </button>
                     <button onClick={() => handleDeleteCategory(cat.id)} className="p-2 rounded-lg cursor-pointer"
-                      style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                      style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)', color: 'var(--danger-text)' }}>
                       <Trash2 size={13} />
                     </button>
                   </div>

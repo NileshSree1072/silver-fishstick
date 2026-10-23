@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { AlertTriangle, Info, Trash2, X } from 'lucide-react';
 
 /**
  * ConfirmModal – a styled replacement for window.confirm()
@@ -10,10 +9,17 @@ import { AlertTriangle, Info, Trash2, X } from 'lucide-react';
  *   message     string | node    – body text
  *   confirmText string           – confirm button label (default "Confirm")
  *   cancelText  string           – cancel button label  (default "Cancel")
- *   variant     'danger' | 'warning' | 'info'  (default 'warning')
+ *   variant     'danger' | 'warning' | 'info' | 'primary'  (default 'warning')
  *   onConfirm   () => void       – called when user clicks confirm
  *   onCancel    () => void       – called when user clicks cancel / presses Esc
  */
+const VARIANTS = {
+  danger:  { icon: 'delete',       iconClass: 'text-danger bg-danger-soft border-danger-border',    button: 'btn-danger !bg-danger !text-white !border-danger hover:!opacity-90' },
+  warning: { icon: 'warning',      iconClass: 'text-warning bg-warning-soft border-warning-border', button: 'btn-primary' },
+  info:    { icon: 'info',         iconClass: 'text-on-surface-variant bg-surface-container border-outline-variant', button: 'btn-primary' },
+  primary: { icon: 'check_circle', iconClass: 'text-primary bg-brand-soft border-brand-border',     button: 'btn-primary' },
+};
+
 const ConfirmModal = ({
   open,
   title = 'Are you sure?',
@@ -24,9 +30,8 @@ const ConfirmModal = ({
   onConfirm,
   onCancel,
 }) => {
-  // Close on Escape
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
     const handler = (e) => { if (e.key === 'Escape') onCancel?.(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -34,93 +39,29 @@ const ConfirmModal = ({
 
   if (!open) return null;
 
-  const cfg = {
-    danger:  { icon: <Trash2   size={22} />, color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.25)',  btn: 'bg-red-500/90 hover:bg-red-500 text-white' },
-    warning: { icon: <AlertTriangle size={22} />, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', btn: 'bg-amber-500/90 hover:bg-amber-500 text-white' },
-    info:    { icon: <Info      size={22} />, color: '#60a5fa', bg: 'rgba(96,165,250,0.12)', border: 'rgba(96,165,250,0.25)', btn: 'bg-blue-500/90 hover:bg-blue-500 text-white' },
-  }[variant] || cfg?.warning;
+  const cfg = VARIANTS[variant] || VARIANTS.warning;
 
   return (
-    /* Backdrop */
-    <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}
-      onClick={onCancel}
-    >
-      {/* Dialog panel */}
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 anim-fade-in" onClick={onCancel}>
       <div
-        className="relative w-full max-w-md rounded-2xl anim-bounce-in overflow-hidden"
-        style={{
-          background: 'var(--bg-card)',
-          border: `1px solid ${cfg.border}`,
-          boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
-        }}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirm-title"
+        className="w-full max-w-md rounded-xl border border-outline-variant bg-popover shadow-[var(--shadow-xl)] anim-scale-up"
         onClick={e => e.stopPropagation()}
       >
-        {/* Coloured top stripe */}
-        <div style={{ height: 3, background: cfg.color, opacity: 0.9 }} />
-
-        {/* Header */}
-        <div className="flex items-start justify-between px-6 pt-5 pb-0 gap-4">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
-            >
-              {cfg.icon}
-            </div>
-            <h3
-              className="text-sm font-bold leading-tight"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}
-            >
-              {title}
-            </h3>
+        <div className="flex items-start gap-3.5 px-5 pt-5 pb-4">
+          <div className={`w-10 h-10 rounded-[10px] border grid place-items-center shrink-0 ${cfg.iconClass}`}>
+            <span className="material-symbols-outlined !text-[20px]">{cfg.icon}</span>
           </div>
-          <button
-            onClick={onCancel}
-            className="p-1 rounded-lg cursor-pointer transition-colors shrink-0 mt-0.5"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-heading)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            <X size={16} />
-          </button>
+          <div className="flex-1 min-w-0 pt-0.5">
+            <h3 id="confirm-title" className="text-[15px] font-semibold text-on-surface">{title}</h3>
+            {message && <p className="text-[13.5px] leading-relaxed text-on-surface-variant mt-1">{message}</p>}
+          </div>
         </div>
-
-        {/* Body */}
-        <div className="px-6 pt-3 pb-5">
-          <p
-            className="text-sm leading-relaxed"
-            style={{ color: 'var(--text-body)', paddingLeft: '3.25rem' }}
-          >
-            {message}
-          </p>
-        </div>
-
-        {/* Divider */}
-        <div style={{ height: 1, background: 'var(--border-subtle)', marginBottom: 0 }} />
-
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 rounded-xl text-sm font-semibold cursor-pointer transition-all"
-            style={{
-              background: 'var(--bg-input)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-body)',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card-hover)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'var(--bg-input)'}
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold cursor-pointer transition-all ${cfg.btn}`}
-          >
-            {confirmText}
-          </button>
+        <div className="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-outline-variant bg-surface-container rounded-b-xl">
+          <button type="button" onClick={onCancel} className="btn btn-secondary">{cancelText}</button>
+          <button type="button" onClick={onConfirm} className={`btn ${cfg.button}`} autoFocus>{confirmText}</button>
         </div>
       </div>
     </div>

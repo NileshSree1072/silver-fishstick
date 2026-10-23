@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.helpdesk.helpdesk_backend.DTO.REQUEST.AiFeedbackRequest;
 import com.helpdesk.helpdesk_backend.DTO.REQUEST.CreateTicketRequest;
 import com.helpdesk.helpdesk_backend.DTO.REQUEST.UpdateTicketRequest;
 import com.helpdesk.helpdesk_backend.DTO.RESPONSE.AttachmentResponse;
@@ -169,6 +170,17 @@ public class TicketController {
                         Authentication auth) {
                 return ResponseEntity.ok(
                                 ticketService.reopenTicket(id, currentUser(auth)));
+        }
+
+        // USER: confirm or reject the AI's answer
+        @PostMapping("/{id}/ai-feedback")
+        @PreAuthorize("hasRole('USER')")
+        public ResponseEntity<TicketResponse> aiFeedback(
+                        @PathVariable UUID id,
+                        @Valid @RequestBody AiFeedbackRequest req,
+                        Authentication auth) {
+                return ResponseEntity.ok(
+                                ticketService.submitAiFeedback(id, req.getHelpful(), currentUser(auth)));
         }
 
         // USER: close a ticket

@@ -23,8 +23,13 @@ const CustomSelect = ({
         setIsOpen(false);
       }
     };
+    const handleEscape = (event) => event.key === 'Escape' && setIsOpen(false);
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 
   const selectedOption = options.find(opt => opt.value === value);
@@ -47,11 +52,13 @@ const CustomSelect = ({
           type="button"
           disabled={disabled}
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center justify-between w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:border-primary transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${triggerClassName}`}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          className={`flex items-center justify-between w-full bg-[var(--bg-input)] border border-outline rounded-lg px-3 py-2 text-[13px] text-on-surface shadow-[var(--shadow-xs)] focus:outline-none focus-visible:border-primary focus-visible:shadow-[var(--shadow-brand)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${triggerClassName}`}
           style={style}
         >
           <span className="truncate mr-2">{selectedOption ? selectedOption.label : placeholder}</span>
-          <span className={`material-symbols-outlined text-[16px] text-on-surface-variant transition-transform duration-180 shrink-0 ${isOpen ? 'rotate-180' : ''}`}>
+          <span className={`material-symbols-outlined !text-[17px] text-on-surface-variant transition-transform duration-150 shrink-0 ${isOpen ? 'rotate-180' : ''}`}>
             expand_more
           </span>
         </button>
@@ -60,21 +67,19 @@ const CustomSelect = ({
       {/* Options Panel */}
       {isOpen && (
         <div 
-          className={`absolute z-50 left-0 right-0 mt-1.5 bg-surface-elevated border border-outline-variant/60 rounded-xl shadow-xl max-h-60 overflow-y-auto anim-fade-in divide-y divide-outline-variant/10 ${optionsClassName}`}
-          style={{ 
-            backgroundColor: 'var(--bg-elevated)', 
-            borderColor: 'var(--border-subtle)',
-            boxShadow: 'var(--shadow-lg)'
-          }}
+          role="listbox"
+          className={`absolute z-50 left-0 right-0 mt-1 p-1 bg-popover border border-outline-variant rounded-lg shadow-[var(--shadow-lg)] max-h-64 overflow-y-auto anim-fade-in ${optionsClassName}`}
         >
           {options.map((opt, idx) => {
             const isSelected = opt.value === value;
             return (
               <div
                 key={opt.value ?? idx}
+                role="option"
+                aria-selected={isSelected}
                 onClick={() => handleSelect(opt.value)}
-                className={`px-3.5 py-2.5 text-xs cursor-pointer transition-colors flex items-center justify-between text-on-surface hover:bg-primary/10 ${
-                  isSelected ? 'bg-primary/5 font-semibold text-primary' : ''
+                className={`px-2.5 py-1.5 rounded-md text-[13px] cursor-pointer transition-colors flex items-center justify-between text-on-surface hover:bg-surface-container-high ${
+                  isSelected ? 'font-medium' : ''
                 }`}
               >
                 {renderOption ? (
@@ -83,7 +88,7 @@ const CustomSelect = ({
                   <span>{opt.label}</span>
                 )}
                 {isSelected && (
-                  <span className="material-symbols-outlined text-[14px] text-primary shrink-0 ml-2">check</span>
+                  <span className="material-symbols-outlined !text-[16px] text-primary shrink-0 ml-2">check</span>
                 )}
               </div>
             );

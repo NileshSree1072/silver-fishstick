@@ -6,23 +6,23 @@ import { getTimeline } from '../../api/performanceApi';
 import DateRangeFilter from '../../components/common/DateRangeFilter';
 
 const EVENT_COLORS = {
-  CREATED:        { bg: 'rgba(76,215,246,0.10)',  color: '#4cd7f6' },
-  ASSIGNED:       { bg: 'rgba(79,70,229,0.12)',   color: '#c3c0ff' },
-  REASSIGNED:     { bg: 'rgba(124,58,237,0.12)',  color: '#a78bfa' },
-  FIRST_REPLY:    { bg: 'rgba(0,200,150,0.12)',   color: '#00c896' },
-  REPLY_SENT:     { bg: 'rgba(0,200,150,0.08)',   color: '#34d399' },
-  TRANSFERRED:    { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b' },
-  STATUS_CHANGED: { bg: 'rgba(99,102,241,0.08)',  color: '#818cf8' },
-  RESOLVED:       { bg: 'rgba(0,200,150,0.15)',   color: '#00c896' },
-  CLOSED:         { bg: 'rgba(145,143,161,0.10)', color: '#918fa1' },
-  BREACHED:       { bg: 'rgba(244,63,94,0.12)',   color: '#f43f5e' },
-  LATE_ASSIGNED:  { bg: 'rgba(251,146,60,0.12)',  color: '#fb923c' },
+  CREATED:        { bg: 'color-mix(in srgb, var(--brand) 10%, transparent)',  color: 'var(--brand)' },
+  ASSIGNED:       { bg: 'color-mix(in srgb, var(--brand) 12%, transparent)',   color: 'var(--brand)' },
+  REASSIGNED:     { bg: 'color-mix(in srgb, var(--ai) 12%, transparent)',  color: 'var(--ai)' },
+  FIRST_REPLY:    { bg: 'color-mix(in srgb, var(--success) 12%, transparent)',   color: 'var(--success-text)' },
+  REPLY_SENT:     { bg: 'color-mix(in srgb, var(--success) 8%, transparent)',   color: 'var(--success-text)' },
+  TRANSFERRED:    { bg: 'color-mix(in srgb, var(--warning) 12%, transparent)',  color: 'var(--warning-text)' },
+  STATUS_CHANGED: { bg: 'color-mix(in srgb, var(--brand) 8%, transparent)',  color: 'var(--brand)' },
+  RESOLVED:       { bg: 'color-mix(in srgb, var(--success) 15%, transparent)',   color: 'var(--success-text)' },
+  CLOSED:         { bg: 'color-mix(in srgb, var(--text-muted) 10%, transparent)', color: 'var(--text-muted)' },
+  BREACHED:       { bg: 'color-mix(in srgb, var(--danger) 12%, transparent)',   color: 'var(--danger-text)' },
+  LATE_ASSIGNED:  { bg: 'color-mix(in srgb, var(--warning) 12%, transparent)',  color: 'var(--warning-text)' },
 };
 
 const EventChip = ({ type }) => {
-  const c = EVENT_COLORS[type] || { bg: 'rgba(100,116,139,0.1)', color: '#94a3b8' };
+  const c = EVENT_COLORS[type] || { bg: 'color-mix(in srgb, var(--text-muted) 10%, transparent)', color: 'var(--text-muted)' };
   return (
-    <span className="chip" style={{ background: c.bg, color: c.color, border: `1px solid ${c.color}30` }}>
+    <span className="chip" style={{ background: c.bg, color: c.color, border: `1px solid color-mix(in srgb, ${c.color} 19%, transparent)` }}>
       {(type || '').replace(/_/g, ' ')}
     </span>
   );
@@ -60,8 +60,8 @@ export default function TicketAuditLog() {
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)' }}>
-            <Activity size={16} style={{ color: '#818cf8' }} />
+            style={{ background: 'color-mix(in srgb, var(--brand) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
+            <Activity size={16} style={{ color: 'var(--brand)' }} />
           </div>
           <div>
             <h1 className="text-base font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>

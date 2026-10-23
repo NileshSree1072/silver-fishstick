@@ -5,10 +5,10 @@ import { axiosInstance } from '../../api/axiosInstance';
 import { useNotifications } from '../../context/NotificationContext';
 
 const PRIORITY_COLORS = {
-  URGENT: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: 'rgba(239, 68, 68, 0.2)' },
-  HIGH: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.1)', border: 'rgba(249, 115, 22, 0.2)' },
-  MEDIUM: { text: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: 'rgba(234, 179, 8, 0.2)' },
-  LOW: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)', border: 'rgba(148, 163, 184, 0.2)' },
+  URGENT: { text: 'var(--danger-text)', bg: 'color-mix(in srgb, var(--danger) 10%, transparent)', border: 'color-mix(in srgb, var(--danger) 20%, transparent)' },
+  HIGH: { text: 'var(--warning-text)', bg: 'color-mix(in srgb, var(--warning) 10%, transparent)', border: 'color-mix(in srgb, var(--warning) 20%, transparent)' },
+  MEDIUM: { text: 'var(--warning-text)', bg: 'color-mix(in srgb, var(--warning) 10%, transparent)', border: 'color-mix(in srgb, var(--warning) 20%, transparent)' },
+  LOW: { text: 'var(--text-muted)', bg: 'color-mix(in srgb, var(--text-muted) 10%, transparent)', border: 'color-mix(in srgb, var(--text-muted) 20%, transparent)' },
 };
 
 const SLAConfig = () => {
@@ -73,10 +73,10 @@ const SLAConfig = () => {
 
   if (isError) {
     return (
-      <div className="card p-8 flex flex-col items-center justify-center text-center gap-4 border border-rose-500/20 bg-rose-500/5">
-        <span className="material-symbols-outlined text-rose-500 text-[40px] live-pulse">error</span>
+      <div className="card p-8 flex flex-col items-center justify-center text-center gap-4 border border-danger/20 bg-danger/5">
+        <span className="material-symbols-outlined text-danger-text text-[40px] live-pulse">error</span>
         <div>
-          <h3 className="text-sm font-bold text-rose-400">Failed to load SLA rules</h3>
+          <h3 className="text-sm font-bold text-danger-text">Failed to load SLA rules</h3>
           <p className="text-xs text-on-surface-variant mt-1">Please ensure the backend is connected and try again.</p>
         </div>
       </div>
@@ -161,7 +161,7 @@ const SLAConfig = () => {
                         })}
                       />
                       {errors.responseHours && (
-                        <p className="text-[9px] text-rose-500 font-semibold mt-1">{errors.responseHours.message}</p>
+                        <p className="text-[9px] text-danger-text font-semibold mt-1">{errors.responseHours.message}</p>
                       )}
                     </div>
 
@@ -182,7 +182,7 @@ const SLAConfig = () => {
                         })}
                       />
                       {errors.resolutionHours && (
-                        <p className="text-[9px] text-rose-500 font-semibold mt-1">{errors.resolutionHours.message}</p>
+                        <p className="text-[9px] text-danger-text font-semibold mt-1">{errors.resolutionHours.message}</p>
                       )}
                     </div>
                   </div>

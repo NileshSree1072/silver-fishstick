@@ -9,19 +9,19 @@ const SLAStatusBadge = ({ status }) => {
   if (!status) return <span style={{ color: 'var(--text-disabled)' }}>—</span>;
   if (status === 'OK' || status === 'SAFE') return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(0,200,150,0.12)', color: '#00c896', border: '1px solid rgba(0,200,150,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success-text)', border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)' }}>
       {status}
     </span>
   );
   if (status === 'AT_RISK' || status === 'WARNING') return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
       {status}
     </span>
   );
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(244,63,94,0.12)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)', border: '1px solid color-mix(in srgb, var(--danger) 25%, transparent)' }}>
       {status}
     </span>
   );
@@ -59,8 +59,8 @@ export default function TransferLog() {
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.2)' }}>
-            <ArrowLeftRight size={16} style={{ color: '#f59e0b' }} />
+            style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 20%, transparent)' }}>
+            <ArrowLeftRight size={16} style={{ color: 'var(--warning-text)' }} />
           </div>
           <div>
             <h1 className="text-base font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>

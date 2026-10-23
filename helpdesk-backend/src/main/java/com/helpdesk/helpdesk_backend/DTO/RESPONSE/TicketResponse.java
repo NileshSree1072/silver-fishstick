@@ -3,6 +3,7 @@ package com.helpdesk.helpdesk_backend.DTO.RESPONSE;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.helpdesk.helpdesk_backend.ENUM.AiFeedbackStatus;
 import com.helpdesk.helpdesk_backend.ENUM.Priority;
 import com.helpdesk.helpdesk_backend.ENUM.TicketStatus;
 
@@ -29,6 +30,8 @@ public class TicketResponse {
     private String         assignedToName;
 
     private boolean        aiResolved;
+    private AiFeedbackStatus aiFeedback;
+    private Double         aiConfidence;
     private LocalDateTime  createdAt;
     private LocalDateTime  updatedAt;
     private LocalDateTime  resolvedAt;

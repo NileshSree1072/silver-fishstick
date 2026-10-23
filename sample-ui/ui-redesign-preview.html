@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aegis UI Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   Design tokens
+   Principle: neutral surfaces, ONE brand colour, semantic colours only
+   where they carry meaning (urgent, breach, success). AI content gets a
+   single muted violet used as an accent line + icon, never as a fill.
+   ══════════════════════════════════════════════════════════════════════ */
+:root, [data-theme="light"] {
+  /* neutrals */
+  --bg-app:#f7f8fa; --surface:#ffffff; --surface-2:#f9fafb; --surface-3:#f2f4f7; --hover:#f5f6f8;
+  --border:#e4e7ec; --border-strong:#d0d5dd;
+  --text-strong:#101828; --text:#344054; --text-muted:#667085; --text-faint:#98a2b3;
+  /* brand */
+  --brand:#3e5fd8; --brand-hover:#3451c2; --brand-soft:#eef2ff; --brand-soft-border:#c7d4fb; --brand-text:#3451c2; --on-brand:#ffffff;
+  /* AI accent */
+  --ai:#6e56cf; --ai-soft:#f5f3ff; --ai-border:#ddd6fe;
+  /* semantic */
+  --danger:#d92d20; --danger-text:#b42318; --danger-soft:#fef3f2; --danger-border:#fecdca;
+  --warning:#dc6803; --warning-text:#b54708; --warning-soft:#fffaeb; --warning-border:#fedf89;
+  --success:#12b76a; --success-text:#067647; --success-soft:#ecfdf3; --success-border:#abefc6;
+  --info:#0e7090;
+  /* notes */
+  --note-soft:#fffaeb; --note-border:#fedf89; --note-rule:#f79009;
+  /* status dots */
+  --st-open:#2e90fa; --st-progress:#f79009; --st-resolved:#12b76a; --st-closed:#98a2b3;
+  /* elevation */
+  --shadow-xs:0 1px 2px rgba(16,24,40,.05);
+  --shadow-sm:0 1px 3px rgba(16,24,40,.08), 0 1px 2px rgba(16,24,40,.04);
+  --shadow-lg:0 12px 24px -4px rgba(16,24,40,.10), 0 4px 8px -2px rgba(16,24,40,.04);
+  --focus-ring:0 0 0 3px rgba(62,95,216,.18);
+  --skeleton:#eef0f3; --skeleton-shine:#f7f8fa;
+  --marker-bg:#101828; --marker-fg:#ffffff;
+}
+[data-theme="dark"] {
+  --bg-app:#0c0e12; --surface:#13161b; --surface-2:#171a20; --surface-3:#1d2129; --hover:#1a1e25;
+  --border:#252a33; --border-strong:#333a45;
+  --text-strong:#f5f6f7; --text:#c9cdd3; --text-muted:#8a919c; --text-faint:#5f6672;
+  --brand:#5b7cfa; --brand-hover:#7390fb; --brand-soft:rgba(91,124,250,.12); --brand-soft-border:rgba(91,124,250,.32); --brand-text:#93a8fc; --on-brand:#ffffff;
+  --ai:#a594f9; --ai-soft:rgba(165,148,249,.08); --ai-border:rgba(165,148,249,.28);
+  --danger:#f97066; --danger-text:#fda29b; --danger-soft:rgba(240,68,56,.10); --danger-border:rgba(240,68,56,.30);
+  --warning:#fdb022; --warning-text:#fec84b; --warning-soft:rgba(247,144,9,.10); --warning-border:rgba(247,144,9,.30);
+  --success:#32d583; --success-text:#75e0a7; --success-soft:rgba(18,183,106,.10); --success-border:rgba(18,183,106,.30);
+  --info:#67e3f9;
+  --note-soft:rgba(247,144,9,.07); --note-border:rgba(247,144,9,.25); --note-rule:#f79009;
+  --st-open:#53b1fd; --st-progress:#fdb022; --st-resolved:#32d583; --st-closed:#5f6672;
+  --shadow-xs:0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.35);
+  --shadow-lg:0 16px 32px -8px rgba(0,0,0,.55);
+  --focus-ring:0 0 0 3px rgba(91,124,250,.25);
+  --skeleton:#1d2129; --skeleton-shine:#252a33;
+  --marker-bg:#f5f6f7; --marker-fg:#101828;
+}
+
+* { box-sizing:border-box; }
+html, body { margin:0; height:100%; }
+body { background:var(--bg-app); color:var(--text); font:13px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"cv11","ss01"; }
+h1,h2,h3,h4 { color:var(--text-strong); margin:0; font-weight:600; letter-spacing:-.01em; }
+button { font:inherit; color:inherit; cursor:pointer; }
+input, textarea { font:inherit; color:var(--text-strong); }
+.ms { font-family:'Material Symbols Outlined'; font-weight:400; font-style:normal; font-size:18px; line-height:1; display:inline-block; vertical-align:middle; font-variation-settings:'FILL' 0, 'wght' 400; }
+.ms.fill { font-variation-settings:'FILL' 1, 'wght' 400; }
+.mono { font-family:'JetBrains Mono', ui-monospace, monospace; font-size:.92em; }
+.num { font-variant-numeric:tabular-nums; }
+.muted { color:var(--text-muted); } .faint { color:var(--text-faint); }
+.row { display:flex; align-items:center; gap:8px; }
+.grow { flex:1; min-width:0; }
+.spacer { flex:1; }
+.truncate { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rel { position:relative; }
+
+/* ── Preview chrome (not part of the app) ─────────────────────────────── */
+.preview-bar { position:sticky; top:0; z-index:100; display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 16px; background:var(--surface); border-bottom:1px solid var(--border); }
+.preview-bar h1 { font-size:13.5px; margin-right:8px; }
+.seg { display:inline-flex; background:var(--surface-3); border:1px solid var(--border); border-radius:8px; padding:2px; }
+.seg button { border:0; background:transparent; padding:5px 11px; border-radius:6px; font-weight:500; font-size:12px; color:var(--text-muted); display:inline-flex; align-items:center; gap:5px; }
+.seg button.on { background:var(--surface); color:var(--text-strong); box-shadow:var(--shadow-xs); }
+.chip-btn { border:1px solid var(--border); background:var(--surface); border-radius:8px; padding:5px 10px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; color:var(--text); box-shadow:var(--shadow-xs); }
+.chip-btn.on { border-color:var(--border-strong); background:var(--surface-3); }
+
+.stage { padding:20px; display:flex; gap:20px; align-items:flex-start; }
+.frame { flex:1; min-width:0; container-type:inline-size; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg-app); box-shadow:var(--shadow-lg); margin:0 auto; transition:max-width .25s; max-width:100%; }
+.frame.mobile { max-width:390px; }
+.legend { width:290px; flex-shrink:0; position:sticky; top:72px; max-height:calc(100vh - 92px); overflow:auto; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow-xs); }
+.legend h2 { font-size:13px; margin-bottom:4px; }
+.legend p { margin:0 0 12px; font-size:12px; }
+.legend ol { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+.legend li { display:flex; gap:9px; font-size:12px; line-height:1.45; }
+.legend li b { color:var(--text-strong); font-weight:600; }
+.legend .group-title { font-size:11px; font-weight:600; color:var(--text-muted); margin:14px 0 8px; padding-top:12px; border-top:1px solid var(--border); }
+.palette-swatches { display:grid; grid-template-columns:repeat(6, 1fr); gap:5px; margin-bottom:4px; }
+.palette-swatches span { height:22px; border-radius:5px; border:1px solid var(--border); }
+body.hide-notes .legend, body.hide-notes .n { display:none !important; }
+@media (max-width: 1100px) { .stage { flex-direction:column; } .legend { width:100%; position:static; max-height:none; } }
+
+.n, .badge-n { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:5px; background:var(--marker-bg); color:var(--marker-fg); font:600 10px/1 Inter, sans-serif; }
+.n { position:absolute; top:-8px; right:-8px; z-index:5; box-shadow:0 0 0 2px var(--bg-app); }
+.view { display:none; } .view.on { display:block; }
+
+/* ── App shell ─────────────────────────────────────────────────────────── */
+.app { display:flex; height:780px; }
+.nav { width:56px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:12px 0; gap:4px; }
+.logo { width:30px; height:30px; border-radius:8px; background:var(--brand); display:grid; place-items:center; color:#fff; margin-bottom:12px; }
+.logo .ms { font-size:17px; }
+.nav button { width:36px; height:36px; border:0; border-radius:8px; background:transparent; color:var(--text-muted); display:grid; place-items:center; }
+.nav button:hover { background:var(--hover); color:var(--text-strong); }
+.nav button.on { background:var(--surface-3); color:var(--text-strong); }
+.nav .ms { font-size:20px; }
+.nav .bottom { margin-top:auto; }
+.me-avatar { width:28px; height:28px; border-radius:50%; background:var(--surface-3); border:1px solid var(--border); display:grid; place-items:center; font-size:10.5px; font-weight:600; color:var(--text); }
+
+.panel { background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; min-width:0; }
+.panel-head { padding:14px 16px 12px; border-bottom:1px solid var(--border); }
+.scroll { overflow-y:auto; flex:1; }
+
+.input { width:100%; background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; padding:7px 10px 7px 32px; outline:none; box-shadow:var(--shadow-xs); }
+.input:focus { border-color:var(--brand); box-shadow:var(--focus-ring); }
+.search { position:relative; }
+.search > .ms { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:17px; color:var(--text-faint); }
+.kbd { font:500 10px/1 'JetBrains Mono', monospace; border:1px solid var(--border); border-radius:4px; padding:2px 4px; color:var(--text-muted); background:var(--surface-2); }
+
+/* tabs used as queue filters */
+.tabs { display:flex; gap:2px; margin-top:12px; overflow-x:auto; scrollbar-width:none; }
+.tab { border:0; background:transparent; border-radius:6px; padding:4px 8px; font-size:12px; font-weight:500; color:var(--text-muted); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
+.tab:hover { background:var(--hover); color:var(--text-strong); }
+.tab.on { background:var(--surface-3); color:var(--text-strong); }
+.tab .count { font-size:11px; color:var(--text-faint); font-variant-numeric:tabular-nums; }
+.tab.on .count { color:var(--text-muted); }
+
+/* badges: neutral by default, colour only via a dot */
+.badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; padding:1px 7px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); white-space:nowrap; line-height:18px; }
+.badge .dot, .dot { width:6px; height:6px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.badge .ms { font-size:13px; }
+.badge.danger { color:var(--danger-text); background:var(--danger-soft); border-color:var(--danger-border); }
+.badge.success { color:var(--success-text); background:var(--success-soft); border-color:var(--success-border); }
+.badge.warning { color:var(--warning-text); background:var(--warning-soft); border-color:var(--warning-border); }
+.badge.ai { color:var(--ai); background:var(--ai-soft); border-color:var(--ai-border); }
+.badge.brand { color:var(--brand-text); background:var(--brand-soft); border-color:var(--brand-soft-border); }
+
+/* priority: signal bars instead of coloured pills */
+.prio { display:inline-flex; align-items:flex-end; gap:1.5px; height:11px; margin-right:1px; }
+.prio i { width:2.5px; border-radius:1px; background:var(--border-strong); display:block; }
+.prio i:nth-child(1) { height:5px; } .prio i:nth-child(2) { height:8px; } .prio i:nth-child(3) { height:11px; }
+.prio.p1 i:nth-child(-n+1), .prio.p2 i:nth-child(-n+2), .prio.p3 i { background:var(--text-muted); }
+.prio.urgent i { background:var(--danger); }
+
+.sla { font-size:11px; font-variant-numeric:tabular-nums; display:inline-flex; align-items:center; gap:3px; color:var(--text-muted); }
+.sla .ms { font-size:13px; }
+.sla.warn { color:var(--warning-text); } .sla.breach { color:var(--danger-text); font-weight:500; }
+
+/* Ticket queue */
+.queue { width:310px; flex-shrink:0; }
+.tcard { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; position:relative; }
+.tcard:hover { background:var(--hover); }
+.tcard.sel { background:var(--brand-soft); }
+.tcard.sel::before { content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--brand); }
+.tcard .top { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-muted); }
+.tcard .who { font-weight:500; color:var(--text); }
+.tcard h4 { font-size:13px; font-weight:500; margin:3px 0 7px; color:var(--text-strong); }
+.tcard.unread h4 { font-weight:600; }
+.tcard .meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:11px; }
+.mood-neg { color:var(--danger-text); font-size:11px; display:inline-flex; align-items:center; gap:3px; }
+.mood-neg .ms { font-size:13px; }
+.queue-foot { padding:9px 16px; border-top:1px solid var(--border); font-size:11px; display:flex; gap:12px; flex-wrap:wrap; color:var(--text-muted); background:var(--surface-2); }
+
+/* Conversation */
+.convo { flex:1; background:var(--bg-app); }
+.convo-head { padding:14px 20px; border-bottom:1px solid var(--border); background:var(--surface); }
+.convo-head h3 { font-size:15px; }
+.convo-head .meta { display:flex; gap:10px; align-items:center; flex-wrap:wrap; font-size:12px; margin-top:5px; color:var(--text-muted); }
+.convo-head .meta .sep { width:3px; height:3px; border-radius:50%; background:var(--text-faint); }
+.select { background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; padding:5px 8px 5px 10px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:6px; color:var(--text-strong); box-shadow:var(--shadow-xs); }
+.select .ms { font-size:16px; color:var(--text-faint); }
+.thread { padding:20px; display:flex; flex-direction:column; gap:16px; max-width:760px; margin:0 auto; }
+.msg { display:flex; gap:10px; align-items:flex-start; }
+.avatar { width:28px; height:28px; border-radius:50%; flex-shrink:0; display:grid; place-items:center; font-size:10.5px; font-weight:600; background:var(--surface-3); color:var(--text); border:1px solid var(--border); }
+.avatar.ai { background:var(--ai-soft); color:var(--ai); border-color:var(--ai-border); }
+.avatar.ai .ms { font-size:15px; }
+.msg-body { flex:1; min-width:0; }
+.msg-head { display:flex; align-items:baseline; gap:8px; font-size:12px; margin-bottom:4px; }
+.msg-head b { color:var(--text-strong); font-weight:600; }
+.msg-head .role { font-size:11px; color:var(--text-muted); }
+.msg-head time { font-size:11px; color:var(--text-faint); margin-left:auto; }
+.bubble { border:1px solid var(--border); border-radius:10px; padding:11px 14px; font-size:13px; background:var(--surface); color:var(--text); box-shadow:var(--shadow-xs); }
+.bubble p { margin:0 0 6px; } .bubble p:last-child { margin:0; }
+.bubble ol { margin:4px 0 6px; padding-left:18px; } .bubble li { margin:2px 0; }
+.bubble b { color:var(--text-strong); font-weight:600; }
+.bubble.mine { background:var(--brand-soft); border-color:var(--brand-soft-border); }
+.bubble.ai { border-left:2px solid var(--ai); border-top-left-radius:4px; border-bottom-left-radius:4px; }
+.bubble.note { background:var(--note-soft); border-color:var(--note-border); border-left:2px solid var(--note-rule); border-top-left-radius:4px; border-bottom-left-radius:4px; }
+.sources { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; padding-top:9px; border-top:1px solid var(--border); font-size:11.5px; }
+.sources .label { color:var(--text-muted); }
+.src { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:6px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:11.5px; line-height:18px; }
+.src .ms { font-size:14px; color:var(--text-muted); }
+.src .pct { color:var(--text-muted); font-variant-numeric:tabular-nums; }
+button.src:hover { border-color:var(--border-strong); background:var(--hover); color:var(--text-strong); }
+.day { text-align:center; font-size:11px; color:var(--text-faint); display:flex; align-items:center; gap:12px; }
+.day::before, .day::after { content:""; flex:1; height:1px; background:var(--border); }
+.event { display:flex; align-items:center; justify-content:center; gap:6px; font-size:11.5px; color:var(--text-muted); }
+.event .ms { font-size:15px; }
+
+.composer { border-top:1px solid var(--border); background:var(--surface); padding:12px 20px 14px; }
+.composer-box { border:1px solid var(--border-strong); border-radius:10px; background:var(--surface); box-shadow:var(--shadow-xs); max-width:760px; margin:0 auto; }
+.composer-box:focus-within { border-color:var(--brand); box-shadow:var(--focus-ring); }
+.composer-box.note-mode { background:var(--note-soft); border-color:var(--note-border); }
+.composer-tabs { display:flex; gap:2px; padding:6px 8px 0; }
+.composer-tabs button { border:0; background:transparent; padding:5px 10px; border-radius:6px; font-size:12px; font-weight:500; color:var(--text-muted); }
+.composer-tabs button.on { background:var(--surface-3); color:var(--text-strong); }
+.composer-box.note-mode .composer-tabs button.on { background:var(--note-border); color:var(--warning-text); }
+.composer textarea { width:100%; min-height:72px; resize:none; background:transparent; border:0; padding:8px 14px; outline:none; font-size:13px; display:block; }
+.composer-bar { display:flex; align-items:center; gap:4px; padding:6px 8px; border-top:1px solid var(--border); flex-wrap:wrap; }
+.tool { border:0; background:transparent; border-radius:6px; padding:4px 8px; font-size:12px; font-weight:500; display:inline-flex; align-items:center; gap:5px; color:var(--text-muted); }
+.tool:hover { background:var(--hover); color:var(--text-strong); }
+.tool .ms { font-size:17px; }
+.tool.ai .ms { color:var(--ai); }
+.vsep { width:1px; height:18px; background:var(--border); margin:0 4px; }
+.composer-hint { max-width:760px; margin:6px auto 0; font-size:11px; color:var(--text-faint); display:flex; gap:12px; }
+
+.btn { border:1px solid transparent; border-radius:8px; padding:7px 14px; font-weight:600; font-size:12.5px; display:inline-flex; align-items:center; gap:6px; line-height:18px; white-space:nowrap; }
+.btn .ms { font-size:17px; }
+.btn-primary { background:var(--brand); color:var(--on-brand); box-shadow:var(--shadow-xs); }
+.btn-primary:hover { background:var(--brand-hover); }
+.btn-secondary { background:var(--surface); border-color:var(--border-strong); color:var(--text-strong); box-shadow:var(--shadow-xs); }
+.btn-secondary:hover { background:var(--hover); }
+.btn-ghost { background:transparent; color:var(--text); }
+.btn-ghost:hover { background:var(--hover); }
+.btn-sm { padding:4px 10px; font-size:12px; border-radius:7px; }
+.btn-sm .ms { font-size:15px; }
+.btn-split { display:inline-flex; }
+.btn-split .btn:first-child { border-top-right-radius:0; border-bottom-right-radius:0; }
+.btn-split .btn:last-child { border-top-left-radius:0; border-bottom-left-radius:0; border-left:1px solid rgba(255,255,255,.25); padding:7px 8px; }
+.icon-btn { border:0; background:transparent; color:var(--text-faint); width:26px; height:26px; border-radius:6px; display:inline-grid; place-items:center; }
+.icon-btn:hover { background:var(--hover); color:var(--text-strong); }
+.icon-btn .ms { font-size:16px; }
+.icon-btn.voted { color:var(--success); } .icon-btn.voted-down { color:var(--danger); }
+
+/* AI Copilot */
+.copilot { width:340px; flex-shrink:0; border-right:0; border-left:1px solid var(--border); background:var(--surface-2); }
+.copilot .panel-head { background:var(--surface); display:flex; align-items:center; gap:8px; }
+.copilot .panel-head h3 { font-size:13px; }
+.ccard { margin:12px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow-xs); }
+.ccard + .ccard { margin-top:0; }
+.ccard-head { display:flex; align-items:center; gap:7px; padding:10px 12px; font-size:12px; font-weight:600; color:var(--text-strong); }
+.ccard-head > .ms { font-size:16px; color:var(--text-muted); }
+.ccard-body { padding:0 12px 12px; font-size:12.5px; }
+.ccard-body > p { margin:0; color:var(--text); }
+.stats { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.stat { padding:8px 10px; }
+.stat:nth-child(odd) { border-right:1px solid var(--border); }
+.stat:nth-child(-n+2) { border-bottom:1px solid var(--border); }
+.stat .label { font-size:11px; color:var(--text-muted); }
+.stat .value { font-weight:600; color:var(--text-strong); margin-top:1px; display:flex; align-items:center; gap:5px; font-size:12.5px; font-variant-numeric:tabular-nums; }
+.meter { height:4px; border-radius:2px; background:var(--surface-3); overflow:hidden; margin-top:6px; }
+.meter > span { display:block; height:100%; border-radius:2px; }
+.suggest-row { display:flex; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:12px; }
+.suggest-row .ms { font-size:16px; color:var(--ai); }
+.draft { font-size:12.5px; color:var(--text); border-left:2px solid var(--ai); padding:2px 0 2px 12px; max-height:200px; overflow:auto; }
+.draft p { margin:0 0 7px; } .draft ol { margin:0 0 7px; padding-left:18px; } .draft b { color:var(--text-strong); }
+.card-actions { display:flex; align-items:center; gap:6px; margin-top:12px; flex-wrap:wrap; }
+.card-foot { display:flex; align-items:center; gap:4px; margin-top:8px; font-size:11px; color:var(--text-faint); }
+.similar { display:flex; gap:10px; padding:9px 0; border-top:1px solid var(--border); align-items:center; }
+.similar:first-child { border-top:0; padding-top:0; }
+.similar .title { color:var(--text-strong); font-weight:500; font-size:12.5px; }
+.similar .sub { font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:5px; }
+.score { font:500 11px 'JetBrains Mono', monospace; color:var(--text-muted); min-width:30px; }
+
+/* Customer portal */
+.portal { display:flex; height:780px; }
+.portal-main { flex:1; display:flex; flex-direction:column; min-width:0; }
+.tracker { display:flex; align-items:center; margin-top:14px; }
+.step { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:500; color:var(--text-faint); white-space:nowrap; }
+.step .dot2 { width:18px; height:18px; border-radius:50%; display:grid; place-items:center; border:1.5px solid var(--border-strong); background:var(--surface); }
+.step .dot2 .ms { font-size:12px; }
+.step.done { color:var(--text); } .step.done .dot2 { background:var(--brand); border-color:var(--brand); color:#fff; }
+.step.now { color:var(--text-strong); font-weight:600; } .step.now .dot2 { border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+.step.now .dot2::after { content:""; width:6px; height:6px; border-radius:50%; background:var(--brand); }
+.bar { flex:1; height:1.5px; background:var(--border-strong); margin:0 10px; min-width:16px; }
+.bar.done { background:var(--brand); }
+.feedback { max-width:760px; margin:0 auto 14px; padding:14px 16px; border-radius:10px; border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow-sm); display:flex; gap:12px; align-items:flex-start; }
+.feedback .icon { width:32px; height:32px; border-radius:8px; display:grid; place-items:center; background:var(--ai-soft); color:var(--ai); flex-shrink:0; border:1px solid var(--ai-border); }
+.feedback h4 { font-size:13px; }
+.feedback-wrap { padding:0 20px; }
+.side { width:330px; flex-shrink:0; border-left:1px solid var(--border); background:var(--surface); display:flex; flex-direction:column; }
+.field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.field label { font-size:12px; font-weight:500; color:var(--text-strong); }
+.field input, .field textarea { background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; padding:8px 11px; outline:none; box-shadow:var(--shadow-xs); resize:vertical; }
+.field input:focus, .field textarea:focus { border-color:var(--brand); box-shadow:var(--focus-ring); }
+.art { padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface); margin-bottom:8px; cursor:pointer; }
+.art:hover { border-color:var(--border-strong); background:var(--hover); }
+.art h4 { font-size:12.5px; font-weight:500; margin-bottom:2px; }
+.art p { margin:0; font-size:12px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.art .ms { font-size:16px; color:var(--text-muted); }
+.deflect { margin-top:4px; padding:10px 12px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); font-size:12px; display:flex; align-items:center; gap:8px; }
+
+/* States */
+.states { padding:20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px; }
+.state-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:visible; box-shadow:var(--shadow-xs); }
+.state-card > .title { padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; font-weight:600; color:var(--text-strong); display:flex; align-items:center; gap:6px; }
+.state-card > .title .ms { font-size:16px; color:var(--text-muted); }
+.sk { background:linear-gradient(90deg, var(--skeleton) 25%, var(--skeleton-shine) 50%, var(--skeleton) 75%); background-size:200% 100%; animation:shine 1.4s infinite linear; border-radius:5px; }
+@keyframes shine { to { background-position:-200% 0; } }
+.empty { padding:30px 22px; text-align:center; }
+.empty .icon { width:44px; height:44px; border-radius:10px; margin:0 auto 12px; display:grid; place-items:center; background:var(--surface); color:var(--text-muted); border:1px solid var(--border); box-shadow:var(--shadow-xs); }
+.empty .icon .ms { font-size:22px; }
+.empty h4 { font-size:14px; margin-bottom:4px; }
+.empty p { margin:0 auto 14px; max-width:270px; font-size:12.5px; color:var(--text-muted); }
+.shortcuts { padding:12px 14px; display:grid; grid-template-columns:auto 1fr; gap:8px 14px; font-size:12.5px; align-items:center; }
+
+/* Command palette */
+.palette-backdrop { position:fixed; inset:0; background:rgba(16,24,40,.35); display:none; align-items:flex-start; justify-content:center; padding-top:12vh; z-index:200; }
+[data-theme="dark"] .palette-backdrop { background:rgba(0,0,0,.6); }
+.palette-backdrop.on { display:flex; }
+.palette { width:min(560px, calc(100vw - 32px)); background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-lg); overflow:hidden; }
+.palette input { width:100%; border:0; border-bottom:1px solid var(--border); background:transparent; padding:14px 16px 14px 42px; font-size:14px; outline:none; }
+.palette .search > .ms { left:15px; font-size:19px; }
+.palette .group { padding:10px 14px 4px; font-size:11px; font-weight:500; color:var(--text-faint); }
+.palette .item { display:flex; align-items:center; gap:10px; padding:7px 10px; margin:0 6px; border-radius:7px; font-size:13px; cursor:pointer; color:var(--text); }
+.palette .item.on, .palette .item:hover { background:var(--surface-3); color:var(--text-strong); }
+.palette .item .ms { color:var(--text-muted); font-size:17px; }
+.palette .foot { display:flex; gap:14px; padding:9px 14px; border-top:1px solid var(--border); font-size:11px; color:var(--text-muted); margin-top:8px; background:var(--surface-2); }
+.palette-inline .palette { width:100%; box-shadow:none; }
+
+.mtabs { display:none; }
+.toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(16px); opacity:0; background:var(--text-strong); color:var(--surface); padding:9px 14px; border-radius:8px; box-shadow:var(--shadow-lg); font-size:12.5px; font-weight:500; transition:.18s; z-index:300; pointer-events:none; display:flex; align-items:center; gap:7px; }
+.toast .ms { font-size:17px; color:var(--success); }
+.toast.on { opacity:1; transform:translateX(-50%); }
+
+/* ── Responsive (container queries on the preview frame) ──────────────── */
+@container (max-width: 1180px) { .copilot { width:300px; } .queue { width:270px; } }
+@container (max-width: 980px) {
+  .app { height:auto; min-height:780px; flex-direction:column; }
+  .nav { display:none; }
+  .queue, .convo, .copilot { width:100%; border:0; display:none; min-height:660px; }
+  .app[data-mpane="queue"] .queue, .app[data-mpane="convo"] .convo, .app[data-mpane="copilot"] .copilot { display:flex; }
+  .mtabs { display:flex; position:sticky; bottom:0; background:var(--surface); border-top:1px solid var(--border); }
+  .mtabs button { flex:1; border:0; background:transparent; padding:8px 0 10px; font-size:11px; font-weight:500; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .mtabs button.on { color:var(--brand-text); }
+  .portal { flex-direction:column; height:auto; }
+  .side { width:100%; border-left:0; border-top:1px solid var(--border); }
+  .convo-head .row { flex-wrap:wrap; }
+  .tracker .step span.lbl { display:none; }
+  .thread, .composer { padding-left:14px; padding-right:14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Preview controls (not part of the app) ═══ -->
+<div class="preview-bar">
+  <h1>Aegis Helpdesk · UI preview</h1>
+  <div class="seg" id="viewSeg">
+    <button data-view="agent" class="on">Agent workspace</button>
+    <button data-view="customer">Customer portal</button>
+    <button data-view="states">States &amp; shortcuts</button>
+  </div>
+  <span class="spacer"></span>
+  <div class="seg" id="deviceSeg">
+    <button data-device="desktop" class="on"><span class="ms" style="font-size:15px">desktop_windows</span>Desktop</button>
+    <button data-device="mobile"><span class="ms" style="font-size:15px">smartphone</span>Mobile</button>
+  </div>
+  <button class="chip-btn" id="themeBtn"><span class="ms" style="font-size:15px">dark_mode</span>Dark</button>
+  <button class="chip-btn on" id="notesBtn"><span class="ms" style="font-size:15px">sell</span>Notes</button>
+  <button class="chip-btn" id="paletteBtn"><span class="kbd">Ctrl</span><span class="kbd">K</span></button>
+</div>
+
+<div class="stage">
+<div class="frame" id="frame">
+
+<!-- ═══════════════════════ AGENT WORKSPACE ═══════════════════════ -->
+<section class="view on" id="view-agent">
+<div class="app" id="agentApp" data-mpane="convo">
+
+  <nav class="nav">
+    <div class="logo"><span class="ms fill">shield</span></div>
+    <button class="on" title="Inbox"><span class="ms">inbox</span></button>
+    <button title="Knowledge base"><span class="ms">menu_book</span></button>
+    <button title="KB drafts"><span class="ms">edit_note</span></button>
+    <button title="Performance"><span class="ms">bar_chart</span></button>
+    <div class="bottom me-avatar" title="Sarah K.">SK</div>
+  </nav>
+
+  <!-- Ticket queue -->
+  <aside class="panel queue">
+    <div class="panel-head">
+      <div class="row" style="margin-bottom:12px">
+        <h3 style="font-size:15px" class="grow">Inbox</h3>
+        <button class="icon-btn" title="Sort"><span class="ms">swap_vert</span></button>
+        <button class="icon-btn" title="Filter"><span class="ms">tune</span></button>
+      </div>
+      <div class="search">
+        <span class="ms">search</span>
+        <input class="input" placeholder="Search tickets" />
+        <span class="kbd" style="position:absolute; right:9px; top:50%; transform:translateY(-50%)">/</span>
+      </div>
+      <div class="tabs rel">
+        <span class="n">1</span>
+        <button class="tab on">All <span class="count">14</span></button>
+        <button class="tab">Mine <span class="count">6</span></button>
+        <button class="tab">Unassigned <span class="count">3</span></button>
+        <button class="tab">At risk <span class="count">2</span></button>
+        <button class="tab">AI rejected <span class="count">1</span></button>
+      </div>
+    </div>
+    <div class="scroll" id="queueList"></div>
+    <div class="queue-foot rel">
+      <span class="n">2</span>
+      <span><span class="kbd">J</span> <span class="kbd">K</span> navigate</span>
+      <span><span class="kbd">R</span> reply</span>
+      <span><span class="kbd">?</span> shortcuts</span>
+    </div>
+  </aside>
+
+  <!-- Conversation -->
+  <main class="panel convo">
+    <div class="convo-head">
+      <div class="row" style="align-items:flex-start; gap:12px">
+        <div class="grow">
+          <h3 class="truncate" id="convoTitle">Locked out after 2FA phone change</h3>
+          <div class="meta rel">
+            <span class="mono" id="convoNum">HD-20261022-000118</span><span class="sep"></span>
+            <span>Priya Raman</span><span class="sep"></span>
+            <span>Account &amp; Access</span><span class="sep"></span>
+            <span class="badge danger rel"><span class="ms fill">auto_awesome</span>AI answer rejected<span class="n">3</span></span>
+          </div>
+        </div>
+        <div class="row" style="flex-shrink:0">
+          <span class="select"><span class="dot" style="background:var(--st-progress)"></span>In progress<span class="ms">expand_more</span></span>
+          <span class="select"><span class="prio p2"><i></i><i></i><i></i></span>High<span class="ms">expand_more</span></span>
+          <button class="icon-btn" title="More"><span class="ms">more_horiz</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="thread">
+        <div class="day">Today</div>
+
+        <div class="msg">
+          <div class="avatar">PR</div>
+          <div class="msg-body">
+            <div class="msg-head"><b>Priya Raman</b><span class="role">Customer</span><time>09:12</time></div>
+            <div class="bubble"><p>I switched to a new phone and now the authenticator codes don't work. I've been locked out of my account all morning and I have a client demo at 2pm. Please help ASAP.</p></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar ai"><span class="ms fill">auto_awesome</span></div>
+          <div class="msg-body">
+            <div class="msg-head"><b>Aegis AI</b><span class="role">Suggested answer</span><time>09:12</time></div>
+            <div class="bubble ai rel">
+              <span class="n">4</span>
+              <p>Sorry you're locked out. To move 2FA to a new phone:</p>
+              <ol><li>Sign in on a device that is still trusted.</li><li>Go to <b>Security → Two-factor</b> and choose <b>Reset device</b>.</li><li>Scan the new QR code with your authenticator app.</li></ol>
+              <div class="sources">
+                <span class="label">Sources</span>
+                <span class="src"><span class="ms">description</span>Moving 2FA to a new device <span class="pct">82%</span></span>
+                <span class="src"><span class="ms">confirmation_number</span>HD-…-000005 <span class="pct">69%</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="event"><span class="ms">undo</span>Customer said the AI answer didn't help · 09:20</div>
+
+        <div class="msg">
+          <div class="avatar">PR</div>
+          <div class="msg-body">
+            <div class="msg-head"><b>Priya Raman</b><span class="role">Customer</span><time>09:20</time></div>
+            <div class="bubble"><p>That doesn't work — I don't have any trusted device left. The old phone was wiped.</p></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar">SK</div>
+          <div class="msg-body">
+            <div class="msg-head"><b>Sarah K.</b><span class="role">Internal note</span><time>09:31</time></div>
+            <div class="bubble note"><p>Identity verified via callback to the number on file. OK to issue a one-time recovery code.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="composer-box" id="composerBox">
+        <div class="composer-tabs">
+          <button class="on" data-mode="reply">Reply</button>
+          <button data-mode="note">Internal note</button>
+        </div>
+        <textarea id="replyBox" placeholder="Write a reply…"></textarea>
+        <div class="composer-bar rel">
+          <span class="n">5</span>
+          <button class="tool ai" data-ai="tone"><span class="ms">auto_fix_high</span>Improve</button>
+          <button class="tool ai" data-ai="shorten"><span class="ms">compress</span>Shorten</button>
+          <button class="tool ai" data-ai="translate"><span class="ms">translate</span>Translate</button>
+          <span class="vsep"></span>
+          <button class="tool" title="Attach"><span class="ms">attach_file</span></button>
+          <button class="tool" title="Macros"><span class="ms">bolt</span></button>
+          <span class="spacer"></span>
+          <div class="btn-split">
+            <button class="btn btn-primary btn-sm">Send</button>
+            <button class="btn btn-primary btn-sm" title="Send and resolve"><span class="ms">expand_more</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="composer-hint"><span><span class="kbd">Ctrl</span> <span class="kbd">Enter</span> send</span><span><span class="kbd">N</span> internal note</span></div>
+    </div>
+  </main>
+
+  <!-- AI Copilot -->
+  <aside class="panel copilot">
+    <div class="panel-head">
+      <span class="ms fill" style="color:var(--ai); font-size:18px">auto_awesome</span>
+      <h3 class="grow">Copilot</h3>
+      <button class="icon-btn" title="Collapse panel"><span class="ms">right_panel_close</span></button>
+    </div>
+    <div class="scroll">
+
+      <div class="ccard rel">
+        <span class="n">6</span>
+        <div class="ccard-head"><span class="ms">insights</span>Insights</div>
+        <div class="ccard-body">
+          <div class="stats">
+            <div class="stat"><div class="label">Sentiment</div><div class="value" style="color:var(--danger-text)"><span class="dot" style="background:var(--danger)"></span>Frustrated</div></div>
+            <div class="stat"><div class="label">Customer deadline</div><div class="value">Today, 2:00 pm</div></div>
+            <div class="stat"><div class="label">SLA remaining</div><div class="value" style="color:var(--warning-text)">1h 12m</div><div class="meter"><span style="width:72%; background:var(--warning)"></span></div></div>
+            <div class="stat"><div class="label">Best KB match</div><div class="value">82%</div><div class="meter"><span style="width:82%; background:var(--brand)"></span></div></div>
+          </div>
+          <div class="suggest-row">
+            <span class="ms">lightbulb</span>
+            <span class="grow">Raise priority to <b style="color:var(--text-strong)">Urgent</b> — customer deadline today</span>
+            <button class="btn btn-secondary btn-sm">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccard rel">
+        <span class="n">7</span>
+        <div class="ccard-head"><span class="ms">notes</span><span class="grow">Summary</span>
+          <button class="icon-btn" title="Regenerate"><span class="ms">refresh</span></button>
+        </div>
+        <div class="ccard-body">
+          <p>Customer is locked out after moving to a new phone; the old phone was wiped, so self-service reset doesn't apply and the AI's steps were rejected. Identity was verified by callback. Next step: issue a one-time recovery code before her 2pm demo.</p>
+          <div class="card-foot"><span class="grow">Updated 2 min ago</span>
+            <button class="icon-btn vote" data-v="up" title="Helpful"><span class="ms">thumb_up</span></button>
+            <button class="icon-btn vote" data-v="down" title="Not helpful"><span class="ms">thumb_down</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccard rel">
+        <span class="n">8</span>
+        <div class="ccard-head"><span class="ms">edit_square</span><span class="grow">Suggested reply</span><span class="badge ai">2 sources</span></div>
+        <div class="ccard-body">
+          <div class="draft" id="draftBox">
+            <p>Hi Priya, thanks for confirming your identity on the call — I know you're short on time before your demo.</p>
+            <p>I've sent a one-time recovery code to your email on file. To finish:</p>
+            <ol><li>Sign in with your password, then enter the recovery code when asked for 2FA.</li><li>Go to <b>Security → Two-factor</b> and choose <b>Reset device</b>.</li><li>Scan the new QR code with your new phone.</li></ol>
+            <p>The code expires in 30 minutes. Reply here if anything doesn't work.</p>
+          </div>
+          <div class="sources">
+            <span class="src"><span class="ms">description</span>Moving 2FA to a new device <span class="pct">82%</span></span>
+            <span class="src"><span class="ms">description</span>Issuing recovery codes <span class="pct">74%</span></span>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-sm" id="insertDraft">Use reply</button>
+            <button class="btn btn-secondary btn-sm" id="regenDraft"><span class="ms">refresh</span>Regenerate</button>
+            <span class="spacer"></span>
+            <button class="icon-btn vote" data-v="up" title="Good draft"><span class="ms">thumb_up</span></button>
+            <button class="icon-btn vote" data-v="down" title="Bad draft"><span class="ms">thumb_down</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccard rel">
+        <span class="n">9</span>
+        <div class="ccard-head"><span class="ms">stacks</span>Similar tickets</div>
+        <div class="ccard-body">
+          <div class="similar">
+            <span class="score">91%</span>
+            <div class="grow"><div class="title truncate">Can't log in — new phone, no codes</div><div class="sub"><span class="dot" style="background:var(--st-open)"></span>Open · 20 min ago</div></div>
+            <button class="btn btn-secondary btn-sm"><span class="ms">link</span>Link</button>
+          </div>
+          <div class="similar">
+            <span class="score">69%</span>
+            <div class="grow"><div class="title truncate">Reset 2FA device after phone upgrade</div><div class="sub"><span class="dot" style="background:var(--st-resolved)"></span>Resolved by Sam</div></div>
+            <button class="icon-btn" title="Open"><span class="ms">open_in_new</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <div class="mtabs" id="mtabs">
+    <button data-pane="queue"><span class="ms">inbox</span>Inbox</button>
+    <button data-pane="convo" class="on"><span class="ms">forum</span>Ticket</button>
+    <button data-pane="copilot"><span class="ms">auto_awesome</span>Copilot</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════ CUSTOMER PORTAL ═══════════════════════ -->
+<section class="view" id="view-customer">
+<div class="portal">
+  <nav class="nav">
+    <div class="logo"><span class="ms fill">shield</span></div>
+    <button title="New ticket"><span class="ms">add</span></button>
+    <button class="on" title="My tickets"><span class="ms">confirmation_number</span></button>
+    <button title="Help center"><span class="ms">help</span></button>
+    <div class="bottom me-avatar" title="Priya Raman">PR</div>
+  </nav>
+
+  <div class="portal-main">
+    <div class="convo-head">
+      <div class="row">
+        <h3 class="grow truncate">Locked out after 2FA phone change</h3>
+        <span class="badge"><span class="dot" style="background:var(--st-open)"></span>Open</span>
+      </div>
+      <div class="muted" style="font-size:12px; margin-top:3px"><span class="mono">HD-20261022-000118</span> · Opened today at 09:12</div>
+      <div class="tracker rel">
+        <span class="n">10</span>
+        <div class="step done"><span class="dot2"><span class="ms">check</span></span><span class="lbl">Submitted</span></div>
+        <div class="bar done"></div>
+        <div class="step done"><span class="dot2"><span class="ms">check</span></span><span class="lbl">AI answered</span></div>
+        <div class="bar done"></div>
+        <div class="step now"><span class="dot2"></span><span class="lbl">With an agent</span></div>
+        <div class="bar"></div>
+        <div class="step"><span class="dot2"></span><span class="lbl">Resolved</span></div>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="thread">
+        <div class="msg">
+          <div class="avatar">PR</div>
+          <div class="msg-body">
+            <div class="msg-head"><b>You</b><time>09:12</time></div>
+            <div class="bubble mine"><p>I switched to a new phone and now the authenticator codes don't work. I have a client demo at 2pm. Please help ASAP.</p></div>
+          </div>
+        </div>
+        <div class="msg">
+          <div class="avatar ai"><span class="ms fill">auto_awesome</span></div>
+          <div class="msg-body">
+            <div class="msg-head"><b>AI Assistant</b><span class="badge ai rel" style="padding:0 6px">Automated<span class="n">11</span></span><time>09:12</time></div>
+            <div class="bubble ai">
+              <p>Sorry you're locked out. To move 2FA to a new phone:</p>
+              <ol><li>Sign in on a device that is still trusted.</li><li>Go to <b>Security → Two-factor</b> and choose <b>Reset device</b>.</li><li>Scan the new QR code with your authenticator app.</li></ol>
+              <div class="sources"><span class="label">Based on</span><button class="src"><span class="ms">description</span>Moving 2FA to a new device</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="event"><span class="ms">support_agent</span>You asked for a person · Sarah K. joined</div>
+        <div class="msg">
+          <div class="avatar">SK</div>
+          <div class="msg-body">
+            <div class="msg-head"><b>Sarah K.</b><span class="role">Support</span><time>09:34</time></div>
+            <div class="bubble"><p>Hi Priya — I've sent a one-time recovery code to your email on file. Sign in with your password and enter the code when asked for 2FA, then reset the device under <b>Security → Two-factor</b>.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feedback-wrap">
+      <div class="feedback rel">
+        <span class="n">12</span>
+        <div class="icon"><span class="ms fill" style="font-size:17px">auto_awesome</span></div>
+        <div class="grow">
+          <h4>Did this answer solve your issue?</h4>
+          <div class="muted" style="font-size:12.5px; margin:2px 0 12px">If not, your ticket stays open and an agent will reply — usually within 2 hours.</div>
+          <div class="row" style="flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm"><span class="ms">check</span>Yes, close ticket</button>
+            <button class="btn btn-secondary btn-sm">No, talk to a person</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="composer-box">
+        <textarea placeholder="Write a message…" style="min-height:56px"></textarea>
+        <div class="composer-bar">
+          <button class="tool" title="Attach"><span class="ms">attach_file</span></button>
+          <span class="spacer"></span>
+          <button class="btn btn-primary btn-sm">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="side">
+    <div class="panel-head"><h3 style="font-size:14px">New ticket</h3><div class="muted" style="font-size:12px; margin-top:2px">We'll suggest answers as you type.</div></div>
+    <div class="scroll" style="padding:16px">
+      <div class="field"><label for="newTitle">Subject</label><input id="newTitle" value="vpn keeps disconnecting" /></div>
+      <div class="field"><label>Description</label><textarea rows="3">Every 10 minutes the VPN drops when I'm on home Wi-Fi.</textarea></div>
+      <div class="rel">
+        <span class="n">13</span>
+        <div class="row" style="margin-bottom:8px"><span class="grow" style="font-size:12px; font-weight:600; color:var(--text-strong)">Suggested articles</span><span class="muted" style="font-size:11.5px" id="artCount"></span></div>
+        <div id="articleList"></div>
+        <div class="deflect"><span class="ms" style="font-size:17px; color:var(--success)">check_circle</span><span class="grow">Found your answer? You don't need to submit.</span></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:16px">Submit ticket</button>
+    </div>
+  </aside>
+</div>
+</section>
+
+<!-- ═══════════════════════ STATES & SHORTCUTS ═══════════════════════ -->
+<section class="view" id="view-states">
+<div class="states">
+
+  <div class="state-card rel">
+    <span class="n">14</span>
+    <div class="title"><span class="ms">hourglass_empty</span>Loading</div>
+    <div>
+      <div style="padding:12px 16px; border-bottom:1px solid var(--border)"><div class="sk" style="height:9px; width:38%; margin-bottom:9px"></div><div class="sk" style="height:11px; width:85%; margin-bottom:9px"></div><div class="sk" style="height:9px; width:55%"></div></div>
+      <div style="padding:12px 16px; border-bottom:1px solid var(--border)"><div class="sk" style="height:9px; width:32%; margin-bottom:9px"></div><div class="sk" style="height:11px; width:70%; margin-bottom:9px"></div><div class="sk" style="height:9px; width:48%"></div></div>
+      <div style="padding:12px 16px"><div class="sk" style="height:9px; width:42%; margin-bottom:9px"></div><div class="sk" style="height:11px; width:78%; margin-bottom:9px"></div><div class="sk" style="height:9px; width:52%"></div></div>
+    </div>
+  </div>
+
+  <div class="state-card rel">
+    <span class="n">15</span>
+    <div class="title"><span class="ms">filter_alt_off</span>No results</div>
+    <div class="empty">
+      <div class="icon"><span class="ms">search_off</span></div>
+      <h4>No tickets match these filters</h4>
+      <p>You're filtering by <b style="color:var(--text-strong)">At risk</b> in <b style="color:var(--text-strong)">Billing</b>. Nothing is close to breaching right now.</p>
+      <button class="btn btn-secondary btn-sm">Clear filters</button>
+    </div>
+  </div>
+
+  <div class="state-card rel">
+    <span class="n">15</span>
+    <div class="title"><span class="ms">inbox</span>Queue cleared</div>
+    <div class="empty">
+      <div class="icon"><span class="ms" style="color:var(--success)">task_alt</span></div>
+      <h4>You're all caught up</h4>
+      <p>All your tickets are handled. The AI resolved 12 tickets today without an agent.</p>
+      <button class="btn btn-secondary btn-sm">View unassigned (3)</button>
+    </div>
+  </div>
+
+  <div class="state-card rel">
+    <span class="n">16</span>
+    <div class="title"><span class="ms">cloud_off</span>AI unavailable</div>
+    <div class="empty">
+      <div class="icon"><span class="ms" style="color:var(--warning)">schedule</span></div>
+      <h4>Copilot is temporarily unavailable</h4>
+      <p>The AI service is rate-limited. You can keep working — suggestions will return shortly.</p>
+      <button class="btn btn-secondary btn-sm"><span class="ms">refresh</span>Retry</button>
+    </div>
+  </div>
+
+  <div class="state-card rel">
+    <span class="n">2</span>
+    <div class="title"><span class="ms">keyboard</span>Keyboard shortcuts</div>
+    <div class="shortcuts">
+      <span><span class="kbd">J</span> <span class="kbd">K</span></span><span>Next / previous ticket</span>
+      <span><span class="kbd">R</span></span><span>Reply</span>
+      <span><span class="kbd">N</span></span><span>Internal note</span>
+      <span><span class="kbd">G</span> <span class="kbd">D</span></span><span>Generate AI reply</span>
+      <span><span class="kbd">Ctrl</span> <span class="kbd">Enter</span></span><span>Send</span>
+      <span><span class="kbd">E</span></span><span>Resolve</span>
+      <span><span class="kbd">Ctrl</span> <span class="kbd">K</span></span><span>Command menu</span>
+      <span><span class="kbd">/</span></span><span>Search</span>
+    </div>
+  </div>
+
+  <div class="state-card rel">
+    <span class="n">17</span>
+    <div class="title"><span class="ms">keyboard_command_key</span>Command menu</div>
+    <div class="palette-inline" style="padding:12px">
+      <div class="palette">
+        <div class="search"><span class="ms">search</span><input value="2fa" readonly /></div>
+        <div class="group">Tickets</div>
+        <div class="item on"><span class="ms">confirmation_number</span><span class="grow">Locked out after 2FA phone change</span><span class="mono faint">000118</span></div>
+        <div class="group">Knowledge base</div>
+        <div class="item"><span class="ms">description</span><span class="grow">Moving 2FA to a new device</span></div>
+        <div class="group">Actions</div>
+        <div class="item"><span class="ms">auto_awesome</span><span class="grow">Generate AI reply</span><span class="kbd">G D</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+</div><!-- /frame -->
+
+<aside class="legend">
+  <h2>Proposed changes</h2>
+  <p class="muted">Numbers on the preview match this list. Use them in your corrections, e.g. "drop 9" or "move 6 below 8".</p>
+  <ol>
+    <li><span class="badge-n">1</span><span><b>Inbox filter tabs</b>: All, Mine, Unassigned, At risk, AI rejected. Rows show priority bars, SLA time and AI status, with sentiment shown only when it's negative.</span></li>
+    <li><span class="badge-n">2</span><span><b>Keyboard shortcuts</b>: J/K to move, R to reply, N for a note, ? for the list. Try them.</span></li>
+    <li><span class="badge-n">3</span><span><b>AI status badge</b> in the ticket header.</span></li>
+    <li><span class="badge-n">4</span><span><b>AI messages</b> are marked by a thin violet line and list their sources with match %.</span></li>
+    <li><span class="badge-n">5</span><span><b>Composer</b> with Reply / Internal note tabs (notes turn amber) and AI tools: Improve, Shorten, Translate.</span></li>
+    <li><span class="badge-n">6</span><span><b>Insights</b>: sentiment, deadline, SLA, KB match, plus a one-click priority suggestion.</span></li>
+    <li><span class="badge-n">7</span><span><b>Summary</b> with regenerate and 👍/👎 feedback.</span></li>
+    <li><span class="badge-n">8</span><span><b>Suggested reply</b> with sources, "Use reply" and Regenerate. It replaces the draft box inside the chat.</span></li>
+    <li><span class="badge-n">9</span><span><b>Similar tickets</b> with one-click "Link" as a duplicate.</span></li>
+    <li><span class="badge-n">10</span><span><b>Progress tracker</b> for customers.</span></li>
+    <li><span class="badge-n">11</span><span><b>"Automated" label</b> and "Based on" article links on AI replies.</span></li>
+    <li><span class="badge-n">12</span><span><b>Feedback card</b> with expected response time.</span></li>
+    <li><span class="badge-n">13</span><span><b>Suggested articles</b> while typing a new ticket. Try "password" or "invoice".</span></li>
+    <li><span class="badge-n">14</span><span><b>Skeleton loading</b> instead of spinners.</span></li>
+    <li><span class="badge-n">15</span><span><b>Empty states</b> that explain why the list is empty and give a next step.</span></li>
+    <li><span class="badge-n">16</span><span><b>Calm AI error state</b> instead of error toasts.</span></li>
+    <li><span class="badge-n">17</span><span><b>Command menu</b> (Ctrl+K). Try it.</span></li>
+    <li><span class="badge-n">M</span><span><b>Mobile</b>: the 3 panels become bottom tabs.</span></li>
+  </ol>
+  <div class="group-title">Colour system</div>
+  <div class="palette-swatches" title="Neutrals">
+    <span style="background:var(--bg-app)"></span><span style="background:var(--surface)"></span><span style="background:var(--surface-3)"></span><span style="background:var(--border-strong)"></span><span style="background:var(--text-muted)"></span><span style="background:var(--text-strong)"></span>
+  </div>
+  <div class="palette-swatches">
+    <span style="background:var(--brand)" title="Brand"></span><span style="background:var(--ai)" title="AI"></span><span style="background:var(--success)" title="Success"></span><span style="background:var(--warning)" title="Warning"></span><span style="background:var(--danger)" title="Danger"></span><span style="background:var(--note-rule)" title="Internal note"></span>
+  </div>
+  <p class="muted" style="margin-top:8px">Neutral greys for 90% of the screen. Indigo is the only brand colour (actions, selection). Violet marks AI content only. Red, amber and green appear only when they mean something.</p>
+</aside>
+</div>
+
+<div class="palette-backdrop" id="paletteBg">
+  <div class="palette" role="dialog" aria-label="Command menu">
+    <div class="search"><span class="ms">search</span><input id="paletteInput" placeholder="Search tickets, articles, actions…" /></div>
+    <div id="paletteList"></div>
+    <div class="foot"><span><span class="kbd">↑</span> <span class="kbd">↓</span> navigate</span><span><span class="kbd">Enter</span> open</span><span><span class="kbd">Esc</span> close</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ms fill">check_circle</span><span id="toastText"></span></div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const toast = (text) => { $('#toastText').textContent = text; const t = $('#toast'); t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); };
+
+/* ── Preview controls ── */
+$$('#viewSeg button').forEach(b => b.onclick = () => {
+  $$('#viewSeg button').forEach(x => x.classList.toggle('on', x === b));
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + b.dataset.view));
+});
+$$('#deviceSeg button').forEach(b => b.onclick = () => {
+  $$('#deviceSeg button').forEach(x => x.classList.toggle('on', x === b));
+  $('#frame').classList.toggle('mobile', b.dataset.device === 'mobile');
+});
+$('#themeBtn').onclick = () => {
+  const root = document.documentElement, toDark = root.dataset.theme === 'light';
+  root.dataset.theme = toDark ? 'dark' : 'light';
+  $('#themeBtn').innerHTML = `<span class="ms" style="font-size:15px">${toDark ? 'light_mode' : 'dark_mode'}</span>${toDark ? 'Light' : 'Dark'}`;
+};
+$('#notesBtn').onclick = () => { document.body.classList.toggle('hide-notes'); $('#notesBtn').classList.toggle('on'); };
+
+/* ── Inbox ── */
+const tickets = [
+  { n:'000118', t:'Locked out after 2FA phone change', who:'Priya Raman', time:'9m', p:2, sla:'1h 12m', slaC:'warn', neg:true, ai:'rejected', st:'progress', unread:true },
+  { n:'000117', t:"Can't log in — new phone, no codes", who:'Tom Okafor', time:'20m', p:1, sla:'5h 40m', slaC:'', neg:false, ai:'pending', st:'open', unread:true },
+  { n:'000116', t:'Invoice shows wrong VAT number', who:'Lisbon Foods Lda', time:'1h', p:1, sla:'Breached', slaC:'breach', neg:false, ai:null, st:'open' },
+  { n:'000114', t:'VPN drops every 10 minutes on home Wi-Fi', who:'Mei Chen', time:'2h', p:3, sla:'38m', slaC:'warn', neg:true, ai:null, st:'progress' },
+  { n:'000111', t:'Request: add SSO for contractors', who:'Diego Alvarez', time:'5h', p:1, sla:'2d 4h', slaC:'', neg:false, ai:null, st:'open' },
+  { n:'000109', t:'Password reset email never arrives', who:'Anna Schmidt', time:'1d', p:2, sla:'—', slaC:'', neg:false, ai:'accepted', st:'resolved' },
+];
+const prioLabel = ['', 'Medium', 'High', 'Urgent'];
+const aiBadge = {
+  rejected:'<span class="badge danger"><span class="ms fill">auto_awesome</span>AI rejected</span>',
+  pending:'<span class="badge ai"><span class="ms fill">auto_awesome</span>AI answered</span>',
+  accepted:'<span class="badge success"><span class="ms fill">auto_awesome</span>Solved by AI</span>',
+};
+const stColor = { open:'var(--st-open)', progress:'var(--st-progress)', resolved:'var(--st-resolved)' };
+const prioBars = (p) => `<span class="prio p${p} ${p === 3 ? 'urgent' : ''}" title="${prioLabel[p]} priority"><i></i><i></i><i></i></span>`;
+let sel = 0;
+function renderQueue() {
+  $('#queueList').innerHTML = tickets.map((k, i) => `
+    <div class="tcard ${i === sel ? 'sel' : ''} ${k.unread ? 'unread' : ''}" data-i="${i}">
+      <div class="top"><span class="dot" style="background:${stColor[k.st]}"></span><span class="who truncate grow">${k.who}</span><span class="num">${k.time}</span></div>
+      <h4 class="truncate">${k.t}</h4>
+      <div class="meta">${prioBars(k.p)}<span class="sla ${k.slaC}"><span class="ms">schedule</span>${k.sla}</span>${k.neg ? '<span class="mood-neg"><span class="ms">sentiment_dissatisfied</span>Frustrated</span>' : ''}${k.ai ? aiBadge[k.ai] : ''}</div>
+    </div>`).join('');
+  $$('.tcard').forEach(c => c.onclick = () => selectTicket(+c.dataset.i));
+}
+function selectTicket(i) {
+  sel = Math.max(0, Math.min(tickets.length - 1, i));
+  renderQueue();
+  $('#convoTitle').textContent = tickets[sel].t;
+  $('#convoNum').textContent = 'HD-20261022-' + tickets[sel].n;
+  $('.tcard.sel')?.scrollIntoView({ block:'nearest' });
+}
+renderQueue();
+
+/* ── Composer + copilot ── */
+function setMode(mode) {
+  $$('.composer-tabs button', $('#composerBox')).forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+  $('#composerBox').classList.toggle('note-mode', mode === 'note');
+  $('#replyBox').placeholder = mode === 'note' ? 'Add an internal note — only agents can see this' : 'Write a reply…';
+}
+$$('.composer-tabs button', $('#composerBox')).forEach(b => b.onclick = () => setMode(b.dataset.mode));
+$('#insertDraft').onclick = () => { setMode('reply'); $('#replyBox').value = $('#draftBox').innerText.trim(); $('#replyBox').focus(); toast('Reply added — review before sending'); };
+$('#regenDraft').onclick = () => {
+  const box = $('#draftBox'), html = box.innerHTML;
+  box.innerHTML = '<div class="sk" style="height:10px;width:92%;margin:4px 0 10px"></div><div class="sk" style="height:10px;width:76%;margin-bottom:10px"></div><div class="sk" style="height:10px;width:84%;margin-bottom:10px"></div><div class="sk" style="height:10px;width:58%"></div>';
+  setTimeout(() => { box.innerHTML = html; toast('New reply generated'); }, 1100);
+};
+$$('.tool.ai').forEach(b => b.onclick = () => {
+  if (!$('#replyBox').value.trim()) { toast('Write or insert a reply first'); return; }
+  toast({ tone:'Tone improved', shorten:'Reply shortened', translate:'Translated to Spanish' }[b.dataset.ai] + ' (preview)');
+});
+$$('.vote').forEach(b => b.onclick = () => {
+  $$('.vote', b.parentElement).forEach(x => { x.classList.remove('voted', 'voted-down'); $('.ms', x).classList.remove('fill'); });
+  b.classList.add(b.dataset.v === 'up' ? 'voted' : 'voted-down');
+  $('.ms', b).classList.add('fill');
+  toast('Thanks for the feedback');
+});
+$$('#mtabs button').forEach(b => b.onclick = () => {
+  $$('#mtabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('#agentApp').dataset.mpane = b.dataset.pane;
+});
+
+/* ── Suggested articles ── */
+const articles = [
+  { t:'Fix VPN disconnects on home Wi-Fi', d:'Disable Wi-Fi power saving and switch the VPN client to TCP mode.', k:['vpn','disconnect','wifi','drops'] },
+  { t:'VPN client setup for Windows & macOS', d:'Install the client, import the profile and sign in with SSO.', k:['vpn','setup','install'] },
+  { t:'Reset a forgotten password', d:'Use "Forgot password" on the sign-in page; the link is valid for 30 minutes.', k:['password','forgot','reset','login'] },
+  { t:'Moving 2FA to a new device', d:'Sign in on a trusted device and choose Security → Two-factor → Reset device.', k:['2fa','phone','authenticator','login'] },
+  { t:'Correcting company details on invoices', d:'Update billing details, then request a reissued invoice from Billing.', k:['invoice','vat','billing','company'] },
+];
+function renderArticles() {
+  const words = $('#newTitle').value.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+  const hits = articles.map(a => ({ a, s:a.k.filter(k => words.some(w => k.startsWith(w) || w.startsWith(k))).length }))
+                       .filter(x => x.s > 0).sort((x, y) => y.s - x.s).slice(0, 3);
+  $('#artCount').textContent = hits.length ? `${hits.length} found` : '';
+  $('#articleList').innerHTML = hits.length ? hits.map(({ a }) => `
+    <div class="art"><div class="row" style="align-items:flex-start"><span class="ms">description</span><div class="grow"><h4>${a.t}</h4><p>${a.d}</p></div></div></div>`).join('')
+    : '<div class="muted" style="font-size:12px; padding:4px 0 10px">No suggestions yet — keep typing.</div>';
+}
+$('#newTitle').oninput = renderArticles; renderArticles();
+
+/* ── Command menu ── */
+const commands = [
+  ...tickets.map((k, i) => ({ g:'Tickets', icon:'confirmation_number', label:k.t, hint:k.n, mono:true, run:() => { $$('#viewSeg button')[0].click(); selectTicket(i); } })),
+  ...articles.map(a => ({ g:'Knowledge base', icon:'description', label:a.t, run:() => toast('Would open: ' + a.t) })),
+  { g:'Actions', icon:'auto_awesome', label:'Generate AI reply', hint:'G D', run:() => $('#regenDraft').click() },
+  { g:'Actions', icon:'sticky_note_2', label:'Add internal note', hint:'N', run:() => { setMode('note'); $('#replyBox').focus(); } },
+  { g:'Actions', icon:'contrast', label:'Toggle dark mode', run:() => $('#themeBtn').click() },
+];
+let pIdx = 0, pItems = [];
+function renderPalette() {
+  const q = $('#paletteInput').value.toLowerCase();
+  pItems = commands.filter(c => c.label.toLowerCase().includes(q) || (c.hint || '').toLowerCase().includes(q));
+  pIdx = Math.min(pIdx, Math.max(0, pItems.length - 1));
+  let html = '', last = '';
+  pItems.forEach((c, i) => {
+    if (c.g !== last) { html += `<div class="group">${c.g}</div>`; last = c.g; }
+    html += `<div class="item ${i === pIdx ? 'on' : ''}" data-i="${i}"><span class="ms">${c.icon}</span><span class="grow truncate">${c.label}</span>${c.hint ? `<span class="${c.mono ? 'mono faint' : 'kbd'}">${c.hint}</span>` : ''}</div>`;
+  });
+  $('#paletteList').innerHTML = html || '<div class="empty" style="padding:20px"><p style="margin:0">No results</p></div>';
+  $$('#paletteList .item').forEach(el => el.onclick = () => runCmd(+el.dataset.i));
+}
+function openPalette() { $('#paletteBg').classList.add('on'); $('#paletteInput').value = ''; pIdx = 0; renderPalette(); $('#paletteInput').focus(); }
+function closePalette() { $('#paletteBg').classList.remove('on'); }
+function runCmd(i) { const c = pItems[i]; closePalette(); c && c.run(); }
+$('#paletteBtn').onclick = openPalette;
+$('#paletteBg').onclick = (e) => { if (e.target.id === 'paletteBg') closePalette(); };
+$('#paletteInput').oninput = () => { pIdx = 0; renderPalette(); };
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', (e) => {
+  const open = $('#paletteBg').classList.contains('on');
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); open ? closePalette() : openPalette(); return; }
+  if (open) {
+    if (e.key === 'Escape') closePalette();
+    if (e.key === 'ArrowDown') { e.preventDefault(); pIdx = Math.min(pItems.length - 1, pIdx + 1); renderPalette(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); pIdx = Math.max(0, pIdx - 1); renderPalette(); }
+    if (e.key === 'Enter') runCmd(pIdx);
+    return;
+  }
+  if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { if (e.key === 'Escape') document.activeElement.blur(); return; }
+  if (!$('#view-agent').classList.contains('on')) return;
+  if (e.key === 'j') selectTicket(sel + 1);
+  if (e.key === 'k') selectTicket(sel - 1);
+  if (e.key === 'r') { e.preventDefault(); setMode('reply'); $('#replyBox').focus(); }
+  if (e.key === 'n') { e.preventDefault(); setMode('note'); $('#replyBox').focus(); }
+});
+</script>
+</body>
+</html>

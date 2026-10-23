@@ -14,6 +14,7 @@ import com.helpdesk.helpdesk_backend.ENTITY.Attachment;
 import com.helpdesk.helpdesk_backend.ENTITY.Reply;
 import com.helpdesk.helpdesk_backend.ENTITY.Ticket;
 import com.helpdesk.helpdesk_backend.ENTITY.User;
+import com.helpdesk.helpdesk_backend.ENUM.AiFeedbackStatus;
 import com.helpdesk.helpdesk_backend.ENUM.Role;
 import com.helpdesk.helpdesk_backend.ENUM.TicketStatus;
 import com.helpdesk.helpdesk_backend.EXCEPTION.BadRequestException;
@@ -140,26 +141,39 @@ public class ReplyService {
     }
 
     //save Ai reply
-    public ReplyResponse saveAiReply(Ticket ticket, String message, User aiUser){
+    // resolve = true  → high confidence: ticket is marked RESOLVED pending customer confirmation
+    // resolve = false → medium confidence: answer is posted but the ticket stays open for an agent
+    public ReplyResponse saveAiReply(Ticket ticket, String message, User aiUser,
+                                     String sourcesJson, boolean resolve, double confidence){
         Reply reply = Reply.builder()
                 .ticket(ticket)
                 .sender(aiUser)
                 .message(message)
                 .isInternal(false)
                 .isAiGenerated(true)
+                .aiSources(sourcesJson)
                 .build();
         replyRepository.save(Objects.requireNonNull(reply));
 
-        ticket.setAiResolved(true);
-        ticket.setStatus(TicketStatus.RESOLVED);
-        ticket.setResolvedAt(LocalDateTime.now());
+        ticket.setAiFeedback(AiFeedbackStatus.PENDING);
+        ticket.setAiConfidence(confidence);
+        if (resolve) {
+            ticket.setAiResolved(true);
+            ticket.setStatus(TicketStatus.RESOLVED);
+            ticket.setResolvedAt(LocalDateTime.now());
+        }
         ticketRepository.save(ticket);
 
-        notificationService.notifyUserTicketResolved(ticket);
+        if (resolve) {
+            notificationService.notifyUserTicketResolved(ticket);
+        } else {
+            notificationService.notifyUserAgentReplied(ticket, reply);
+        }
 
+        // Topic is shared with the customer, so broadcast the customer-safe view
         messagingTemplate.convertAndSend(
             "/topic/ticket/" + ticket.getId(),
-            mapper.toResponse(reply)
+            mapper.toCustomerView(mapper.toResponse(reply))
         );
 
         return mapper.toResponse(reply);
@@ -175,11 +189,15 @@ public class ReplyService {
             );
         asserCanView(ticket, currentUser);
 
-        List<Reply> replies = (currentUser.getRole() == Role.USER) ?
-                replyRepository.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(ticket) :
-                replyRepository.findByTicketOrderByCreatedAtAsc(ticket); 
+        if (currentUser.getRole() == Role.USER) {
+            List<Reply> replies = replyRepository.findByTicketAndIsInternalFalseOrderByCreatedAtAsc(ticket);
+            return mapper.toResponseList(replies, attachmentRepository::findByReply).stream()
+                    .map(mapper::toCustomerView)
+                    .toList();
+        }
 
-        return mapper.toResponseList(replies, attachmentRepository::findByReply); 
+        List<Reply> replies = replyRepository.findByTicketOrderByCreatedAtAsc(ticket);
+        return mapper.toResponseList(replies, attachmentRepository::findByReply);
     }
 
     public void addInternalNote(Ticket ticket, User sender, String message) {

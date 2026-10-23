@@ -19,8 +19,8 @@ const drawStroke = (ctx, stroke) => {
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.strokeStyle = stroke.tool === 'marker' ? 'rgba(245, 158, 11, 0.45)' : '#ef4444';
-  ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+  ctx.strokeStyle = stroke.tool === 'marker' ? 'color-mix(in srgb, var(--warning) 45%, transparent)' : 'var(--danger)';
+  ctx.fillStyle = 'color-mix(in srgb, var(--danger) 15%, transparent)';
   ctx.lineWidth = stroke.tool === 'marker' ? 18 : 5;
 
   if (stroke.points.length === 1) {
@@ -47,8 +47,8 @@ const drawCircle = (ctx, shape, preview = false) => {
   const radius = Math.max(Math.abs(width), Math.abs(height)) / 2;
 
   ctx.save();
-  ctx.strokeStyle = preview ? 'rgba(239, 68, 68, 0.7)' : '#ef4444';
-  ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+  ctx.strokeStyle = preview ? 'color-mix(in srgb, var(--danger) 70%, transparent)' : 'var(--danger)';
+  ctx.fillStyle = 'color-mix(in srgb, var(--danger) 8%, transparent)';
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -273,7 +273,7 @@ const ImageMarkupEditor = ({ open, file, onClose, onSave, actionLabel = 'Save ed
             <button type="button" onClick={onClose} className="rounded-lg border border-outline-variant px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container cursor-pointer transition-colors">
               Cancel
             </button>
-            <button type="button" onClick={saveEditedImage} disabled={loading} className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-[#5a52f0] disabled:opacity-50 cursor-pointer transition-colors">
+            <button type="button" onClick={saveEditedImage} disabled={loading} className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:bg-[var(--brand-hover)] disabled:opacity-50 cursor-pointer transition-colors">
               {actionLabel}
             </button>
           </div>

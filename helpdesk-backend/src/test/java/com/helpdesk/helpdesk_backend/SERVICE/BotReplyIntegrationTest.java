@@ -16,6 +16,7 @@ import com.helpdesk.helpdesk_backend.DTO.RESPONSE.TicketResponse;
 import com.helpdesk.helpdesk_backend.ENTITY.Reply;
 import com.helpdesk.helpdesk_backend.ENTITY.Ticket;
 import com.helpdesk.helpdesk_backend.ENTITY.User;
+import com.helpdesk.helpdesk_backend.ENUM.AiFeedbackStatus;
 import com.helpdesk.helpdesk_backend.ENUM.TicketStatus;
 import com.helpdesk.helpdesk_backend.REPOSITORY.ReplyRepository;
 import com.helpdesk.helpdesk_backend.REPOSITORY.TicketRepository;
@@ -59,7 +60,7 @@ public class BotReplyIntegrationTest {
         for (int i = 0; i < 45; i++) {
             Thread.sleep(1000);
             ticketAfterAi = ticketRepo.findById(response.getId()).orElse(null);
-            if (ticketAfterAi != null && ticketAfterAi.isAiResolved()) {
+            if (ticketAfterAi != null && ticketAfterAi.getAiFeedback() != null) {
                 break;
             }
         }
@@ -68,8 +69,10 @@ public class BotReplyIntegrationTest {
         
         try {
             // Verify if the ticket is marked resolved by AI
-            assertTrue(ticketAfterAi.isAiResolved(), "Ticket should be marked as AI resolved");
-            assertEquals(TicketStatus.RESOLVED, ticketAfterAi.getStatus(), "Ticket status should be RESOLVED");
+            // AI answered (auto-resolve or suggestion tier) and is awaiting customer feedback
+            assertEquals(AiFeedbackStatus.PENDING, ticketAfterAi.getAiFeedback(), "AI answer should await customer feedback");
+            assertEquals(ticketAfterAi.isAiResolved() ? TicketStatus.RESOLVED : TicketStatus.OPEN,
+                    ticketAfterAi.getStatus(), "Only the auto-resolve tier should resolve the ticket");
 
             // Verify if the AI reply is stored in the replies table
             List<Reply> replies = replyRepo.findByTicketOrderByCreatedAtAsc(ticketAfterAi);
@@ -111,7 +114,7 @@ public class BotReplyIntegrationTest {
         for (int i = 0; i < 45; i++) {
             Thread.sleep(1000);
             ticketAfterAi = ticketRepo.findById(response.getId()).orElse(null);
-            if (ticketAfterAi != null && ticketAfterAi.isAiResolved()) {
+            if (ticketAfterAi != null && ticketAfterAi.getAiFeedback() != null) {
                 break;
             }
         }
@@ -120,8 +123,10 @@ public class BotReplyIntegrationTest {
         
         try {
             // Verify if the ticket is marked resolved by AI
-            assertTrue(ticketAfterAi.isAiResolved(), "Ticket should be marked as AI resolved by KB article match");
-            assertEquals(TicketStatus.RESOLVED, ticketAfterAi.getStatus(), "Ticket status should be RESOLVED");
+            // AI answered (auto-resolve or suggestion tier) and is awaiting customer feedback
+            assertEquals(AiFeedbackStatus.PENDING, ticketAfterAi.getAiFeedback(), "AI answer should await customer feedback");
+            assertEquals(ticketAfterAi.isAiResolved() ? TicketStatus.RESOLVED : TicketStatus.OPEN,
+                    ticketAfterAi.getStatus(), "Only the auto-resolve tier should resolve the ticket");
 
             // Verify if the AI reply is stored in the replies table
             List<Reply> replies = replyRepo.findByTicketOrderByCreatedAtAsc(ticketAfterAi);

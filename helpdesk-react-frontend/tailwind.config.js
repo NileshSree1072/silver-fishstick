@@ -56,6 +56,16 @@ export default {
         "on-tertiary-fixed": "#351000",
         "background": "var(--bg-app)",
 
+        // Colour-system tokens (see index.css)
+        ai: { DEFAULT: "var(--ai)", soft: "var(--ai-soft)", border: "var(--ai-border)" },
+        danger: { DEFAULT: "var(--danger)", text: "var(--danger-text)", soft: "var(--danger-soft)", border: "var(--danger-border)" },
+        warning: { DEFAULT: "var(--warning)", text: "var(--warning-text)", soft: "var(--warning-soft)", border: "var(--warning-border)" },
+        success: { DEFAULT: "var(--success)", text: "var(--success-text)", soft: "var(--success-soft)", border: "var(--success-border)" },
+        note: { soft: "var(--note-soft)", border: "var(--note-border)", rule: "var(--note-rule)" },
+        popover: "var(--bg-popover)",
+        "brand-soft": "var(--brand-dim)",
+        "brand-border": "var(--brand-border)",
+
         // Existing CSS variable hooks for backwards compatibility
         brand: {
           DEFAULT: "var(--brand)",
@@ -125,17 +135,17 @@ export default {
         "container-max": "1440px"
       },
       fontFamily: {
-        "display-xl": ["Geist", "sans-serif"],
+        "display-xl": ["Inter", "sans-serif"],
         "mono-code": ["JetBrains Mono", "monospace"],
-        "title-md": ["Geist", "sans-serif"],
-        "headline-lg": ["Geist", "sans-serif"],
+        "title-md": ["Inter", "sans-serif"],
+        "headline-lg": ["Inter", "sans-serif"],
         "body-md": ["Inter", "sans-serif"],
         "label-sm": ["Inter", "sans-serif"],
-        "headline-lg-mobile": ["Geist", "sans-serif"],
+        "headline-lg-mobile": ["Inter", "sans-serif"],
         "body-lg": ["Inter", "sans-serif"],
         // Backwards compatible
         sans:    ["Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-        heading: ["Geist", "Inter", "system-ui", "sans-serif"],
+        heading: ["Inter", "system-ui", "sans-serif"],
         mono:    ["JetBrains Mono", "monospace"],
       },
       fontSize: {

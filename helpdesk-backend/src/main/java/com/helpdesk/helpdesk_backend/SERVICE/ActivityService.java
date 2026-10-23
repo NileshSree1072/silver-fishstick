@@ -122,6 +122,32 @@ public class ActivityService {
         publish(event);
     }
 
+    public void aiSuggested(Ticket ticket, double similarityScore) {
+        ActivityEvent event = ActivityEvent.builder()
+                .type(EventType.AI_SUGGESTED)
+                .message("AI posted a suggested answer — ticket kept open")
+                .detail(String.format("Similarity: %.0f%% · Awaiting customer feedback", similarityScore * 100))
+                .ticketId(ticket.getId())
+                .ticketTitle(ticket.getTitle())
+                .timestamp(LocalDateTime.now())
+                .level("INFO")
+                .build();
+        publish(event);
+    }
+
+    public void aiRejected(Ticket ticket) {
+        ActivityEvent event = ActivityEvent.builder()
+                .type(EventType.AI_FAILED)
+                .message("Customer said the AI answer did not help — routed to agent")
+                .detail("AI feedback: rejected")
+                .ticketId(ticket.getId())
+                .ticketTitle(ticket.getTitle())
+                .timestamp(LocalDateTime.now())
+                .level("WARN")
+                .build();
+        publish(event);
+    }
+
     public void aiFailed(Ticket ticket, String reason) {
         ActivityEvent event = ActivityEvent.builder()
                 .type(EventType.AI_FAILED)

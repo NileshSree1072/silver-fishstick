@@ -81,13 +81,8 @@ function MainApp() {
   // Loading spinner on session restore
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#090d16] flex items-center justify-center font-sans text-body">
-        <div className="text-center space-y-4">
-          <div className="w-10 h-10 border-4 border-[#10b981]/25 border-t-[#10b981] rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-muted uppercase tracking-widest">
-            Restoring session context...
-          </p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center" role="status" aria-label="Loading">
+        <div className="w-6 h-6 border-2 border-outline-variant border-t-primary rounded-full animate-spin" />
       </div>
     );
   }

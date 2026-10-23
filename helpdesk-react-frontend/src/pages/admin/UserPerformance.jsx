@@ -12,19 +12,19 @@ const getInitials = (n) => n ? n.split(' ').map(x => x[0]).join('').toUpperCase(
 const QualityBadge = ({ score }) => {
   if (score >= 4) return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(0,200,150,0.12)', color: '#00c896', border: '1px solid rgba(0,200,150,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success-text)', border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)' }}>
       <Star size={9} /> {score.toFixed(1)}
     </span>
   );
   if (score >= 2) return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
       <Star size={9} /> {score.toFixed(1)}
     </span>
   );
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(244,63,94,0.12)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)', border: '1px solid color-mix(in srgb, var(--danger) 25%, transparent)' }}>
       <Star size={9} /> {score.toFixed(1)}
     </span>
   );
@@ -48,11 +48,11 @@ function UserDetailModal({ userId, filters, onClose }) {
 
   const rows = [
     { label: 'Total Tickets Submitted', value: m.totalTicketsSubmitted, accent: 'var(--brand)' },
-    { label: 'Avg Response Time', value: `${Math.round(m.avgResponseTimeMinutes)}m`, accent: '#4cd7f6' },
-    { label: 'Repeat Issues (30d)', value: m.repeatIssueCount, accent: '#f59e0b' },
-    { label: 'Avg Rating Given', value: m.avgSatisfactionGiven.toFixed(1) + ' / 5', accent: '#f59e0b' },
-    { label: 'Auto-Closed Tickets', value: m.autoClosedCount, accent: '#64748b' },
-    { label: 'Ticket Quality Score', value: m.ticketQualityScore.toFixed(1) + ' / 5', accent: '#00c896' },
+    { label: 'Avg Response Time', value: `${Math.round(m.avgResponseTimeMinutes)}m`, accent: 'var(--brand)' },
+    { label: 'Repeat Issues (30d)', value: m.repeatIssueCount, accent: 'var(--warning)' },
+    { label: 'Avg Rating Given', value: m.avgSatisfactionGiven.toFixed(1) + ' / 5', accent: 'var(--warning)' },
+    { label: 'Auto-Closed Tickets', value: m.autoClosedCount, accent: 'var(--text-muted)' },
+    { label: 'Ticket Quality Score', value: m.ticketQualityScore.toFixed(1) + ' / 5', accent: 'var(--success)' },
   ];
 
   return createPortal(
@@ -134,8 +134,8 @@ export default function UserPerformance() {
     <div className="flex flex-col gap-4 h-full overflow-hidden anim-fade-in" style={{ padding: '16px 20px' }}>
       <div className="flex items-center gap-3 shrink-0">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: 'rgba(76,215,246,0.12)', border: '1px solid rgba(76,215,246,0.2)' }}>
-          <Users size={16} style={{ color: '#4cd7f6' }} />
+          style={{ background: 'color-mix(in srgb, var(--brand) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
+          <Users size={16} style={{ color: 'var(--brand)' }} />
         </div>
         <div>
           <h1 className="text-base font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>
@@ -180,7 +180,7 @@ export default function UserPerformance() {
                   <td style={{ padding: '12px 16px' }}>
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-                        style={{ background: 'rgba(59,130,246,0.12)', color: '#60a5fa' }}>
+                        style={{ background: 'color-mix(in srgb, var(--brand) 12%, transparent)', color: 'var(--brand)' }}>
                         {getInitials(u.userName)}
                       </div>
                       <span className="font-semibold" style={{ color: 'var(--text-heading)' }}>{u.userName}</span>
@@ -189,11 +189,11 @@ export default function UserPerformance() {
                   <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-heading)' }}>{u.totalTicketsSubmitted}</td>
                   <td style={{ padding: '12px 16px', color: 'var(--text-muted)' }}>{Math.round(u.avgResponseTimeMinutes)}m</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{ color: u.repeatIssueCount > 0 ? '#f59e0b' : 'var(--text-muted)', fontWeight: u.repeatIssueCount > 0 ? 700 : 400 }}>
+                    <span style={{ color: u.repeatIssueCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: u.repeatIssueCount > 0 ? 700 : 400 }}>
                       {u.repeatIssueCount}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#f59e0b', fontWeight: 600 }}>
+                  <td style={{ padding: '12px 16px', color: 'var(--warning-text)', fontWeight: 600 }}>
                     {u.avgSatisfactionGiven.toFixed(1)} ★
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -201,7 +201,7 @@ export default function UserPerformance() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button className="text-xs px-3 py-1 rounded-lg cursor-pointer font-semibold"
-                      style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid rgba(79,70,229,0.2)' }}>
+                      style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
                       Details
                     </button>
                   </td>

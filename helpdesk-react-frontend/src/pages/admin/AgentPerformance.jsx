@@ -14,19 +14,19 @@ const getInitials = (n) => n ? n.split(' ').map(x => x[0]).join('').toUpperCase(
 const SLABadge = ({ rate }) => {
   if (rate >= 95) return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(0,200,150,0.12)', color: '#00c896', border: '1px solid rgba(0,200,150,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', color: 'var(--success-text)', border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)' }}>
       <ShieldCheck size={10} /> {rate.toFixed(1)}%
     </span>
   );
   if (rate >= 80) return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
       <AlertTriangle size={10} /> {rate.toFixed(1)}%
     </span>
   );
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(244,63,94,0.12)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)', border: '1px solid color-mix(in srgb, var(--danger) 25%, transparent)' }}>
       <ShieldAlert size={10} /> {rate.toFixed(1)}%
     </span>
   );
@@ -89,17 +89,17 @@ function AgentDetailModal({ agentId, filters, onClose }) {
           <div className="grid grid-cols-3 gap-3">
             <MetricCard label="SLA Compliance" value={`${metrics.slaComplianceRate.toFixed(1)}%`}
               sub={`${metrics.slaCompliantCount}/${metrics.slaEligibleCount} eligible`}
-              accent={metrics.slaComplianceRate >= 95 ? '#00c896' : metrics.slaComplianceRate >= 80 ? '#f59e0b' : '#f43f5e'} />
+              accent={metrics.slaComplianceRate >= 95 ? 'var(--success)' : metrics.slaComplianceRate >= 80 ? 'var(--warning)' : 'var(--danger)'} />
             <MetricCard label="Resolution Rate" value={`${metrics.resolutionRate.toFixed(1)}%`}
               sub={`${metrics.totalResolved} resolved`} accent="var(--brand)" />
             <MetricCard label="Avg FRT" value={`${Math.round(metrics.avgFirstResponseMinutes)}m`}
-              sub="First response time" accent="#4cd7f6" />
+              sub="First response time" accent="var(--brand)" />
             <MetricCard label="Avg Handle Time" value={`${Math.round(metrics.avgHandleTimeMinutes / 60)}h`}
-              sub="From assign to resolve" accent="#7c3aed" />
+              sub="From assign to resolve" accent="var(--ai)" />
             <MetricCard label="Avg Rating" value={metrics.avgSatisfactionScore.toFixed(1)}
-              sub="Out of 5.0" accent="#f59e0b" />
+              sub="Out of 5.0" accent="var(--warning)" />
             <MetricCard label="Late Assigned" value={metrics.lateAssignedCount}
-              sub="Excluded from SLA" accent="#f43f5e" />
+              sub="Excluded from SLA" accent="var(--danger)" />
           </div>
 
           {/* Bar chart */}
@@ -124,10 +124,10 @@ function AgentDetailModal({ agentId, filters, onClose }) {
           {/* Late assignment note */}
           {metrics.lateAssignedCount > 0 && (
             <div className="flex items-start gap-3 p-3 rounded-xl"
-              style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
-              <ShieldAlert size={16} style={{ color: '#f43f5e', flexShrink: 0, marginTop: 1 }} />
+              style={{ background: 'color-mix(in srgb, var(--danger) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}>
+              <ShieldAlert size={16} style={{ color: 'var(--danger-text)', flexShrink: 0, marginTop: 1 }} />
               <div>
-                <p className="text-xs font-semibold" style={{ color: '#f43f5e' }}>
+                <p className="text-xs font-semibold" style={{ color: 'var(--danger-text)' }}>
                   {metrics.lateAssignedCount} ticket{metrics.lateAssignedCount !== 1 ? 's' : ''} late-assigned
                 </p>
                 <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
@@ -189,8 +189,8 @@ export default function AgentPerformance() {
       {/* Title */}
       <div className="flex items-center gap-3 shrink-0">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: 'rgba(0,200,150,0.12)', border: '1px solid rgba(0,200,150,0.2)' }}>
-          <TrendingUp size={16} style={{ color: '#00c896' }} />
+          style={{ background: 'color-mix(in srgb, var(--success) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--success) 20%, transparent)' }}>
+          <TrendingUp size={16} style={{ color: 'var(--success-text)' }} />
         </div>
         <div>
           <h1 className="text-base font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>
@@ -239,7 +239,7 @@ export default function AgentPerformance() {
                   <td style={{ padding: '12px 16px' }}>
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-                        style={{ background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }}>
+                        style={{ background: 'color-mix(in srgb, var(--ai) 12%, transparent)', color: 'var(--ai)' }}>
                         {getInitials(a.agentName)}
                       </div>
                       <span className="font-semibold" style={{ color: 'var(--text-heading)' }}>{a.agentName}</span>
@@ -249,7 +249,7 @@ export default function AgentPerformance() {
                   <td style={{ padding: '12px 16px', color: 'var(--text-heading)', fontWeight: 600 }}>{a.totalAssigned}</td>
                   <td style={{ padding: '12px 16px', color: 'var(--text-heading)', fontWeight: 600 }}>{a.totalResolved}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{ color: a.resolutionRate >= 80 ? '#00c896' : '#f59e0b', fontWeight: 700 }}>
+                    <span style={{ color: a.resolutionRate >= 80 ? 'var(--success)' : 'var(--warning)', fontWeight: 700 }}>
                       {a.resolutionRate.toFixed(1)}%
                     </span>
                   </td>
@@ -264,7 +264,7 @@ export default function AgentPerformance() {
                       title="These tickets are excluded from SLA compliance calculation"
                       className="cursor-default"
                       style={{
-                        color: a.lateAssignedCount > 0 ? '#f43f5e' : 'var(--text-muted)',
+                        color: a.lateAssignedCount > 0 ? 'var(--danger)' : 'var(--text-muted)',
                         fontWeight: a.lateAssignedCount > 0 ? 700 : 400,
                       }}
                     >
@@ -272,13 +272,13 @@ export default function AgentPerformance() {
                     </span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{ color: '#f59e0b', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--warning-text)', fontWeight: 600 }}>
                       {'★'.repeat(Math.round(a.avgSatisfactionScore))} {a.avgSatisfactionScore.toFixed(1)}
                     </span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button className="text-xs px-3 py-1 rounded-lg cursor-pointer font-semibold transition-colors"
-                      style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid rgba(79,70,229,0.2)' }}>
+                      style={{ background: 'var(--brand-dim)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
                       Details
                     </button>
                   </td>

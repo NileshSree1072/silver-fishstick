@@ -32,6 +32,24 @@ public interface SimilarTicketRepository extends JpaRepository<Ticket, UUID> {
         @Param("limit")      int    limit
     );
 
+    // Similar tickets of any status (for duplicate detection), excluding one ticket
+    @Query(value = """
+        SELECT t.*,
+               1 - (t.embedding <=> CAST(:embedding AS vector)) AS similarity
+        FROM tickets t
+        WHERE t.id <> :excludeId
+          AND t.embedding IS NOT NULL
+          AND 1 - (t.embedding <=> CAST(:embedding AS vector)) > :threshold
+        ORDER BY t.embedding <=> CAST(:embedding AS vector)
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Object[]> findSimilarTickets(
+        @Param("embedding")  String embedding,
+        @Param("excludeId")  UUID   excludeId,
+        @Param("threshold")  double threshold,
+        @Param("limit")      int    limit
+    );
+
     // Same but searches knowledge articles too
     @Query(value = """
         SELECT ka.*,

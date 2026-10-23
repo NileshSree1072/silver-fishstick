@@ -48,21 +48,21 @@ const SLAIndicator = ({ ticket, rules = [], slaInfo = null, showDetails = false 
 
   switch (status) {
     case 'BREACHED':
-      badgeClasses = 'bg-rose-500/10 border border-rose-500/20 text-rose-500';
-      dotClasses = 'bg-rose-500';
+      badgeClasses = 'bg-danger/10 border border-danger/20 text-danger-text';
+      dotClasses = 'bg-danger';
       statusLabel = 'Breached';
       description = 'Resolution deadline exceeded';
       break;
     case 'WARNING':
-      badgeClasses = 'bg-amber-500/10 border border-amber-500/20 text-amber-500';
-      dotClasses = 'bg-amber-500 animate-pulse';
+      badgeClasses = 'bg-warning/10 border border-warning/20 text-warning-text';
+      dotClasses = 'bg-warning animate-pulse';
       statusLabel = 'Warning';
       description = `${hoursRemaining}h remaining`;
       break;
     case 'OK':
     default:
-      badgeClasses = 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-500';
-      dotClasses = 'bg-emerald-500';
+      badgeClasses = 'bg-success/10 border border-success/20 text-success-text';
+      dotClasses = 'bg-success';
       statusLabel = 'OK';
       description = `${hoursRemaining}h remaining`;
       break;
@@ -72,10 +72,10 @@ const SLAIndicator = ({ ticket, rules = [], slaInfo = null, showDetails = false 
     return (
       <div className={`flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all duration-200 ${
         status === 'BREACHED' 
-          ? 'bg-rose-500/5 border-rose-500/10' 
+          ? 'bg-danger/5 border-danger/10' 
           : status === 'WARNING' 
-            ? 'bg-amber-500/5 border-amber-500/10' 
-            : 'bg-emerald-500/5 border-emerald-500/10'
+            ? 'bg-warning/5 border-warning/10' 
+            : 'bg-success/5 border-success/10'
       }`}>
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-semibold tracking-wider uppercase opacity-80 text-on-surface-variant">SLA Resolution Status</span>

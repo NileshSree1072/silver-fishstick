@@ -9,15 +9,18 @@ import org.springframework.data.domain.Pageable;
 
 import org.springframework.stereotype.Service;
 
+import com.helpdesk.helpdesk_backend.DTO.REQUEST.CreateReplyRequest;
 import com.helpdesk.helpdesk_backend.DTO.REQUEST.CreateTicketRequest;
 import com.helpdesk.helpdesk_backend.DTO.REQUEST.UpdateTicketRequest;
 import com.helpdesk.helpdesk_backend.DTO.RESPONSE.TicketResponse;
 import com.helpdesk.helpdesk_backend.ENTITY.Category;
 import com.helpdesk.helpdesk_backend.ENTITY.Ticket;
 import com.helpdesk.helpdesk_backend.ENTITY.User;
+import com.helpdesk.helpdesk_backend.ENUM.AiFeedbackStatus;
 import com.helpdesk.helpdesk_backend.ENUM.Priority;
 import com.helpdesk.helpdesk_backend.ENUM.Role;
 import com.helpdesk.helpdesk_backend.ENUM.TicketStatus;
+import com.helpdesk.helpdesk_backend.EXCEPTION.BadRequestException;
 import com.helpdesk.helpdesk_backend.EXCEPTION.NotFoundException;
 import com.helpdesk.helpdesk_backend.EXCEPTION.UnauthorizedException;
 import com.helpdesk.helpdesk_backend.REPOSITORY.CategoryRepository;
@@ -45,6 +48,7 @@ public class TicketService {
     private final AIService aiService;
     private final ActivityService activityService;
     private final TicketTimelineService timelineService;
+    private final ReplyService replyService;
 
     // ── CREATE ──────────────────────────────────────
 
@@ -209,6 +213,50 @@ public class TicketService {
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setResolvedAt(null);
         return mapper.toResponse(ticketRepo.save(ticket));
+    }
+
+    // USER: confirm or reject the AI's answer
+    // Accepted → ticket closes as AI-resolved. Rejected → ticket reopens for a human agent
+    // and stops counting as an AI resolution in metrics.
+    public TicketResponse submitAiFeedback(UUID id, boolean helpful, User currentUser) {
+        Ticket ticket = findTicketOrThrow(id);
+
+        if (!ticket.getCreatedBy().getId().equals(currentUser.getId()))
+            throw new UnauthorizedException("You can only give feedback on your own tickets");
+        if (ticket.getAiFeedback() != AiFeedbackStatus.PENDING)
+            throw new BadRequestException("This ticket has no AI answer awaiting feedback");
+
+        // Leave a visible trail in the thread (also notifies the assigned agent)
+        CreateReplyRequest note = new CreateReplyRequest();
+        note.setMessage(helpful
+                ? "The AI answer solved my issue."
+                : "The AI answer did not solve my issue. I still need help from a support agent.");
+        replyService.sendReply(id, note, currentUser);
+
+        ticket = findTicketOrThrow(id);
+        if (helpful) {
+            ticket.setAiFeedback(AiFeedbackStatus.ACCEPTED);
+            ticket.setAiResolved(true);
+            ticket.setStatus(TicketStatus.CLOSED);
+            if (ticket.getResolvedAt() == null) {
+                ticket.setResolvedAt(LocalDateTime.now());
+            }
+            ticketRepo.save(ticket);
+        } else {
+            ticket.setAiFeedback(AiFeedbackStatus.REJECTED);
+            ticket.setAiResolved(false);
+            ticket.setStatus(TicketStatus.OPEN);
+            ticket.setResolvedAt(null);
+            ticketRepo.save(ticket);
+            if (ticket.getAssignedTo() == null) {
+                assignmentService.autoAssign(ticket);
+                if (ticket.getAssignedTo() != null) {
+                    notificationService.notifyAgentNewTicket(ticket);
+                }
+            }
+            activityService.aiRejected(ticket);
+        }
+        return mapper.toResponse(ticket);
     }
 
     // USER: close a resolved/open ticket

@@ -29,6 +29,8 @@ public class TicketMapper {
                 .assignedToName(ticket.getAssignedTo() != null
                         ? ticket.getAssignedTo().getName() : null)
                 .aiResolved(ticket.isAiResolved())
+                .aiFeedback(ticket.getAiFeedback())
+                .aiConfidence(ticket.getAiConfidence())
                 .createdAt(ticket.getCreatedAt())
                 .updatedAt(ticket.getUpdatedAt())
                 .resolvedAt(ticket.getResolvedAt())

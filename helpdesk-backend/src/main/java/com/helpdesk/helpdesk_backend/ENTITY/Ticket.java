@@ -3,6 +3,7 @@ package com.helpdesk.helpdesk_backend.ENTITY;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.helpdesk.helpdesk_backend.ENUM.AiFeedbackStatus;
 import com.helpdesk.helpdesk_backend.ENUM.Priority;
 import com.helpdesk.helpdesk_backend.ENUM.TicketStatus;
 
@@ -72,6 +73,14 @@ public class Ticket {
 
     @Builder.Default
     private boolean aiResolved = false;
+
+    // Customer verdict on the AI answer (null when the AI never replied)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 16)
+    private AiFeedbackStatus aiFeedback;
+
+    // Best retrieval similarity behind the AI answer
+    private Double aiConfidence;
 
     @Builder.Default
     private LocalDateTime createdAt  = LocalDateTime.now();

@@ -6,22 +6,22 @@ import { getBreachLog } from '../../api/performanceApi';
 import DateRangeFilter from '../../components/common/DateRangeFilter';
 
 const PRIORITY_COLORS = {
-  URGENT: { bg: 'rgba(255,180,171,0.12)', color: '#ffb4ab', border: 'rgba(255,180,171,0.25)' },
-  HIGH:   { bg: 'rgba(255,182,149,0.12)', color: '#ffb695', border: 'rgba(255,182,149,0.25)' },
-  MEDIUM: { bg: 'rgba(195,192,255,0.12)', color: '#c3c0ff', border: 'rgba(195,192,255,0.25)' },
-  LOW:    { bg: 'rgba(195,192,255,0.08)', color: '#c3c0ff', border: 'rgba(195,192,255,0.15)' },
+  URGENT: { bg: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)', border: 'color-mix(in srgb, var(--danger) 25%, transparent)' },
+  HIGH:   { bg: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)', border: 'color-mix(in srgb, var(--warning) 25%, transparent)' },
+  MEDIUM: { bg: 'color-mix(in srgb, var(--brand) 12%, transparent)', color: 'var(--brand)', border: 'color-mix(in srgb, var(--brand) 25%, transparent)' },
+  LOW:    { bg: 'color-mix(in srgb, var(--brand) 8%, transparent)', color: 'var(--brand)', border: 'color-mix(in srgb, var(--brand) 15%, transparent)' },
 };
 
 const FaultBadge = ({ type }) => {
   if (type === 'SYSTEM') return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--warning) 12%, transparent)', color: 'var(--warning-text)', border: '1px solid color-mix(in srgb, var(--warning) 25%, transparent)' }}>
       <AlertTriangle size={9} /> SYSTEM
     </span>
   );
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-      style={{ background: 'rgba(244,63,94,0.12)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.25)' }}>
+      style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', color: 'var(--danger-text)', border: '1px solid color-mix(in srgb, var(--danger) 25%, transparent)' }}>
       <ShieldAlert size={9} /> AGENT
     </span>
   );
@@ -62,8 +62,8 @@ export default function BreachLog() {
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: 'rgba(244,63,94,0.12)', border: '1px solid rgba(244,63,94,0.2)' }}>
-            <ShieldAlert size={16} style={{ color: '#f43f5e' }} />
+            style={{ background: 'color-mix(in srgb, var(--danger) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}>
+            <ShieldAlert size={16} style={{ color: 'var(--danger-text)' }} />
           </div>
           <div>
             <h1 className="text-base font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-heading)' }}>
@@ -78,11 +78,11 @@ export default function BreachLog() {
         {/* Summary chips */}
         <div className="flex items-center gap-2">
           <span className="text-[11px] px-2.5 py-1 rounded-lg font-semibold"
-            style={{ background: 'rgba(244,63,94,0.1)', color: '#f43f5e', border: '1px solid rgba(244,63,94,0.2)' }}>
+            style={{ background: 'color-mix(in srgb, var(--danger) 10%, transparent)', color: 'var(--danger-text)', border: '1px solid color-mix(in srgb, var(--danger) 20%, transparent)' }}>
             {agentBreaches} Agent
           </span>
           <span className="text-[11px] px-2.5 py-1 rounded-lg font-semibold"
-            style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)' }}>
+            style={{ background: 'color-mix(in srgb, var(--warning) 10%, transparent)', color: 'var(--warning-text)', border: '1px solid color-mix(in srgb, var(--warning) 20%, transparent)' }}>
             {systemBreaches} System
           </span>
         </div>
@@ -90,12 +90,12 @@ export default function BreachLog() {
 
       {/* Fair evaluation note */}
       <div className="shrink-0 flex items-center gap-3 p-3 rounded-xl"
-        style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)' }}>
-        <ShieldCheck size={14} style={{ color: '#f59e0b', flexShrink: 0 }} />
+        style={{ background: 'color-mix(in srgb, var(--warning) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--warning) 15%, transparent)' }}>
+        <ShieldCheck size={14} style={{ color: 'var(--warning-text)', flexShrink: 0 }} />
         <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-          <span className="font-semibold" style={{ color: '#f59e0b' }}>SYSTEM</span> breaches occur
+          <span className="font-semibold" style={{ color: 'var(--warning-text)' }}>SYSTEM</span> breaches occur
           when the agent was assigned with less than 20% of the SLA window remaining — not counted against agent performance.
-          <span className="font-semibold ml-1" style={{ color: '#f43f5e' }}>AGENT</span> breaches are
+          <span className="font-semibold ml-1" style={{ color: 'var(--danger-text)' }}>AGENT</span> breaches are
           those where the agent had adequate time.
         </p>
       </div>

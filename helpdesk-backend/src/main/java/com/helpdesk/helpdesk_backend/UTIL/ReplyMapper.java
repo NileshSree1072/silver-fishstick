@@ -1,7 +1,11 @@
 package com.helpdesk.helpdesk_backend.UTIL;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.stereotype.Component;
 
@@ -12,6 +16,8 @@ import com.helpdesk.helpdesk_backend.ENTITY.Reply;
 
 @Component
 public class ReplyMapper {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ReplyResponse toResponse(Reply reply) {
         return toResponse(reply, List.of());
@@ -28,8 +34,30 @@ public class ReplyMapper {
                 .isInternal(reply.isInternal())
                 .isAiGenerated(reply.isAiGenerated())
                 .attachments(attachments.stream().map(this::toAttachmentResponse).toList())
+                .aiSources(parseSources(reply.getAiSources()))
                 .createdAt(reply.getCreatedAt())
                 .build();
+    }
+
+    // Customers may only see knowledge-article sources — past tickets belong to other users
+    public ReplyResponse toCustomerView(ReplyResponse response) {
+        if (response.getAiSources() != null) {
+            response.setAiSources(response.getAiSources().stream()
+                    .filter(s -> "article".equals(s.get("type")))
+                    .toList());
+        }
+        return response;
+    }
+
+    private List<Map<String, Object>> parseSources(String json) {
+        if (json == null || json.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     public List<ReplyResponse> toResponseList(List<Reply> replies) {
